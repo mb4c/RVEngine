@@ -1,0 +1,35 @@
+{
+  "name" : "realvirtuality",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "d5b03c125afee1d9cef38f4cfa77e229400fb48a",
+  "dependencies" : [ {
+    "name" : "glm",
+    "version>=" : "0.9.9.8#2"
+  }, {
+    "name" : "glfw3",
+    "version>=" : "3.3.8#2"
+  }, {
+    "name" : "fmt",
+    "version>=" : "10.1.0"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36"
+  }, {
+    "name" : "imgui",
+    "version>=" : "1.89.7",
+    "$comment" : "    # this is heuristically generated, and may not be correct\n\n    find_package(imgui CONFIG REQUIRED)\n\n    target_link_libraries(main PRIVATE imgui::imgui)\n",
+    "features" : [ "docking-experimental", "glfw-binding", "opengl3-binding" ]
+  }, {
+    "name" : "stb",
+    "version>=" : "2023-04-11#1"
+  }, {
+    "name" : "assimp",
+    "version>=" : "5.2.5"
+  }, {
+    "name" : "tracy",
+    "version>=" : "0.9.1#2"
+  }, {
+    "name" : "entt",
+    "version>=" : "3.12.2"
+  } ]
+}
