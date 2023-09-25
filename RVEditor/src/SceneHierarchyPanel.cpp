@@ -69,10 +69,21 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
-			ImGui::DragFloat3("Position", glm::value_ptr(transform.Transform[3]),0.1f);
+			ImGui::DragFloat3("Position", glm::value_ptr(transform.Translation),0.01f);
+			auto rot = glm::degrees(transform.Rotation);
+			ImGui::DragFloat3("Rotation", glm::value_ptr(rot),0.1f);
+			transform.Rotation = glm::radians(rot);
+			ImGui::DragFloat3("Scale", glm::value_ptr(transform.Scale),0.1f);
 			ImGui::TreePop();
 		}
 
 	}
 
 }
+
+void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
+{
+	m_SelectionContext = entity;
+}
+
+

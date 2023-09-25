@@ -10,6 +10,9 @@ void Renderer::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
 	glEnable(GL_LINE_SMOOTH);
 
 	glEnable(GL_DEBUG_OUTPUT);
@@ -40,12 +43,17 @@ void Renderer::EndScene()
 
 }
 
-void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4 &transform)
+void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4 &transform, unsigned int entity)
 {
 	RV_PROFILE_FUNCTION();
 	shader->Bind();
 	shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
 	shader->SetMat4("u_Transform", transform);
+	shader->SetMat3("u_NormalMatrix", glm::transpose(glm::inverse(glm::mat3(transform))));
+	shader->SetUInt("u_ObjectIndex", entity + 1);
+
+	const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers( 2, buffers );
 
 	vertexArray->Bind();
 	DrawIndexed(vertexArray, 0);
@@ -66,7 +74,7 @@ void Renderer::SetClearColor(const glm::vec4 &color)
 void Renderer::Clear()
 {
 	RV_PROFILE_FUNCTION();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void Renderer::DrawIndexed(const std::shared_ptr<VertexArray> &vertexArray, int indexCount)

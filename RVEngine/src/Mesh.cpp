@@ -20,13 +20,22 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 		interleavedVertices.push_back(m_Vertices[i].Normal.z);
 		interleavedVertices.push_back(m_Vertices[i].TexCoords.x);
 		interleavedVertices.push_back(m_Vertices[i].TexCoords.y);
+		interleavedVertices.push_back(m_Vertices[i].Tangent.x);
+		interleavedVertices.push_back(m_Vertices[i].Tangent.y);
+		interleavedVertices.push_back(m_Vertices[i].Tangent.z);
+		interleavedVertices.push_back(m_Vertices[i].Bitangent.x);
+		interleavedVertices.push_back(m_Vertices[i].Bitangent.y);
+		interleavedVertices.push_back(m_Vertices[i].Bitangent.z);
 	}
 
 	std::shared_ptr<VertexBuffer> vertexBuffer = std::make_shared<VertexBuffer>(interleavedVertices.data(), interleavedVertices.size() * sizeof(float));
 	BufferLayout layout = {
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float3, "a_Normal" },
-			{ ShaderDataType::Float2, "a_TexCoord" }
+			{ ShaderDataType::Float2, "a_TexCoord" },
+			{ ShaderDataType::Float3, "a_Tangent" },
+			{ ShaderDataType::Float3, "a_Bitangent" }
+
 	};
 	vertexBuffer->SetLayout(layout);
 

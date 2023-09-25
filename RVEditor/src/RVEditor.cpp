@@ -10,18 +10,42 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 
 void RVEditor::OnInit()
 {
-	model = std::make_shared<Model>("/home/lolman/Downloads/backpack/backpack.obj");
+	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
 	light = std::make_shared<Model>("/home/lolman/monke.fbx");
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
-	mainShader = std::make_shared<Shader>("res/shaders/vert.glsl", "res/shaders/frag.glsl");
+	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
 	m_Scene = std::make_shared<Scene>();
 
 	m_SceneHierarchyPanel.SetContext(m_Scene);
-	m_BackpackEntity = m_Scene->CreateEntity("Dupa romana");
-	m_BackpackEntity.AddComponent<MeshRendererComponent>(model, mainShader);
+
+	auto dzwonek = m_Scene->CreateEntity("dzwonek");
+	dzwonek.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
+	dzwonek.GetComponent<TransformComponent>().Rotate({-90,0,0});
+
+	auto dzwonek2 = m_Scene->CreateEntity("dzwonek2");
+	dzwonek2.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
+	dzwonek2.GetComponent<TransformComponent>().Rotate({-90,0,0});
+	dzwonek2.GetComponent<TransformComponent>().Translation = {0,0,0.2};
+
+	auto dzwonek3 = m_Scene->CreateEntity("dzwonek3");
+	dzwonek3.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
+	dzwonek3.GetComponent<TransformComponent>().Rotate({-90,0,0});
+	dzwonek3.GetComponent<TransformComponent>().Translation = {0,0,0.4};
+
+	auto swiatlo = m_Scene->CreateEntity("swiatelko");
+	swiatlo.AddComponent<MeshRendererComponent>(light, flatShader, flatShader);
+	swiatlo.GetComponent<TransformComponent>().Rotate({-90,0,0});
+	swiatlo.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
+	swiatlo.GetComponent<TransformComponent>().SetPosition({lightPosition});
+
+	std::shared_ptr<Material> material = std::make_shared<Material>() ;
+	material->albedo.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");;
+	material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");;
+	model->m_Material = material;
+	light->m_Material = material;
 
 }
 
@@ -31,7 +55,31 @@ void RVEditor::OnUpdate()
 	Renderer::BeginScene(camera);
 	ProcessInput();
 
+	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
+
+	if (ClickedInViewPort())
+	{
+		if(m_HoveredEntity < 4294967295)
+		{
+
+			m_ClickedEntity = m_HoveredEntity;
+			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)m_ClickedEntity, m_Scene.get()));
+			m_Scene->SetSelectedEntity(m_ClickedEntity);
+
+		}
+		else
+		{
+			m_ClickedEntity = entt::null;
+			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)entt::null, m_Scene.get()));
+			m_Scene->SetSelectedEntity(entt::null);
+		}
+	}
+
+
+
 	frameBuffer->Bind();
+
+	Renderer::SetClearColor({0, 0, 0, 1});
 	Renderer::Clear();
 
 	m_Scene->OnUpdate(GetDeltaTime());
@@ -40,39 +88,22 @@ void RVEditor::OnUpdate()
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
 	camera.SetViewMatrix(view);
+
 	mainShader->Bind();
-
 	mainShader->SetVec3("u_CamPos", cameraPos);
-//		mainShader->SetVec3("u_Light.position", lightPosition);
-	mainShader->SetVec3("u_Light.direction", lightRotation);
-	mainShader->SetVec3("u_Light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	mainShader->SetVec3("u_Light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-	mainShader->SetVec3("u_Light.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	mainShader->SetVec3("lightPositions[0]", lightPosition);
+	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
 
-	mainShader->SetFloat("u_Material.shininess", 32.0f);
 
-//	auto meshes = model->GetMeshes();
-//	m_MeshesCount = meshes->size();
-//	{
-//		RV_PROFILE_SCOPE("MeshLoop");
-//		for (int i = 0; i < m_MeshesCount; ++i)
-//		{
-////			 bind diffuse map
-//			glActiveTexture(GL_TEXTURE0);
-//			glBindTexture(GL_TEXTURE_2D, meshes->at(i).m_Textures.at(0).id);
-//			// bind specular map
-//			glActiveTexture(GL_TEXTURE1);
-//			glBindTexture(GL_TEXTURE_2D, meshes->at(i).m_Textures.at(1).id);
-//			Renderer::Submit(mainShader, meshes->at(i).m_VertexArray);
-//		}
-//	}
-//
-//	glm::mat4 transform = glm::mat4(1.0f);
-//	transform = glm::translate(transform, glm::vec3(lightPosition));
-//	flatShader->Bind();
-//	flatShader->SetVec4("u_Color", glm::vec4(lightColor.x,lightColor.y,lightColor.z,1));
-//	Renderer::Submit(flatShader, light->GetMeshes()->at(0).m_VertexArray, transform);
 
+
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, glm::vec3(lightPosition));
+	transform = glm::scale(transform, glm::vec3(0.1,0.1,0.1));
+
+	flatShader->Bind();
+	flatShader->SetVec4("u_Color", glm::vec4(lightColor.x,lightColor.y,lightColor.z,1));
+	Renderer::Submit(flatShader, light->GetMeshes()->at(0).m_VertexArray, transform);
 	frameBuffer->Unbind();
 }
 
@@ -93,6 +124,7 @@ void RVEditor::DrawImGui()
 	Dockspace();
 
 	ImGui::Begin("Content browser");
+
 	ImGui::End();
 
 
@@ -107,19 +139,19 @@ void RVEditor::DrawImGui()
 	ImGui::DragFloat3("LightPos", glm::value_ptr(lightPosition), 0.1);
 	ImGui::ColorEdit3("LightColor", glm::value_ptr(lightColor));
 	ImGui::DragFloat3("LightDir", glm::value_ptr(lightRotation), 0.1);
+	ImGui::DragFloat("LightIntensity", &lightIntensity, 0.1);
 
-	if (m_BackpackEntity)
-	{
-		ImGui::Separator();
-		auto& tag = m_BackpackEntity.GetComponent<TagComponent>().Tag;
-		ImGui::Text("%s", tag.c_str());
+	ImGui::ColorEdit3("Albedo", glm::value_ptr(albedo));
+	ImGui::DragFloat("Metallic", &metallic, 0.1);
+	ImGui::DragFloat("Roughness", &roughness, 0.1);
+	ImGui::DragFloat("AO", &ao, 0.1);
+	ImGui::InputFloat2("Viewport cursor pos", &m_MouseVieportPos[0]);
+	ImGui::Text("Hovered entity: %u", m_HoveredEntity);
 
-		ImGui::Separator();
-	}
 	ImGui::End();
 
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // Big padding used for clarity.	// Get the size of the child (i.e. the whole draw size of the windows).
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 	ImGui::Begin("Viewport");
 	m_ViewportFocused = ImGui::IsWindowFocused();
@@ -137,6 +169,10 @@ void RVEditor::DrawImGui()
 	// Because I use the texture from OpenGL, I need to invert the V from the UV.
 
 	ImGui::Image((ImTextureID)frameBuffer->GetColorTexture(), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+
+	float posx = ImGui::GetCursorScreenPos().x - ImGui::GetMousePos().x;
+	float posy = ImGui::GetCursorScreenPos().y - ImGui::GetMousePos().y;
+	m_MouseVieportPos = ImVec2{-posx,posy};
 
 	ImGui::End();
 	m_LastViewportSize = m_ViewportSize;
@@ -156,7 +192,7 @@ void RVEditor::ProcessInput()
 
 	if (m_ViewportFocused)
 	{
-		float cameraSpeed = 2.0f * GetDeltaTime();
+		float cameraSpeed = 0.5f * GetDeltaTime();
 
 
 
@@ -249,4 +285,12 @@ void RVEditor::Dockspace()
 	ImGui::DockSpace(dockspace_id);
 	ImGui::End();
 
+}
+
+bool RVEditor::ClickedInViewPort()
+{
+	if (m_Input.GetMouseDown(0) && m_ViewportFocused && m_MouseVieportPos.x > 0 && m_MouseVieportPos.x < m_ViewportSize.x && m_MouseVieportPos.y > 0 && m_MouseVieportPos.y < m_ViewportSize.y)
+		return true;
+	else
+		return false;
 }

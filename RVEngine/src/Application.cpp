@@ -1,5 +1,7 @@
 #include <cmath>
 #include <iostream>
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include "imgui_internal.h"
 #include "Application.hpp"
 #include "Shader.hpp"
 #define STB_IMAGE_IMPLEMENTATION
@@ -7,7 +9,6 @@
 #include "Renderer.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
-
 
 
 Application::Application(const std::string &title, int width, int height)
@@ -27,7 +28,7 @@ void Application::Run()
 	}
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	printf("GLFW version: %s\n", glfwGetVersionString());

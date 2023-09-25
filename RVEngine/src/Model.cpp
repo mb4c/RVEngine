@@ -15,7 +15,7 @@ void Model::LoadModel(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate);
+	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -76,6 +76,12 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		else
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
+		if(mesh->HasTangentsAndBitangents())
+		{
+			vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+			vertex.Bitangent = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+		}
+
 		vertices.push_back(vertex);
 	}
 	// process indices
@@ -86,16 +92,16 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			indices.push_back(face.mIndices[j]);
 	}
 	// process material
-	if(mesh->mMaterialIndex >= 0)
-	{
-		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material,
-																aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-		std::vector<Texture> specularMaps = LoadMaterialTextures(material,
-																 aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	}
+//	if(mesh->mMaterialIndex >= 0)
+//	{
+//		aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+//		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+//		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+//		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, "texture_roughness");
+//		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+//		std::vector<Texture> metallicMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_metalness");
+//		textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
+//	}
 
 	return {vertices, indices, textures};
 

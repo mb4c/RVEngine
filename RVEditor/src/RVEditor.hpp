@@ -6,7 +6,6 @@
 #include "Scene.hpp"
 #include <FrameBuffer.hpp>
 #include <Entity.hpp>
-#include <Math.hpp>
 #include "SceneHierarchyPanel.hpp"
 
 class RVEditor : public Application
@@ -22,23 +21,23 @@ private:
 	void ProcessInput();
 	void Dockspace();
 
+	bool ClickedInViewPort();
+
 
 	bool m_CursorEnabled = true;
 	bool m_ViewportFocused = false;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
 	std::shared_ptr<Scene> m_Scene;
-	Entity m_BackpackEntity;
 
 
 	std::shared_ptr<Model> model;
 	std::shared_ptr<Model> light;
 
-//	Model light {"/home/lolman/monke.fbx"};
 	PerspectiveCamera camera;
 
 
-	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  1.0f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 	glm::vec3 direction;
@@ -46,15 +45,27 @@ private:
 	float pitch = 0;
 	float yaw = -90;
 
-	glm::vec3 lightPosition = glm::vec3(2.0f, 0.0f,  3.0f);
+	glm::vec3 lightPosition = glm::vec3(0.5f, 0.0f,  0.0f);
 	glm::vec3 lightRotation = glm::vec3(2.0f, 0.0f,  3.0f);
 	glm::vec3 lightColor  	= glm::vec3(1.0f, 1.0f,  1.0f);
+	float lightIntensity = 1.0f;
+
+
+	glm::vec3 albedo = glm::vec3(1.0f, 1.0f,  1.0f);
+	float metallic = 1.0f;
+	float roughness = 1.0f;
+	float ao = 1.0f;
+
+
 	uint32_t m_MeshesCount = 0;
 	float mousedelta[2];
 
 	ImVec2 m_ViewportSize {};
 	ImVec2 m_LastViewportSize {};
 	glm::ivec2 m_LastWindowSize {};
+	ImVec2 m_MouseVieportPos {0,0};
+	uint32_t m_HoveredEntity {};
+	uint32_t m_ClickedEntity {};
 
 	std::shared_ptr<Shader> flatShader;
 	std::shared_ptr<Shader> mainShader;

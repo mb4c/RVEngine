@@ -11,6 +11,7 @@ public:
 	SceneHierarchyPanel(const std::shared_ptr<Scene>& context);
 	void SetContext(const std::shared_ptr<Scene>& context);
 	void OnRender();
+	void SetSelectedEntity(Entity entity);
 private:
 	void DrawEntityNode(Entity entity);
 	void DrawComponents(Entity entity);
