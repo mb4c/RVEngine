@@ -9,6 +9,7 @@
 #include "Renderer.hpp"
 #include "Mesh.hpp"
 #include "Model.hpp"
+#include <ImGuizmo.h>
 
 
 Application::Application(const std::string &title, int width, int height)
@@ -116,6 +117,7 @@ void Application::Run()
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
+			ImGuizmo::BeginFrame();
 
 			OnImGuiRender();
 

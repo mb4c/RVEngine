@@ -7,6 +7,8 @@
 #include <FrameBuffer.hpp>
 #include <Entity.hpp>
 #include "SceneHierarchyPanel.hpp"
+#include <ImGuizmo.h>
+#include <Math.hpp>
 
 class RVEditor : public Application
 {
@@ -71,4 +73,6 @@ private:
 	std::shared_ptr<Shader> mainShader;
 
 	std::shared_ptr<FrameBuffer> frameBuffer;
+
+	int m_GizmoType = -1;
 };

@@ -18,12 +18,11 @@ public:
 	const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 	void SetViewMatrix(glm::mat4 view);
 	void Resize(float width, float height);
-private:
-	void RecalculateViewMatrix();
-
 	glm::mat4 m_ProjectionMatrix;
 	glm::mat4 m_ViewMatrix;
 	glm::mat4 m_ViewProjectionMatrix;
+private:
+	void RecalculateViewMatrix();
 
 	glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
 	float m_Rotation = 0.0f;

@@ -86,4 +86,9 @@ void SceneHierarchyPanel::SetSelectedEntity(Entity entity)
 	m_SelectionContext = entity;
 }
 
+Entity SceneHierarchyPanel::GetSelectedEntity()
+{
+	return m_SelectionContext;
+}
+
 

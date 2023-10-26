@@ -57,7 +57,7 @@ void RVEditor::OnUpdate()
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
-	if (ClickedInViewPort())
+	if (ClickedInViewPort() && !ImGuizmo::IsUsing())
 	{
 		if(m_HoveredEntity < 4294967295)
 		{
@@ -174,6 +174,40 @@ void RVEditor::DrawImGui()
 	float posy = ImGui::GetCursorScreenPos().y - ImGui::GetMousePos().y;
 	m_MouseVieportPos = ImVec2{-posx,posy};
 
+
+	// Gizmos
+
+	Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+	if (selectedEntity && m_GizmoType != -1)
+	{
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist();
+
+		float windowWidth = (float)ImGui::GetWindowWidth();
+		float windowHeight = (float)ImGui::GetWindowHeight();
+		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+		glm::mat4 cameraView = camera.m_ViewMatrix;
+		glm::mat4 cameraProjection = camera.GetProjectionMatrix();
+
+		auto& tc = selectedEntity.GetComponent<TransformComponent>();
+		glm::mat4 transform = tc.GetTransform();
+
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
+
+		if(ImGuizmo::IsUsing())
+		{
+			glm::vec3 translation, rotation, scale;
+			Math::DecomposeTransform(transform, translation, rotation, scale);
+
+			tc.Translation = translation;
+//			glm::vec3 deltaRot = rotation - tc.Rotation;
+			tc.Rotation = rotation;
+			tc.Scale = scale;
+		}
+
+	}
+
 	ImGui::End();
 	m_LastViewportSize = m_ViewportSize;
 	m_LastWindowSize = GetWindowSize();
@@ -248,15 +282,17 @@ void RVEditor::ProcessInput()
 				glPolygonMode(GL_FRONT_AND_BACK, newMode);
 			}
 
-
-
 		} else
 		{
 			SetCursorState(GLFW_CURSOR_NORMAL);
+			if (m_Input.GetKeyPressed(GLFW_KEY_W))
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			if (m_Input.GetKeyPressed(GLFW_KEY_E))
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			if (m_Input.GetKeyPressed(GLFW_KEY_R))
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 		}
 	}
-
-
 
 
 

@@ -12,6 +12,7 @@ public:
 	void SetContext(const std::shared_ptr<Scene>& context);
 	void OnRender();
 	void SetSelectedEntity(Entity entity);
+	Entity GetSelectedEntity();
 private:
 	void DrawEntityNode(Entity entity);
 	void DrawComponents(Entity entity);
