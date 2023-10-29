@@ -147,7 +147,36 @@ void RVEditor::DrawImGui()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("Viewport");
+	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
+	if (ImGui::BeginMenuBar())
+	{
+		ImGui::Text("Gizmo: ");
+
+		bool translate = false;
+		bool rotate = false;
+		bool scale = false;
+
+		if (m_GizmoType == ImGuizmo::OPERATION::TRANSLATE)
+			translate = true;
+		if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+			rotate = true;
+		if (m_GizmoType == ImGuizmo::OPERATION::SCALE)
+			scale = true;
+
+		if(ImGui::RadioButton("T", translate))
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+		if(ImGui::RadioButton("R", rotate))
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+
+		if(ImGui::RadioButton("S", scale))
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+
+		ImGui::Text("|");
+
+		ImGui::EndMenuBar();
+	}
+
 	m_ViewportFocused = ImGui::IsWindowFocused();
 
 	m_ViewportSize = ImGui::GetContentRegionAvail();
