@@ -3,6 +3,7 @@
 #include "Stencil.hpp"
 #include <Components.hpp>
 #include <Entity.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Scene::Scene()
 {
@@ -51,6 +52,14 @@ void Scene::OnUpdate(float ts)
 			Stencil::DisableStencil();
 
 			mesh.shader->Bind();
+
+			for (int k = 0; k < 32; ++k) //HACK: i want to die when i see this
+			{
+				glm::vec3 zero {0,0,0};
+				mesh.shader->SetVec3("lightPositions[" + std::to_string(k) + "]", zero);
+				mesh.shader->SetVec3("lightColors[" + std::to_string(k) + "]", zero);
+			}
+
 			for (int j = 0; j < lights.size(); ++j)
 			{
 				mesh.shader->SetVec3("lightPositions[" + std::to_string(j) + "]", std::get<0>(lights.at(j)).GetPosition());
@@ -81,4 +90,9 @@ void Scene::OnUpdate(float ts)
 void Scene::SetSelectedEntity(uint32_t entity)
 {
 	m_SelectedEntity = entity;
+}
+
+void Scene::RemoveEntity(Entity entity)
+{
+	m_Registry.destroy(entity.GetHandle());
 }

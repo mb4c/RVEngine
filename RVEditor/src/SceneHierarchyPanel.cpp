@@ -34,6 +34,10 @@ void SceneHierarchyPanel::OnRender()
 			swiatlo.GetComponent<LightComponent>().color = {1,1,1};
 			swiatlo.GetComponent<TransformComponent>().SetPosition({0,0,0});
 		}
+		if (ImGui::MenuItem("Remove entity"))
+		{
+			m_Context->RemoveEntity(m_SelectionContext);
+		}
 
 		ImGui::EndPopup();
 	}
@@ -57,7 +61,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 	ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 	bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity, flags, "%s", tag.c_str());
-	if (ImGui::IsItemClicked())
+	if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
 	{
 		m_SelectionContext = entity;
 	}

@@ -35,12 +35,6 @@ void RVEditor::OnInit()
 	dzwonek3.GetComponent<TransformComponent>().Rotate({-90,0,0});
 	dzwonek3.GetComponent<TransformComponent>().Translation = {0,0,0.4};
 
-	auto swiatlo = m_Scene->CreateEntity("swiatelko");
-	swiatlo.AddComponent<MeshRendererComponent>(light, flatShader, flatShader);
-	swiatlo.GetComponent<TransformComponent>().Rotate({-90,0,0});
-	swiatlo.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
-	swiatlo.GetComponent<TransformComponent>().SetPosition({lightPosition});
-
 	std::shared_ptr<Material> material = std::make_shared<Material>() ;
 	material->albedo.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");;
 	material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");;
@@ -190,21 +184,26 @@ void RVEditor::DrawImGui()
 		glm::mat4 cameraView = camera.m_ViewMatrix;
 		glm::mat4 cameraProjection = camera.GetProjectionMatrix();
 
-		auto& tc = selectedEntity.GetComponent<TransformComponent>();
-		glm::mat4 transform = tc.GetTransform();
-
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
-
-		if(ImGuizmo::IsUsing())
+		if (selectedEntity.HasComponent<TransformComponent>())
 		{
-			glm::vec3 translation, rotation, scale;
-			Math::DecomposeTransform(transform, translation, rotation, scale);
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 transform = tc.GetTransform();
 
-			tc.Translation = translation;
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
+
+			if(ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				tc.Translation = translation;
 //			glm::vec3 deltaRot = rotation - tc.Rotation;
-			tc.Rotation = rotation;
-			tc.Scale = scale;
+				tc.Rotation = rotation;
+				tc.Scale = scale;
+			}
 		}
+
+
 
 	}
 

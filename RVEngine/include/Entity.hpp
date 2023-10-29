@@ -14,16 +14,14 @@ public:
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{
-//		HZ_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
-		assert(!HasComponent<T>());
+		assert(!HasComponent<T>()); // "Entity already has component!"
 		return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 	}
 
 	template<typename T>
 	T& GetComponent()
 	{
-//		HZ_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
-		assert(HasComponent<T>());
+		assert(HasComponent<T>()); // "Entity does not have component!"
 		return m_Scene->m_Registry.get<T>(m_EntityHandle);
 	}
 
@@ -37,8 +35,7 @@ public:
 	void RemoveComponent()
 	{
 		assert(HasComponent<T>());
-//		HZ_CORE_ASSERT(HasComponent<T>(), "Entity does not have component!");
-		m_Scene->m_Registry.remove<T>(m_EntityHandle);
+		m_Scene->m_Registry.remove<T>(m_EntityHandle); // "Entity does not have component!"
 	}
 
 	operator bool() const { return m_EntityHandle != entt::null; }
@@ -53,6 +50,8 @@ public:
 	{
 		return !(*this == other);
 	}
+
+	entt::entity GetHandle() { return m_EntityHandle;};
 
 private:
 	entt::entity m_EntityHandle{ entt::null };
