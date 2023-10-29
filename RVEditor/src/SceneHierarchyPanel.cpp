@@ -28,11 +28,8 @@ void SceneHierarchyPanel::OnRender()
 	{
 		if (ImGui::MenuItem("New Light"))
 		{
-			auto swiatlo = m_Context->CreateEntity("Point light");
-			swiatlo.AddComponent<LightComponent>();
-			swiatlo.GetComponent<LightComponent>().intensity = 1;
-			swiatlo.GetComponent<LightComponent>().color = {1,1,1};
-			swiatlo.GetComponent<TransformComponent>().SetPosition({0,0,0});
+			auto light = m_Context->CreateEntity("Point light");
+			light.AddComponent<LightComponent>();
 			m_SelectionContext = light;
 			m_Context->SetSelectedEntity(light);
 		}
