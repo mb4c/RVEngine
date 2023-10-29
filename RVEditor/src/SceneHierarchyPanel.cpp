@@ -33,6 +33,8 @@ void SceneHierarchyPanel::OnRender()
 			swiatlo.GetComponent<LightComponent>().intensity = 1;
 			swiatlo.GetComponent<LightComponent>().color = {1,1,1};
 			swiatlo.GetComponent<TransformComponent>().SetPosition({0,0,0});
+			m_SelectionContext = light;
+			m_Context->SetSelectedEntity(light);
 		}
 		if (ImGui::MenuItem("Remove entity"))
 		{
