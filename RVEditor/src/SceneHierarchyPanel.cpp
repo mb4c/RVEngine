@@ -24,6 +24,19 @@ void SceneHierarchyPanel::OnRender()
 		Entity entity {entityID, m_Context.get()};
 		DrawEntityNode(entity);
 	});
+	if (ImGui::BeginPopupContextWindow())
+	{
+		if (ImGui::MenuItem("New Light"))
+		{
+			auto swiatlo = m_Context->CreateEntity("Point light");
+			swiatlo.AddComponent<LightComponent>();
+			swiatlo.GetComponent<LightComponent>().intensity = 1;
+			swiatlo.GetComponent<LightComponent>().color = {1,1,1};
+			swiatlo.GetComponent<TransformComponent>().SetPosition({0,0,0});
+		}
+
+		ImGui::EndPopup();
+	}
 
 	ImGui::End();
 
@@ -76,7 +89,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::DragFloat3("Scale", glm::value_ptr(transform.Scale),0.1f);
 			ImGui::TreePop();
 		}
+	}
+	if (entity.HasComponent<LightComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Light"))
+		{
+			auto& lc = entity.GetComponent<LightComponent>();
+			ImGui::ColorEdit3("Color", glm::value_ptr(lc.color));
+			ImGui::DragFloat("Intensity", &lc.intensity, 0.01f);
 
+			ImGui::TreePop();
+		}
 	}
 
 }

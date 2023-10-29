@@ -48,6 +48,10 @@ struct TransformComponent
 	{
 		Translation = position;
 	}
+	glm::vec3 GetPosition()
+	{
+		return Translation;
+	}
 
 
 };
@@ -64,20 +68,13 @@ struct MeshRendererComponent
 			: model(std::move(mdl)), shader(std::move(shdr)), outlineShader(std::move(outShdr)) {}
 };
 
-//template<typename Component>
-//static void Display(Component& component)
-//{
-//
-//	// Could we do it the everything'sfinae way instead?
-//
-//	static_assert(false && "Missing Display() implementation for component");
-//
-//};
-//
-//template<>
-//static void Display(TagComponent& component)
-//{
-//
-//	ImGui::Text("TestStruct print: %s", component.Tag.c_str());
-//
-//}
+struct LightComponent
+{
+	glm::vec3 color = {1, 1, 1};
+	float intensity = {1.0};
+
+	LightComponent() = default;
+	LightComponent(const LightComponent&) = default;
+	LightComponent(const glm::vec3 & newcolor, const float _intensity)
+			: color(newcolor), intensity(_intensity) {}
+};

@@ -91,8 +91,8 @@ void RVEditor::OnUpdate()
 
 	mainShader->Bind();
 	mainShader->SetVec3("u_CamPos", cameraPos);
-	mainShader->SetVec3("lightPositions[0]", lightPosition);
-	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
+//	mainShader->SetVec3("lightPositions[0]", lightPosition);
+//	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
 
 
 

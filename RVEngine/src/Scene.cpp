@@ -26,6 +26,15 @@ Entity Scene::CreateEntity(const std::string& name)
 void Scene::OnUpdate(float ts)
 {
 	RV_PROFILE_FUNCTION();
+
+	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent ,LightComponent>);
+
+	std::vector<std::tuple<TransformComponent, LightComponent>> lights;
+	for (auto entity : lightGroup)
+	{
+		lights.emplace_back(lightGroup.get<TransformComponent>(entity), lightGroup.get<LightComponent>(entity));
+	}
+
 	auto group = m_Registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
 	for (auto entity : group)
 	{
@@ -40,6 +49,14 @@ void Scene::OnUpdate(float ts)
 			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic.id);
 
 			Stencil::DisableStencil();
+
+			mesh.shader->Bind();
+			for (int j = 0; j < lights.size(); ++j)
+			{
+				mesh.shader->SetVec3("lightPositions[" + std::to_string(j) + "]", std::get<0>(lights.at(j)).GetPosition());
+				mesh.shader->SetVec3("lightColors[" + std::to_string(j) + "]", std::get<1>(lights.at(j)).color * std::get<1>(lights.at(j)).intensity);
+			}
+
 
 			Renderer::Submit(mesh.shader, mesh.model->GetMeshes()->at(i).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
 			mesh.outlineShader->Bind();
@@ -56,6 +73,8 @@ void Scene::OnUpdate(float ts)
 		}
 
 	}
+
+
 
 }
 
