@@ -74,6 +74,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
 	{
 		m_SelectionContext = entity;
+		m_Context->SetSelectedEntity(entity);
 	}
 	if (opened)
 	{
