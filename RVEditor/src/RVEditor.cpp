@@ -319,6 +319,17 @@ void RVEditor::ProcessInput()
 				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 			if (m_Input.GetKeyPressed(GLFW_KEY_R))
 				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+
+			// Duplicate
+			if (m_Input.GetKeyDown(GLFW_KEY_LEFT_CONTROL) && m_Input.GetKeyPressed(GLFW_KEY_D))
+			{
+				if (auto selected = m_SceneHierarchyPanel.GetSelectedEntity())
+				{
+					m_Scene->DuplicateEntity(selected);
+				}
+
+			}
+
 		}
 	}
 

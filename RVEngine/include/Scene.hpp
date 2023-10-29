@@ -11,6 +11,7 @@ public:
 
 	Entity CreateEntity(const std::string& name = std::string());
 	void RemoveEntity(Entity entity);
+	void DuplicateEntity(Entity entity);
 
 	void OnUpdate(float ts);
 	void SetSelectedEntity(uint32_t entity);

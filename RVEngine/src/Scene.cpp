@@ -103,3 +103,16 @@ void Scene::RemoveEntity(Entity entity)
 		std::cout << "Entity does not exist" << std::endl;
 	}
 }
+
+void Scene::DuplicateEntity(Entity entity)
+{
+	auto newEntity = m_Registry.create();
+
+	// create a copy of an entity component by component
+	for(auto &&curr: m_Registry.storage()) {
+		if(auto &storage = curr.second; storage.contains(entity.GetHandle())) {
+			storage.push(newEntity, storage.value(entity.GetHandle()));
+		}
+	}
+
+}

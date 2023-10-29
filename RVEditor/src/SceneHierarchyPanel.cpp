@@ -41,6 +41,13 @@ void SceneHierarchyPanel::OnRender()
 				m_SelectionContext = Entity(entt::null, m_Context.get());
 			}
 		}
+		if (GetSelectedEntity())
+		{
+			if (ImGui::MenuItem("Duplicate entity"))
+			{
+				m_Context->DuplicateEntity(GetSelectedEntity());
+			}
+		}
 
 		ImGui::EndPopup();
 	}
