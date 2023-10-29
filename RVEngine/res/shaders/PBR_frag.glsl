@@ -21,8 +21,9 @@ uniform sampler2D albedoMap;
 uniform sampler2D occlusionRoughnessMetallic;
 
 // lights
-uniform vec3 lightPositions[4];
-uniform vec3 lightColors[4];
+#define MAX_LIGHTS 32
+uniform vec3 lightPositions[MAX_LIGHTS];
+uniform vec3 lightColors[MAX_LIGHTS];
 
 uniform vec3 u_CamPos;
 uniform uint u_ObjectIndex;
@@ -86,7 +87,7 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < MAX_LIGHTS; ++i)
     {
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
