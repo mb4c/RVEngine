@@ -94,5 +94,12 @@ void Scene::SetSelectedEntity(uint32_t entity)
 
 void Scene::RemoveEntity(Entity entity)
 {
-	m_Registry.destroy(entity.GetHandle());
+	if (m_Registry.valid(entity.GetHandle()))
+	{
+		m_Registry.destroy(entity.GetHandle());
+		m_SelectedEntity = entt::null;
+	} else
+	{
+		std::cout << "Entity does not exist" << std::endl;
+	}
 }

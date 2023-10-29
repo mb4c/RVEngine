@@ -33,9 +33,13 @@ void SceneHierarchyPanel::OnRender()
 			m_SelectionContext = light;
 			m_Context->SetSelectedEntity(light);
 		}
-		if (ImGui::MenuItem("Remove entity"))
+		if (GetSelectedEntity())
 		{
-			m_Context->RemoveEntity(m_SelectionContext);
+			if (ImGui::MenuItem("Remove entity"))
+			{
+				m_Context->RemoveEntity(GetSelectedEntity());
+				m_SelectionContext = Entity(entt::null, m_Context.get());
+			}
 		}
 
 		ImGui::EndPopup();
