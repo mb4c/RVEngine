@@ -34,5 +34,8 @@
   }, {
     "name" : "imguizmo",
     "version>=" : "1.83#1"
+  }, {
+    "name" : "yaml-cpp",
+    "version>=" : "0.7.0#1"
   } ]
 }
