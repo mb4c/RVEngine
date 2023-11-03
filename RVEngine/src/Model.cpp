@@ -15,7 +15,7 @@ void Model::LoadModel(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+	const aiScene *scene = import.ReadFile(path,  aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
 
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -91,6 +91,49 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		for(unsigned int j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
+
+
+
+//	uint32_t index_count = indices.size();
+//
+//	for (uint32_t i = 0; i < index_count; i += 3)
+//	{
+//		uint32_t  i0 = indices[i + 0];
+//		uint32_t  i1 = indices[i + 1];
+//		uint32_t  i2 = indices[i + 2];
+//
+//		glm::vec3 edge1 = vertices[i1].Position - vertices[i0].Position;
+//		glm::vec3 edge2 = vertices[i2].Position - vertices[i0].Position;
+//
+//		float deltaU1 = vertices[i1].TexCoords.x - vertices[i0].TexCoords.x;
+//		float deltaV1 = vertices[i1].TexCoords.y - vertices[i0].TexCoords.y;
+//
+//		float deltaU2 = vertices[i2].TexCoords.x - vertices[i0].TexCoords.x;
+//		float deltaV2 = vertices[i2].TexCoords.y - vertices[i0].TexCoords.y;
+//
+//		float dividend = (deltaU1 * deltaV2 - deltaU2 * deltaV1);
+//		float fc = 1.0f / dividend;
+//
+//		glm::vec3 tangent = (glm::vec3)	{(fc * (deltaV2 * edge1.x - deltaV1 * edge2.x)),
+//										(fc * (deltaV2 * edge1.y - deltaV1 * edge2.y)),
+//										(fc * (deltaV2 * edge1.z - deltaV1 * edge2.z))};
+//
+//		tangent = glm::normalize(tangent);
+//
+//		float sx = deltaU1, sy = deltaU2;
+//		float tx = deltaV1, ty = deltaV2;
+//		float handedness = ((tx * sy - ty * sx) < 0.0f) ? -1.0f : 1.0f;
+//
+//		glm::vec3 t4 = tangent * handedness;
+//		vertices[i0].Tangent = t4;
+//		vertices[i1].Tangent = t4;
+//		vertices[i2].Tangent = t4;
+//	}
+
+
+
+
+
 	// process material
 //	if(mesh->mMaterialIndex >= 0)
 //	{
