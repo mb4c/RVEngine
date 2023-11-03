@@ -26,6 +26,26 @@ void SceneHierarchyPanel::OnRender()
 	});
 	if (ImGui::BeginPopupContextWindow())
 	{
+		if (ImGui::BeginMenu("Create 3D..."))
+		{
+			if (ImGui::MenuItem("Create Plane"))
+			{
+				auto model = std::make_shared<Model>("res/plane.fbx");
+				auto shader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
+				auto flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
+				auto material = std::make_shared<Material>();
+				material->albedo.id = Texture::TextureFromFile("res/brickwall.jpg");
+				material->normal.id = Texture::TextureFromFile("res/brickwall_normal.jpg", true);
+				material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("res/brickwall_ORM.png");
+				model->m_Material = material;
+				auto plane = m_Context->CreateEntity("Plane");
+				plane.AddComponent<MeshRendererComponent>(model,shader, flatShader);
+				plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
+				plane.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
+			}
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::MenuItem("New Light"))
 		{
 			auto light = m_Context->CreateEntity("Point light");

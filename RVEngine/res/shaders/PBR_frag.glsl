@@ -138,7 +138,41 @@ void main()
     // gamma correct
     color = pow(color, vec3(1.0/2.2));
 
-    FragColor = vec4(color, 1.0);
+    switch (u_DisplayType)
+    {
+        case 0: // LIT
             FragColor = vec4(color, 1.0);
+            break;
+        case 1: // ALBEDO
+            FragColor = vec4(albedo, 1.0);
+            break;
+        case 2: // AO
+            FragColor = vec4(vec3(ao), 1.0);
+            break;
+        case 3: // Rougness
+            FragColor = vec4(vec3(roughness), 1.0);
+            break;
+        case 4: // Metallic
+            FragColor = vec4(vec3(metallic), 1.0);
+            break;
+        case 5: // Vertex normal
+            FragColor = vec4(Normal, 1.0);
+            break;
+        case 6: // World position
+            FragColor = vec4(WorldPos, 1.0);
+            break;
+        case 7: // Tangent normal
+            FragColor = vec4(texture(normalMap, TexCoords).xyz, 1.0);
+            break;
+        case 8: // TBN * vec3(1)
+            FragColor = vec4(TBN * vec3(1), 1.0);
+            break;
+        case 9: // Normal mapped
+            FragColor = vec4(getNormalFromMap(TexCoords), 1.0);
+        break;
+    }
+
+
+
     EntityColor = uvec3(u_ObjectIndex, 0, gl_PrimitiveID);
 }
