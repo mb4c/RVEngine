@@ -8,12 +8,9 @@ in vec3 WorldPos;
 in vec3 Normal;
 in mat3 TBN;
 
-uniform sampler2D albedoMap;
-//uniform sampler2D normalMap;
-//uniform sampler2D roughnessMap;
-//uniform sampler2D metallicMap;
-//uniform sampler2D aoMap;
-uniform sampler2D occlusionRoughnessMetallic;
+layout(binding=0) uniform sampler2D albedoMap;
+layout(binding=1) uniform sampler2D normalMap;
+layout(binding=2) uniform sampler2D occlusionRoughnessMetallic;
 
 // lights
 #define MAX_LIGHTS 32
@@ -22,6 +19,7 @@ uniform vec3 lightColors[MAX_LIGHTS];
 
 uniform vec3 u_CamPos;
 uniform uint u_ObjectIndex;
+uniform uint u_DisplayType;
 
 const float PI = 3.14159265359;
 

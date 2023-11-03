@@ -77,4 +77,6 @@ private:
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
 	int m_GizmoType = -1;
+
+	unsigned int m_DisplayType = 0;
 };

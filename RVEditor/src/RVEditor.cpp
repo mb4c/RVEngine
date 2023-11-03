@@ -111,7 +111,6 @@ void RVEditor::OnUpdate()
 	Renderer::SetClearColor({0, 0, 0, 1});
 	Renderer::Clear();
 
-	m_Scene->OnUpdate(GetDeltaTime());
 
 	glm::mat4 view;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -120,6 +119,7 @@ void RVEditor::OnUpdate()
 
 	mainShader->Bind();
 	mainShader->SetVec3("u_CamPos", cameraPos);
+	mainShader->SetUInt("u_DisplayType", m_DisplayType);
 //	mainShader->SetVec3("lightPositions[0]", lightPosition);
 //	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
 	m_Scene->OnUpdate(GetDeltaTime());
@@ -178,6 +178,7 @@ void RVEditor::DrawImGui()
 	ImGui::InputFloat2("Viewport cursor pos", &m_MouseVieportPos[0]);
 	ImGui::Text("Hovered entity: %u", m_HoveredEntity);
 
+	ImGui::DragScalar("Visualizer:", ImGuiDataType_U32, &m_DisplayType);
 	ImGui::End();
 
 
