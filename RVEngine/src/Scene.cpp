@@ -43,17 +43,22 @@ void Scene::OnUpdate(float ts)
 
 		for (int i = 0; i < mesh.model->GetMeshes()->size(); ++i)
 		{
+			// bind albedo
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->albedo.id);
-			// bind orm map
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic.id);
 
+			// bind normal map
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->normal.id);
+
+			// bind orm map
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic.id);
 			Stencil::DisableStencil();
 
 			mesh.shader->Bind();
 
-			for (int k = 0; k < 32; ++k) //HACK: i want to die when i see this
+			for (int k = 0; k < 32; ++k)
 			{
 				glm::vec3 zero {0,0,0};
 				mesh.shader->SetVec3("lightPositions[" + std::to_string(k) + "]", zero);

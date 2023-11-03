@@ -11,6 +11,9 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 void RVEditor::OnInit()
 {
 	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
+	cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
+//	backpack = std::make_shared<Model>("/home/lolman/Downloads/backpack/backpack.obj");
+
 	light = std::make_shared<Model>("/home/lolman/monke.fbx");
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
@@ -21,9 +24,9 @@ void RVEditor::OnInit()
 
 	m_SceneHierarchyPanel.SetContext(m_Scene);
 
-	auto dzwonek = m_Scene->CreateEntity("dzwonek");
-	dzwonek.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
-	dzwonek.GetComponent<TransformComponent>().Rotate({-90,0,0});
+//	auto dzwonek = m_Scene->CreateEntity("dzwonek");
+//	dzwonek.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
+//	dzwonek.GetComponent<TransformComponent>().Rotate({-90,0,0});
 
 	auto dzwonek2 = m_Scene->CreateEntity("dzwonek2");
 	dzwonek2.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
@@ -35,12 +38,44 @@ void RVEditor::OnInit()
 	dzwonek3.GetComponent<TransformComponent>().Rotate({-90,0,0});
 	dzwonek3.GetComponent<TransformComponent>().Translation = {0,0,0.4};
 
+	auto cerb = m_Scene->CreateEntity("cerberus");
+	cerb.AddComponent<MeshRendererComponent>(cerberus, mainShader, flatShader);
+	cerb.GetComponent<TransformComponent>().Rotate({-90,90,0});
+	cerb.GetComponent<TransformComponent>().Translation = {-0.75,0,-1};
+	cerb.GetComponent<TransformComponent>().SetScale({0.01,0.01,0.01});
+
+//	auto bp = m_Scene->CreateEntity("backpack");
+//	bp.AddComponent<MeshRendererComponent>(backpack, mainShader, flatShader);
+//	bp.GetComponent<TransformComponent>().Translation = {-0.75,0,2};
+//	bp.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
+
+	auto swiatelko = m_Scene->CreateEntity("light");
+	swiatelko.AddComponent<LightComponent>();
+
 	std::shared_ptr<Material> material = std::make_shared<Material>() ;
-	material->albedo.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");;
-	material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");;
+	material->albedo.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");
+	material->normal.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_Normal.png");
+	material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");
 	model->m_Material = material;
 	light->m_Material = material;
 
+	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
+	cerbMat->albedo.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png");
+	cerbMat->normal.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png");
+	cerbMat->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png");
+	cerberus->m_Material = cerbMat;
+
+	auto model2 = std::make_shared<Model>("res/plane.fbx");
+	auto material2 = std::make_shared<Material>();
+	material2->albedo.id = Texture::TextureFromFile("res/brickwall.jpg");
+	material2->normal.id = Texture::TextureFromFile("res/brickwall_normal.jpg");
+	material2->occlusionRoughnessMetallic.id = Texture::TextureFromFile("res/brickwall_ORM.png");
+	model2->m_Material = material2;
+
+	auto plane = m_Scene->CreateEntity("Plane");
+	plane.AddComponent<MeshRendererComponent>(model2, mainShader, flatShader);
+	plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
+	plane.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
 }
 
 void RVEditor::OnUpdate()
@@ -87,6 +122,7 @@ void RVEditor::OnUpdate()
 	mainShader->SetVec3("u_CamPos", cameraPos);
 //	mainShader->SetVec3("lightPositions[0]", lightPosition);
 //	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
+	m_Scene->OnUpdate(GetDeltaTime());
 
 
 

@@ -6,12 +6,7 @@ layout(location = 1) out uvec3 EntityColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
-
-// material parameters
-//uniform vec3 albedo;
-//uniform float metallic;
-//uniform float roughness;
-//uniform float ao;
+in mat3 TBN;
 
 uniform sampler2D albedoMap;
 //uniform sampler2D normalMap;
@@ -29,6 +24,15 @@ uniform vec3 u_CamPos;
 uniform uint u_ObjectIndex;
 
 const float PI = 3.14159265359;
+
+vec3 getNormalFromMap(vec2 tempUv)
+{
+    vec3 tangentNormal = texture(normalMap, tempUv).xyz;
+    tangentNormal = tangentNormal * 2.0 - 1.0;
+
+    return normalize(TBN * tangentNormal);
+}
+
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -77,7 +81,7 @@ void main()
     float metallic  = texture(occlusionRoughnessMetallic, TexCoords).b;
     float roughness = texture(occlusionRoughnessMetallic, TexCoords).g;
 
-    vec3 N = normalize(Normal);
+    vec3 N = getNormalFromMap(TexCoords);
     vec3 V = normalize(u_CamPos - WorldPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
@@ -135,5 +139,6 @@ void main()
     color = pow(color, vec3(1.0/2.2));
 
     FragColor = vec4(color, 1.0);
+            FragColor = vec4(color, 1.0);
     EntityColor = uvec3(u_ObjectIndex, 0, gl_PrimitiveID);
 }

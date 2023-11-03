@@ -4,7 +4,7 @@
 #include "Texture.hpp"
 #include "Macros.hpp"
 
-unsigned int Texture::TextureFromFile(const std::string& path, const std::string &directory, bool gamma)
+unsigned int Texture::TextureFromFile(const std::string& path, const std::string &directory, bool normalMap)
 {
 	RV_PROFILE_FUNCTION();
 	std::string filename = std::string(path);
@@ -29,8 +29,8 @@ unsigned int Texture::TextureFromFile(const std::string& path, const std::string
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -44,7 +44,7 @@ unsigned int Texture::TextureFromFile(const std::string& path, const std::string
 
 	return textureID;
 }
-unsigned int Texture::TextureFromFile(const std::string& path, bool gamma)
+unsigned int Texture::TextureFromFile(const std::string& path, bool normalMap)
 {
 	RV_PROFILE_FUNCTION();
 
@@ -64,12 +64,15 @@ unsigned int Texture::TextureFromFile(const std::string& path, bool gamma)
 		else if (nrComponents == 4)
 			format = GL_RGBA;
 
+		if (normalMap)
+			format = GL_RGBA;
+
 		glBindTexture(GL_TEXTURE_2D, textureID);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
