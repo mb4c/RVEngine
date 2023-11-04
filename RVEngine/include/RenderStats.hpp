@@ -1,7 +1,7 @@
 class RenderStats
 {
 public:
-	static RenderStats &getInstance()
+	static RenderStats &GetInstance()
 	{
 		static RenderStats instance;
 		return instance;

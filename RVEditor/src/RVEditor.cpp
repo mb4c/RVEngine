@@ -181,7 +181,7 @@ void RVEditor::DrawImGui()
 	ImGui::DragScalar("Visualizer:", ImGuiDataType_U32, &m_DisplayType);
 
 	std::string drawcalls = "Draw calls: ";
-	drawcalls.append(std::to_string(RenderStats::getInstance().DrawCalls));
+	drawcalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
 	ImGui::Text("%s", drawcalls.c_str());
 
 	ImGui::End();
