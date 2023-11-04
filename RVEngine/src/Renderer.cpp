@@ -35,6 +35,8 @@ void Renderer::BeginScene(PerspectiveCamera &camera)
 {
 	RV_PROFILE_FUNCTION();
 	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	RenderStats::getInstance().DrawCalls = 0;
+
 }
 
 void Renderer::EndScene()
@@ -83,6 +85,7 @@ void Renderer::DrawIndexed(const std::shared_ptr<VertexArray> &vertexArray, int 
 	vertexArray->Bind();
 	uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
 	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+	RenderStats::getInstance().DrawCalls++;
 }
 
 void Renderer::DrawLines(const std::shared_ptr<VertexArray> &vertexArray, int vertexCount)
@@ -90,6 +93,7 @@ void Renderer::DrawLines(const std::shared_ptr<VertexArray> &vertexArray, int ve
 	RV_PROFILE_FUNCTION();
 	vertexArray->Bind();
 	glDrawArrays(GL_LINES, 0, vertexCount);
+	RenderStats::getInstance().DrawCalls++;
 }
 
 void Renderer::SetLineWidth(float width)

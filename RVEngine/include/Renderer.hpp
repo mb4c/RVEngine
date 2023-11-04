@@ -6,6 +6,7 @@
 #include "Shader.hpp"
 #include "VertexArray.hpp"
 #include <Macros.hpp>
+#include "RenderStats.hpp"
 
 class Renderer
 {
