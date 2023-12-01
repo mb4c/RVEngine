@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <memory>
-#include "BufferLayout.hpp"
+#include <BufferLayout.hpp>
 
 class VertexBuffer
 {

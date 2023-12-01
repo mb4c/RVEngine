@@ -1,14 +1,11 @@
-#include <cmath>
 #include <iostream>
 #define IMGUI_DEFINE_MATH_OPERATORS
-#include "imgui_internal.h"
-#include "Application.hpp"
-#include "Shader.hpp"
+#include <imgui_internal.h>
+#include <Application.hpp>
+#include <Shader.hpp>
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "Renderer.hpp"
-#include "Mesh.hpp"
-#include "Model.hpp"
+#include <stb_image.h>
+#include <Renderer.hpp>
 #include <ImGuizmo.h>
 
 
@@ -87,19 +84,7 @@ void Application::Run()
 	OnInit();
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-//	std::shared_ptr<Shader> flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
-//	std::shared_ptr<Shader> mainShader = std::make_shared<Shader>("res/shaders/vert.glsl", "res/shaders/frag.glsl");
-
 	float clearColor[3] {1,0,1};
-	float h,s,v;
-	float backgroundIncrement = 0.01;
-//	float mousedelta[2];
-
-//	Model model("/home/lolman/Downloads/backpack/backpack.obj");
-//	Model light("/home/lolman/monke.fbx");
-
-//	PerspectiveCamera camera;
-
 
 	Renderer::Init();
 
@@ -110,7 +95,6 @@ void Application::Run()
 
 		Renderer::SetClearColor(glm::vec4{clearColor[0], clearColor[1], clearColor[2], 1});
 		Renderer::Clear();
-//		Renderer::BeginScene(camera);
 
 		{
 			RV_PROFILE_SCOPE("OnImGuiRender");
@@ -145,7 +129,7 @@ void Application::Run()
 	glfwTerminate();
 }
 
-GLFWwindow *Application::GetWindow()
+GLFWwindow* Application::GetWindow()
 {
 	RV_PROFILE_FUNCTION();
 	return m_Window;
@@ -185,7 +169,7 @@ double Application::GetTime()
 	return glfwGetTime();
 }
 
-float Application::GetFPS()
+float Application::GetFPS() const
 {
 	RV_PROFILE_FUNCTION();
 	return 1 / GetDeltaTime();

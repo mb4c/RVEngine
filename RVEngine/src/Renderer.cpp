@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include <Renderer.hpp>
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 

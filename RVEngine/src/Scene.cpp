@@ -1,6 +1,6 @@
-#include "Scene.hpp"
-#include "Renderer.hpp"
-#include "Stencil.hpp"
+#include <Scene.hpp>
+#include <Renderer.hpp>
+#include <Stencil.hpp>
 #include <Components.hpp>
 #include <Entity.hpp>
 #include <glm/gtc/type_ptr.hpp>

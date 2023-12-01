@@ -2,14 +2,14 @@
 
 
 #include <vector>
-#include "Shader.hpp"
-#include "Mesh.hpp"
+#include <Shader.hpp>
+#include <Mesh.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <Texture.hpp>
-#include "Macros.hpp"
-#include "Material.hpp"
+#include <Macros.hpp>
+#include <Material.hpp>
 
 class Model
 {

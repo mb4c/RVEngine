@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include <iostream>
-#include "VertexArray.hpp"
-#include "Macros.hpp"
+#include <VertexArray.hpp>
+#include <Macros.hpp>
 
 static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
 {

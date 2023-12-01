@@ -1,4 +1,4 @@
-#include "RenderBuffer.hpp"
+#include <RenderBuffer.hpp>
 
 RenderBuffer::RenderBuffer()
 {

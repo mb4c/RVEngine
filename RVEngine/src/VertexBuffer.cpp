@@ -1,6 +1,6 @@
 #include <glad/glad.h>
-#include "VertexBuffer.hpp"
-#include "Macros.hpp"
+#include <VertexBuffer.hpp>
+#include <Macros.hpp>
 
 VertexBuffer::VertexBuffer(uint32_t size)
 {

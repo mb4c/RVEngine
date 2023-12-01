@@ -1,5 +1,5 @@
-#include "Mesh.hpp"
-#include "Macros.hpp"
+#include <Mesh.hpp>
+#include <Macros.hpp>
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 {
@@ -29,20 +29,19 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 	}
 
 	std::shared_ptr<VertexBuffer> vertexBuffer = std::make_shared<VertexBuffer>(interleavedVertices.data(), interleavedVertices.size() * sizeof(float));
-	BufferLayout layout = {
+	BufferLayout layout =
+		{
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float3, "a_Normal" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			{ ShaderDataType::Float3, "a_Tangent" },
 			{ ShaderDataType::Float3, "a_Bitangent" }
 
-	};
+		};
 	vertexBuffer->SetLayout(layout);
 
 	m_VertexArray = std::make_shared<VertexArray>();
 	m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-//	uint32_t indices2[3] = { 0, 1, 2 };
 
 	std::shared_ptr<IndexBuffer> indexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size()); // * sizeof(uint32_t)?
 	m_VertexArray->SetIndexBuffer(indexBuffer);

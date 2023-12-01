@@ -12,7 +12,7 @@
 
 #include <string>
 #include <fmt/core.h>
-#include "Input.hpp"
+#include <Input.hpp>
 
 class Application
 {
@@ -31,9 +31,9 @@ public:
 	void SetWindowSize(glm::ivec2 size);
 	float GetDeltaTime() const;
 	static double GetTime();
-	float GetFPS();
+	float GetFPS() const;
 	void SetCursorState(int state);
-	void SetVSync(bool vsync);
+	static void SetVSync(bool vsync);
 
 	Input m_Input{nullptr};
 
@@ -43,7 +43,7 @@ private:
 	int m_Width;
 	int m_Height;
 	bool m_Vsync;
-	GLFWwindow* m_Window;
+	GLFWwindow* m_Window{};
 	void UpdateDeltaTime();
 
 

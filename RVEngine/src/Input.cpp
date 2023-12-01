@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Input.hpp"
+#include <Input.hpp>
 
 Input::Input(GLFWwindow* window)
 {

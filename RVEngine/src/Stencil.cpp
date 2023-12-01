@@ -1,4 +1,4 @@
-#include "Stencil.hpp"
+#include <Stencil.hpp>
 
 void Stencil::EnableStencil()
 {

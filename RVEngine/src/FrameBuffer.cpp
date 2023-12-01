@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <iostream>
-#include "FrameBuffer.hpp"
+#include <FrameBuffer.hpp>
 
 FrameBuffer::FrameBuffer(uint32_t width, uint32_t height)
 {

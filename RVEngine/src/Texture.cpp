@@ -1,8 +1,8 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 #include <iostream>
-#include "Texture.hpp"
-#include "Macros.hpp"
+#include <Texture.hpp>
+#include <Macros.hpp>
 
 unsigned int Texture::TextureFromFile(const std::string& path, const std::string &directory, bool normalMap)
 {
