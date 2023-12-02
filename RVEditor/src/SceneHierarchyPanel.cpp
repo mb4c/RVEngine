@@ -34,9 +34,9 @@ void SceneHierarchyPanel::OnRender()
 				auto shader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 				auto flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 				auto material = std::make_shared<Material>();
-				material->albedo.id = Texture::TextureFromFile("res/brickwall.jpg");
-				material->normal.id = Texture::TextureFromFile("res/brickwall_normal.jpg");
-				material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("res/brickwall_ORM.png");
+				material->albedo = Texture("res/brickwall.jpg");
+				material->normal= Texture("res/brickwall_normal.jpg");
+				material->occlusionRoughnessMetallic = Texture("res/brickwall_ORM.png");
 				model->m_Material = material;
 				auto plane = m_Context->CreateEntity("Plane");
 				plane.AddComponent<MeshRendererComponent>(model,shader, flatShader);

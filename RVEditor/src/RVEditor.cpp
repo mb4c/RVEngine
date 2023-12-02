@@ -56,23 +56,23 @@ void RVEditor::OnInit()
 	swiatelko.AddComponent<LightComponent>();
 
 	std::shared_ptr<Material> material = std::make_shared<Material>() ;
-	material->albedo.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");
-	material->normal.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_Normal.png");
-	material->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");
+	material->albedo = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");
+	material->normal = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_Normal.png");
+	material->occlusionRoughnessMetallic = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");
 	model->m_Material = material;
 	light->m_Material = material;
 
 	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
-	cerbMat->albedo.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png");
-	cerbMat->normal.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png");
-	cerbMat->occlusionRoughnessMetallic.id = Texture::TextureFromFile("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png");
+	cerbMat->albedo = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png");
+	cerbMat->normal = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png");
+	cerbMat->occlusionRoughnessMetallic = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png");
 	cerberus->m_Material = cerbMat;
 
 	auto model2 = std::make_shared<Model>("res/plane.fbx");
 	auto material2 = std::make_shared<Material>();
-	material2->albedo.id = Texture::TextureFromFile("res/brickwall.jpg");
-	material2->normal.id = Texture::TextureFromFile("res/brickwall_normal.jpg");
-	material2->occlusionRoughnessMetallic.id = Texture::TextureFromFile("res/brickwall_ORM.png");
+	material2->albedo = Texture("res/brickwall.jpg");
+	material2->normal = Texture("res/brickwall_normal.jpg");
+	material2->occlusionRoughnessMetallic = Texture("res/brickwall_ORM.png");
 	model2->m_Material = material2;
 
 	auto plane = m_ActiveScene->CreateEntity("Plane");

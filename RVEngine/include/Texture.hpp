@@ -4,9 +4,14 @@
 class Texture
 {
 public:
-	static unsigned int TextureFromFile(const std::string& path, const std::string &directory, bool normalMap = false);
-	static unsigned int TextureFromFile(const std::string& path, bool normalMap = false);
-	unsigned int id;
-	std::string type;
-	std::string path;
+	Texture() = default;
+	explicit Texture(const std::string& path, bool normalMap = false);
+
+	static uint32_t FromFile(const std::string& path, bool normalMap = false);
+	void SetTexture(uint32_t id);
+	[[nodiscard]] uint32_t GetTexture() const;
+	std::string GetPath() {return m_Path;};
+private:
+	uint32_t m_ID{};
+	std::string m_Path;
 };

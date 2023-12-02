@@ -45,15 +45,15 @@ void Scene::OnUpdate(float ts)
 		{
 			// bind albedo
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->albedo.id);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->albedo.GetTexture());
 
 			// bind normal map
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->normal.id);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->normal.GetTexture());
 
 			// bind orm map
 			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic.id);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic.GetTexture());
 			Stencil::DisableStencil();
 
 			mesh.shader->Bind();
