@@ -136,6 +136,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::TreePop();
 		}
 	}
+	if (entity.HasComponent<MeshRendererComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "MeshRenderer"))
+		{
+			auto& mrc = entity.GetComponent<MeshRendererComponent>();
+
+
+			ImGui::TreePop();
+		}
+	}
+
 
 }
 
