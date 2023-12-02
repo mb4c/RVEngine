@@ -5,6 +5,8 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
 	RV_PROFILE_FUNCTION();
+	m_VertexPath = vertexPath;
+	m_FragmentPath = fragmentPath;
 
 // 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;

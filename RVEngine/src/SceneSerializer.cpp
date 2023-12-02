@@ -136,6 +136,26 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap; // CameraComponent
 	}
 
+	if (entity.HasComponent<MeshRendererComponent>())
+	{
+		out << YAML::Key << "MeshRendererComponent";
+		out << YAML::BeginMap; // MeshRendererComponent
+
+		auto& meshRendererComponent = entity.GetComponent<MeshRendererComponent>();
+
+		out << YAML::Key << "ModelPath" << YAML::Value << meshRendererComponent.model->GetPath();
+		out << YAML::Key << "FragmentShaderPath" << YAML::Value << meshRendererComponent.shader->m_FragmentPath;
+		out << YAML::Key << "VertexShaderPath" << YAML::Value << meshRendererComponent.shader->m_VertexPath;
+
+		//textures
+		out << YAML::Key << "Albedo" << YAML::Value << meshRendererComponent.model->m_Material->albedo.GetPath();
+		out << YAML::Key << "Normal" << YAML::Value << meshRendererComponent.model->m_Material->normal.GetPath();
+		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic.GetPath();
+
+
+		out << YAML::EndMap; // MeshRendererComponent
+	}
+
 	out << YAML::EndMap;
 
 }
@@ -225,12 +245,21 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
 
-//			auto spriteRendererComponent = entity["SpriteRendererComponent"];
-//			if (spriteRendererComponent)
-//			{
-//				auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
-//				src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
-//			}
+			auto meshRendererComponent = entity["MeshRendererComponent"];
+			if (meshRendererComponent)
+			{
+				auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
+				mrc.model = std::make_shared<Model>(meshRendererComponent["ModelPath"].as<std::string>());
+				std::shared_ptr<Material> mat = std::make_shared<Material>() ;
+				mat->albedo = Texture(meshRendererComponent["Albedo"].as<std::string>());
+				mat->normal = Texture(meshRendererComponent["Normal"].as<std::string>());
+				mat->occlusionRoughnessMetallic = Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>());
+				mrc.model->m_Material = mat;
+				auto flatShader = std::make_shared<Shader>(meshRendererComponent["VertexShaderPath"].as<std::string>().c_str(), meshRendererComponent["FragmentShaderPath"].as<std::string>().c_str());
+				auto mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
+				mrc.outlineShader = flatShader;
+				mrc.shader = mainShader;
+			}
 		}
 	}
 	return true;

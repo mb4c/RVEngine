@@ -4,6 +4,7 @@ Model::Model(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
 	LoadModel(path);
+	m_Path = path;
 }
 
 void Model::LoadModel(const std::string& path)
@@ -89,35 +90,4 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 
 	return {vertices, indices, textures};
 
-}
-
-std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName)
-{
-	RV_PROFILE_FUNCTION();
-	std::vector<Texture> textures;
-	for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
-	{
-		aiString str;
-		mat->GetTexture(type, i, &str);
-		bool skip = false;
-		for(unsigned int j = 0; j < m_TexturesLoaded.size(); j++)
-		{
-			if(std::strcmp(m_TexturesLoaded[j].path.data(), str.C_Str()) == 0)
-			{
-				textures.push_back(m_TexturesLoaded[j]);
-				skip = true;
-				break;
-			}
-		}
-		if(!skip)
-		{   // if texture hasn't been loaded already, load it
-			Texture texture;
-			texture.id = Texture::TextureFromFile(str.C_Str(), m_Directory);
-			texture.type = typeName;
-			texture.path = str.C_Str();
-			textures.push_back(texture);
-			m_TexturesLoaded.push_back(texture); // add to loaded textures
-		}
-	}
-	return textures;
 }

@@ -28,4 +28,6 @@ public:
 	void SetMat4(const std::string &name, glm::mat4 value) const;
 	void SetMat3(const std::string &name, glm::mat3 value) const;
 	void CheckCompileErrors(unsigned int shader, std::string type);
+	std::string m_VertexPath;
+	std::string m_FragmentPath;
 };
