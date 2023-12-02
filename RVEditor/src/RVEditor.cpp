@@ -81,7 +81,7 @@ void RVEditor::OnInit()
 void RVEditor::OnUpdate()
 {
 	RV_PROFILE_FUNCTION();
-	Renderer::BeginScene(camera);
+	Renderer::BeginScene(m_Camera);
 	ProcessInput();
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
@@ -115,7 +115,7 @@ void RVEditor::OnUpdate()
 	glm::mat4 view;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
-	camera.SetViewMatrix(view);
+	m_Camera.SetViewMatrix(view);
 
 	mainShader->Bind();
 	mainShader->SetVec3("u_CamPos", cameraPos);
@@ -225,10 +225,9 @@ void RVEditor::DrawImGui()
 
 	if (m_ViewportSize.x != m_LastViewportSize.x || m_ViewportSize.y != m_LastViewportSize.y || m_LastWindowSize != GetWindowSize())
 	{
-		Renderer::SetViewport(0,0,m_ViewportSize.x,m_ViewportSize.y);
-		camera.Resize(m_ViewportSize.x, m_ViewportSize.y);
-//		frameBuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
-		frameBuffer = std::make_shared<FrameBuffer>(m_ViewportSize.x,m_ViewportSize.y);
+		Renderer::SetViewport(0, 0, m_ViewportSize.x, m_ViewportSize.y);
+		m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+		frameBuffer = std::make_shared<FrameBuffer>(m_ViewportSize.x, m_ViewportSize.y);
 
 	}
 	// Because I use the texture from OpenGL, I need to invert the V from the UV.
@@ -252,8 +251,8 @@ void RVEditor::DrawImGui()
 		float windowHeight = (float)ImGui::GetWindowHeight();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-		glm::mat4 cameraView = camera.m_ViewMatrix;
-		glm::mat4 cameraProjection = camera.GetProjectionMatrix();
+		glm::mat4 cameraView = m_Camera.GetViewMatrix();
+		glm::mat4 cameraProjection = m_Camera.GetProjection();
 
 		if (selectedEntity.HasComponent<TransformComponent>())
 		{

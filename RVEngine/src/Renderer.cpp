@@ -1,4 +1,5 @@
 #include <Renderer.hpp>
+#include "EditorCamera.hpp"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 
@@ -31,12 +32,19 @@ void Renderer::OnWindowResize(int width, int height)
 
 }
 
-void Renderer::BeginScene(PerspectiveCamera &camera)
+void Renderer::BeginScene(EditorCamera &camera)
 {
 	RV_PROFILE_FUNCTION();
-	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * camera.GetViewMatrix();
 	RenderStats::GetInstance().DrawCalls = 0;
 
+}
+
+void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
+{
+	RV_PROFILE_FUNCTION();
+	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
+	RenderStats::GetInstance().DrawCalls = 0;
 }
 
 void Renderer::EndScene()

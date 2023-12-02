@@ -6,6 +6,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+#include "SceneCamera.hpp"
 
 struct TagComponent
 {
@@ -77,4 +78,14 @@ struct LightComponent
 	LightComponent(const LightComponent&) = default;
 	LightComponent(const glm::vec3 & newcolor, const float _intensity)
 			: color(newcolor), intensity(_intensity) {}
+};
+
+struct CameraComponent
+{
+	SceneCamera Camera;
+	bool Primary = true;
+	bool FixedAspectRatio = false;
+
+	CameraComponent() = default;
+	CameraComponent(const CameraComponent&) = default;
 };

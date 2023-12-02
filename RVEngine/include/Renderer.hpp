@@ -2,11 +2,12 @@
 
 #include <glm/vec4.hpp>
 #include <memory>
-#include <PerspectiveCamera.hpp>
 #include <Shader.hpp>
 #include <VertexArray.hpp>
 #include <Macros.hpp>
 #include <RenderStats.hpp>
+#include <Camera.hpp>
+#include "EditorCamera.hpp"
 
 class Renderer
 {
@@ -16,7 +17,8 @@ public:
 
 	static void OnWindowResize(int width, int height);
 
-	static void BeginScene(PerspectiveCamera& camera);
+	static void BeginScene(EditorCamera& camera);
+	static void BeginScene(Camera& camera, const glm::mat4& transform);
 	static void EndScene();
 
 	static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f), unsigned int entity = 0);

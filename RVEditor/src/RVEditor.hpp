@@ -7,6 +7,8 @@
 #include <FrameBuffer.hpp>
 #include <Entity.hpp>
 #include "SceneHierarchyPanel.hpp"
+#include "SceneCamera.hpp"
+#include "EditorCamera.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>
 
@@ -38,8 +40,7 @@ private:
 	std::shared_ptr<Model> cerberus;
 	std::shared_ptr<Model> light;
 
-	PerspectiveCamera camera;
-
+	EditorCamera m_Camera;
 
 	glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  1.0f);
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
