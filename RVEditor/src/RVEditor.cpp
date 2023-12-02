@@ -403,7 +403,7 @@ void RVEditor::Dockspace()
 
 	ImGui::Begin("DockSpace Demo", nullptr, flags);
 	ImGui::PopStyleVar(3);
-	if ( ImGui::BeginMainMenuBar() )
+	if ( ImGui::BeginMenuBar() )
 	{
 		if ( ImGui::BeginMenu( "File" ) )
 		{
@@ -441,7 +441,7 @@ void RVEditor::Dockspace()
 			ImGui::EndMenu();
 		}
 	}
-	ImGui::EndMainMenuBar();
+	ImGui::EndMenuBar();
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGui::DockSpace(dockspace_id);
 	ImGui::End();
