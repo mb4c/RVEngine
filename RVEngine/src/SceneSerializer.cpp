@@ -156,6 +156,18 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap; // MeshRendererComponent
 	}
 
+	if (entity.HasComponent<LightComponent>())
+	{
+		out << YAML::Key << "LightComponent";
+		out << YAML::BeginMap;
+
+		auto& lc = entity.GetComponent<LightComponent>();
+		out << YAML::Key << "Color" << YAML::Value << lc.color;
+		out << YAML::Key << "Intensity" << YAML::Value << lc.intensity;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 
 }
@@ -259,6 +271,15 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				auto mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 				mrc.outlineShader = flatShader;
 				mrc.shader = mainShader;
+			}
+
+			auto lightComponent = entity["LightComponent"];
+			if (lightComponent)
+			{
+				auto& lc = deserializedEntity.AddComponent<LightComponent>();
+				lc.color = lightComponent["Color"].as<glm::vec3>();
+				lc.intensity = lightComponent["Intensity"].as<float>();
+
 			}
 		}
 	}
