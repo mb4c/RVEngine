@@ -2,6 +2,8 @@
 #include "Renderer.hpp"
 #include "Macros.hpp"
 #include "Components.hpp"
+#include "SceneSerializer.hpp"
+#include "portable-file-dialogs.h"
 
 RVEditor::RVEditor(const std::string &title, int width, int height) : Application(title, width, height)
 {
@@ -20,25 +22,26 @@ void RVEditor::OnInit()
 	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
-	m_Scene = std::make_shared<Scene>();
+	m_ActiveScene = std::make_shared<Scene>();
+	m_Serializer.SetContext(m_ActiveScene);
 
-	m_SceneHierarchyPanel.SetContext(m_Scene);
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 //	auto dzwonek = m_Scene->CreateEntity("dzwonek");
 //	dzwonek.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
 //	dzwonek.GetComponent<TransformComponent>().Rotate({-90,0,0});
 
-	auto dzwonek2 = m_Scene->CreateEntity("dzwonek2");
+	auto dzwonek2 = m_ActiveScene->CreateEntity("dzwonek2");
 	dzwonek2.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
 	dzwonek2.GetComponent<TransformComponent>().Rotate({-90,0,0});
 	dzwonek2.GetComponent<TransformComponent>().Translation = {0,0,0.2};
 
-	auto dzwonek3 = m_Scene->CreateEntity("dzwonek3");
+	auto dzwonek3 = m_ActiveScene->CreateEntity("dzwonek3");
 	dzwonek3.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
 	dzwonek3.GetComponent<TransformComponent>().Rotate({-90,0,0});
 	dzwonek3.GetComponent<TransformComponent>().Translation = {0,0,0.4};
 
-	auto cerb = m_Scene->CreateEntity("cerberus");
+	auto cerb = m_ActiveScene->CreateEntity("cerberus");
 	cerb.AddComponent<MeshRendererComponent>(cerberus, mainShader, flatShader);
 	cerb.GetComponent<TransformComponent>().Rotate({-90,90,0});
 	cerb.GetComponent<TransformComponent>().Translation = {-0.75,0,-1};
@@ -49,7 +52,7 @@ void RVEditor::OnInit()
 //	bp.GetComponent<TransformComponent>().Translation = {-0.75,0,2};
 //	bp.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
 
-	auto swiatelko = m_Scene->CreateEntity("light");
+	auto swiatelko = m_ActiveScene->CreateEntity("light");
 	swiatelko.AddComponent<LightComponent>();
 
 	std::shared_ptr<Material> material = std::make_shared<Material>() ;
@@ -72,10 +75,13 @@ void RVEditor::OnInit()
 	material2->occlusionRoughnessMetallic.id = Texture::TextureFromFile("res/brickwall_ORM.png");
 	model2->m_Material = material2;
 
-	auto plane = m_Scene->CreateEntity("Plane");
+	auto plane = m_ActiveScene->CreateEntity("Plane");
 	plane.AddComponent<MeshRendererComponent>(model2, mainShader, flatShader);
 	plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
 	plane.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
+
+	auto camera = m_ActiveScene->CreateEntity("Camera");
+	camera.AddComponent<CameraComponent>();
 }
 
 void RVEditor::OnUpdate()
@@ -92,15 +98,15 @@ void RVEditor::OnUpdate()
 		{
 
 			m_ClickedEntity = m_HoveredEntity;
-			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)m_ClickedEntity, m_Scene.get()));
-			m_Scene->SetSelectedEntity(m_ClickedEntity);
+			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)m_ClickedEntity, m_ActiveScene.get()));
+			m_ActiveScene->SetSelectedEntity(m_ClickedEntity);
 
 		}
 		else
 		{
 			m_ClickedEntity = entt::null;
-			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)entt::null, m_Scene.get()));
-			m_Scene->SetSelectedEntity(entt::null);
+			m_SceneHierarchyPanel.SetSelectedEntity(Entity((entt::entity)entt::null, m_ActiveScene.get()));
+			m_ActiveScene->SetSelectedEntity(entt::null);
 		}
 	}
 
@@ -122,7 +128,7 @@ void RVEditor::OnUpdate()
 	mainShader->SetUInt("u_DisplayType", m_DisplayType);
 //	mainShader->SetVec3("lightPositions[0]", lightPosition);
 //	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
-	m_Scene->OnUpdate(GetDeltaTime());
+	m_ActiveScene->OnUpdate(GetDeltaTime());
 
 
 
@@ -366,7 +372,7 @@ void RVEditor::ProcessInput()
 			{
 				if (auto selected = m_SceneHierarchyPanel.GetSelectedEntity())
 				{
-					m_Scene->DuplicateEntity(selected);
+					m_ActiveScene->DuplicateEntity(selected);
 				}
 
 			}
@@ -397,6 +403,45 @@ void RVEditor::Dockspace()
 
 	ImGui::Begin("DockSpace Demo", nullptr, flags);
 	ImGui::PopStyleVar(3);
+	if ( ImGui::BeginMainMenuBar() )
+	{
+		if ( ImGui::BeginMenu( "File" ) )
+		{
+			if ( ImGui::MenuItem( "New scene" ) )
+			{
+				NewScene();
+			}
+			if ( ImGui::MenuItem( "Open scene..." ) )
+			{
+				auto selection = pfd::open_file("Select a file", ".",
+												{"Scene files", "*.rvscene"},
+												pfd::opt::none).result();
+
+				std::cout << "Selected file: " << selection.at(0) << "\n";
+
+				if(m_Serializer.Deserialize(selection.at(0)))
+				{
+
+				} else
+				{
+					std::cout << "Failed to deserialize scene" << std::endl;
+				}
+
+			}
+			if ( ImGui::MenuItem( "Save" ) )
+			{
+			}
+			if ( ImGui::MenuItem( "Save as..." ) )
+			{
+				SaveSceneAs();
+			}
+			if ( ImGui::MenuItem( "Exit" ) )
+			{
+			}
+			ImGui::EndMenu();
+		}
+	}
+	ImGui::EndMainMenuBar();
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGui::DockSpace(dockspace_id);
 	ImGui::End();
@@ -409,4 +454,23 @@ bool RVEditor::ClickedInViewPort()
 		return true;
 	else
 		return false;
+}
+
+
+void RVEditor::NewScene()
+{
+	m_ActiveScene = std::make_shared<Scene>();
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	m_Serializer.SetContext(m_ActiveScene);
+}
+
+std::filesystem::path RVEditor::SaveSceneAs()
+{
+	auto selection = pfd::save_file("Select a file", ".",
+									{"Scene files", "*.rvscene"},
+									pfd::opt::none).result();
+
+	std::cout << "Saved file: " << selection << "\n";
+	m_Serializer.Serialize(selection.append(".rvscene"));
+	return selection;
 }

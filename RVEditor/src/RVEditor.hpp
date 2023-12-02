@@ -2,13 +2,13 @@
 
 #include "Application.hpp"
 #include "Model.hpp"
-#include "PerspectiveCamera.hpp"
 #include "Scene.hpp"
 #include <FrameBuffer.hpp>
 #include <Entity.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include "SceneCamera.hpp"
 #include "EditorCamera.hpp"
+#include "SceneSerializer.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>
 
@@ -27,12 +27,14 @@ private:
 
 	bool ClickedInViewPort();
 
+	void NewScene();
+	std::filesystem::path SaveSceneAs();
 
 	bool m_CursorEnabled = true;
 	bool m_ViewportFocused = false;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
-	std::shared_ptr<Scene> m_Scene;
+	std::shared_ptr<Scene> m_ActiveScene;
 
 
 	std::shared_ptr<Model> model;
@@ -78,6 +80,7 @@ private:
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
 	int m_GizmoType = -1;
+	SceneSerializer m_Serializer;
 
 	unsigned int m_DisplayType = 0;
 };
