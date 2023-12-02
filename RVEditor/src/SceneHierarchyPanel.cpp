@@ -147,6 +147,24 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		}
 	}
 
+	if (entity.HasComponent<CameraComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
+		{
+			auto& cc = entity.GetComponent<CameraComponent>();
+			ImGui::Checkbox("Primary", &cc.Primary);
+			ImGui::Checkbox("Fixed aspect ratio", &cc.FixedAspectRatio);
+
+			auto nc = cc.Camera.GetPerspectiveNearClip();
+			if(ImGui::InputFloat("Near clip", &nc))
+				cc.Camera.SetPerspectiveNearClip(nc);
+
+			auto fc = cc.Camera.GetPerspectiveFarClip();
+			if(ImGui::InputFloat("Far clip", &fc))
+				cc.Camera.SetPerspectiveFarClip(fc);
+			ImGui::TreePop();
+		}
+	}
 
 }
 
