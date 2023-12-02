@@ -14,9 +14,6 @@ void RVEditor::OnInit()
 {
 	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
 	cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
-//	backpack = std::make_shared<Model>("/home/lolman/Downloads/backpack/backpack.obj");
-
-	light = std::make_shared<Model>("/home/lolman/monke.fbx");
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
@@ -26,10 +23,6 @@ void RVEditor::OnInit()
 	m_Serializer.SetContext(m_ActiveScene);
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
-//	auto dzwonek = m_Scene->CreateEntity("dzwonek");
-//	dzwonek.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
-//	dzwonek.GetComponent<TransformComponent>().Rotate({-90,0,0});
 
 	auto dzwonek2 = m_ActiveScene->CreateEntity("dzwonek2");
 	dzwonek2.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
@@ -47,10 +40,6 @@ void RVEditor::OnInit()
 	cerb.GetComponent<TransformComponent>().Translation = {-0.75,0,-1};
 	cerb.GetComponent<TransformComponent>().SetScale({0.01,0.01,0.01});
 
-//	auto bp = m_Scene->CreateEntity("backpack");
-//	bp.AddComponent<MeshRendererComponent>(backpack, mainShader, flatShader);
-//	bp.GetComponent<TransformComponent>().Translation = {-0.75,0,2};
-//	bp.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
 
 	auto swiatelko = m_ActiveScene->CreateEntity("light");
 	swiatelko.AddComponent<LightComponent>();
@@ -60,7 +49,6 @@ void RVEditor::OnInit()
 	material->normal = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_Normal.png");
 	material->occlusionRoughnessMetallic = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");
 	model->m_Material = material;
-	light->m_Material = material;
 
 	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
 	cerbMat->albedo = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png");
@@ -126,20 +114,14 @@ void RVEditor::OnUpdate()
 	mainShader->Bind();
 	mainShader->SetVec3("u_CamPos", cameraPos);
 	mainShader->SetUInt("u_DisplayType", m_DisplayType);
-//	mainShader->SetVec3("lightPositions[0]", lightPosition);
-//	mainShader->SetVec3("lightColors[0]", lightColor * lightIntensity);
+
 	m_ActiveScene->OnUpdate(GetDeltaTime());
 
 
 
 
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(lightPosition));
-	transform = glm::scale(transform, glm::vec3(0.1,0.1,0.1));
 
-	flatShader->Bind();
-	flatShader->SetVec4("u_Color", glm::vec4(lightColor.x,lightColor.y,lightColor.z,1));
-	Renderer::Submit(flatShader, light->GetMeshes()->at(0).m_VertexArray, transform);
+
 	frameBuffer->Unbind();
 }
 

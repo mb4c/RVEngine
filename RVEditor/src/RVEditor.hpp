@@ -38,7 +38,6 @@ private:
 
 
 	std::shared_ptr<Model> model;
-	std::shared_ptr<Model> backpack;
 	std::shared_ptr<Model> cerberus;
 	std::shared_ptr<Model> light;
 
