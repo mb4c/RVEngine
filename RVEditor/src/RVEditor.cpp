@@ -466,11 +466,16 @@ void RVEditor::NewScene()
 
 std::filesystem::path RVEditor::SaveSceneAs()
 {
-	auto selection = pfd::save_file("Select a file", ".",
+	std::filesystem::path selection = pfd::save_file("Select a file", ".",
 									{"Scene files", "*.rvscene"},
 									pfd::opt::none).result();
 
+	if (selection.extension() != ".rvscene")
+	{
+		selection.append(".rvscene");
+	}
+
 	std::cout << "Saved file: " << selection << "\n";
-	m_Serializer.Serialize(selection.append(".rvscene"));
+	m_Serializer.Serialize(selection);
 	return selection;
 }
