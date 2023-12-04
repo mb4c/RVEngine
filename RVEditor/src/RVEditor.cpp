@@ -441,6 +441,7 @@ bool RVEditor::ClickedInViewPort()
 
 void RVEditor::NewScene()
 {
+	m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_ActiveScene.get()));
 	m_ActiveScene = std::make_shared<Scene>();
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	m_Serializer.SetContext(m_ActiveScene);
