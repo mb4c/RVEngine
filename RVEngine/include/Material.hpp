@@ -8,8 +8,8 @@ class Material
 {
 public:
 	Material();
-	Texture albedo;
-	Texture normal;
-	Texture occlusionRoughnessMetallic;
+	std::shared_ptr<Texture> albedo;
+	std::shared_ptr<Texture> normal;
+	std::shared_ptr<Texture> occlusionRoughnessMetallic;
 	std::shared_ptr<Shader> shader;
 };
