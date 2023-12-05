@@ -129,6 +129,7 @@ void RVEditor::OnImGuiRender()
 {
 	DrawImGui();
 	m_SceneHierarchyPanel.OnRender();
+	m_ContentBrowserPanel.OnRender();
 }
 
 void RVEditor::OnShutdown()
@@ -140,11 +141,6 @@ void RVEditor::DrawImGui()
 {
 	RV_PROFILE_FUNCTION();
 	Dockspace();
-
-	ImGui::Begin("Content browser");
-
-	ImGui::End();
-
 
 	ImGui::Begin("Settings");
 	ImGui::Text("FPS: %f", GetFPS());

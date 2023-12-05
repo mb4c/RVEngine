@@ -11,6 +11,7 @@
 #include "SceneSerializer.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>
+#include "ContentBrowserPanel.hpp"
 
 class RVEditor : public Application
 {
@@ -34,6 +35,7 @@ private:
 	bool m_ViewportFocused = false;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
+	ContentBrowserPanel m_ContentBrowserPanel;
 	std::shared_ptr<Scene> m_ActiveScene;
 
 
