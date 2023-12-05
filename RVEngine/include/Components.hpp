@@ -73,7 +73,7 @@ struct SpriteRendererComponent
 {
 	glm::vec4 Color {1,1,1,1};
 	bool Billboard = false;
-	std::shared_ptr<Texture> Tex = ResourceManager::instance().GetTexture("default_missing");
+	std::shared_ptr<Texture> Tex = ResourceManager::instance().GetTexture("default_albedo");
 
 	SpriteRendererComponent() = default;
 	SpriteRendererComponent(const SpriteRendererComponent&) = default;
