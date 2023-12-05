@@ -80,7 +80,7 @@ private:
 
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
-	int m_GizmoType = -1;
+	int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 	SceneSerializer m_Serializer;
 
 	unsigned int m_DisplayType = 0;
