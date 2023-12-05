@@ -40,7 +40,6 @@ private:
 
 
 	std::shared_ptr<Model> model;
-	std::shared_ptr<Model> cerberus;
 	std::shared_ptr<Model> light;
 
 	EditorCamera m_Camera;

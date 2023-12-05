@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
+#include <ResourceManager.hpp>
 
 class Entity;
 

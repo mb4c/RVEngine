@@ -30,14 +30,12 @@ void SceneHierarchyPanel::OnRender()
 		{
 			if (ImGui::MenuItem("Create Plane"))
 			{
-				auto model = std::make_shared<Model>("res/plane.fbx");
-				auto shader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
-				auto flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
-				auto material = std::make_shared<Material>();
-				material->albedo = Texture("res/brickwall.jpg");
-				material->normal= Texture("res/brickwall_normal.jpg");
-				material->occlusionRoughnessMetallic = Texture("res/brickwall_ORM.png");
-				model->m_Material = material;
+				ResourceManager& rm = ResourceManager::instance();
+				auto model = rm.GetModel("plane");
+				auto shader = rm.GetShader("pbr");
+				auto flatShader = rm.GetShader("flat");
+
+				model->m_Material = rm.GetMaterial("brickwall");
 				auto plane = m_Context->CreateEntity("Plane");
 				plane.AddComponent<MeshRendererComponent>(model,shader, flatShader);
 				plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});

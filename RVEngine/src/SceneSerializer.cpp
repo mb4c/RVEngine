@@ -148,9 +148,9 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::Key << "VertexShaderPath" << YAML::Value << meshRendererComponent.shader->m_VertexPath;
 
 		//textures
-		out << YAML::Key << "Albedo" << YAML::Value << meshRendererComponent.model->m_Material->albedo.GetPath();
-		out << YAML::Key << "Normal" << YAML::Value << meshRendererComponent.model->m_Material->normal.GetPath();
-		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic.GetPath();
+		out << YAML::Key << "Albedo" << YAML::Value << meshRendererComponent.model->m_Material->albedo->GetPath();
+		out << YAML::Key << "Normal" << YAML::Value << meshRendererComponent.model->m_Material->normal->GetPath();
+		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic->GetPath();
 
 
 		out << YAML::EndMap; // MeshRendererComponent
@@ -263,9 +263,9 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
 				mrc.model = std::make_shared<Model>(meshRendererComponent["ModelPath"].as<std::string>());
 				std::shared_ptr<Material> mat = std::make_shared<Material>() ;
-				mat->albedo = Texture(meshRendererComponent["Albedo"].as<std::string>());
-				mat->normal = Texture(meshRendererComponent["Normal"].as<std::string>());
-				mat->occlusionRoughnessMetallic = Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>());
+				mat->albedo = std::make_shared<Texture>(Texture(meshRendererComponent["Albedo"].as<std::string>()));
+				mat->normal = std::make_shared<Texture>(Texture(meshRendererComponent["Normal"].as<std::string>()));
+				mat->occlusionRoughnessMetallic = std::make_shared<Texture>(Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
 				mrc.model->m_Material = mat;
 				auto flatShader = std::make_shared<Shader>(meshRendererComponent["VertexShaderPath"].as<std::string>().c_str(), meshRendererComponent["FragmentShaderPath"].as<std::string>().c_str());
 				auto mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");

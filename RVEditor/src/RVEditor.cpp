@@ -13,7 +13,6 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 void RVEditor::OnInit()
 {
 	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
-	cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
@@ -24,52 +23,38 @@ void RVEditor::OnInit()
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
-	auto dzwonek2 = m_ActiveScene->CreateEntity("dzwonek2");
-	dzwonek2.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
-	dzwonek2.GetComponent<TransformComponent>().Rotate({-90,0,0});
-	dzwonek2.GetComponent<TransformComponent>().Translation = {0,0,0.2};
 
-	auto dzwonek3 = m_ActiveScene->CreateEntity("dzwonek3");
-	dzwonek3.AddComponent<MeshRendererComponent>(model, mainShader, flatShader);
-	dzwonek3.GetComponent<TransformComponent>().Rotate({-90,0,0});
-	dzwonek3.GetComponent<TransformComponent>().Translation = {0,0,0.4};
+	ResourceManager& rm = ResourceManager::instance();
+
+	auto cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
+	rm.AddModel("cerberus", cerberus);
+
+
+	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
+	rm.AddMaterial("cerberus", cerbMat);
+	rm.AddTexture("cerberus_albedo",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png")));
+	rm.AddTexture("cerberus_normal",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png")));
+	rm.AddTexture("cerberus_orm",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png")));
+	cerbMat->albedo = rm.GetTexture("cerberus_albedo");
+	cerbMat->normal = rm.GetTexture("cerberus_normal");
+	cerbMat->occlusionRoughnessMetallic = rm.GetTexture("cerberus_orm");
+
+	cerberus->m_Material = cerbMat;
 
 	auto cerb = m_ActiveScene->CreateEntity("cerberus");
 	cerb.AddComponent<MeshRendererComponent>(cerberus, mainShader, flatShader);
 	cerb.GetComponent<TransformComponent>().Rotate({-90,90,0});
 	cerb.GetComponent<TransformComponent>().Translation = {-0.75,0,-1};
 	cerb.GetComponent<TransformComponent>().SetScale({0.01,0.01,0.01});
-
-
-	auto swiatelko = m_ActiveScene->CreateEntity("light");
+		auto swiatelko = m_ActiveScene->CreateEntity("light");
 	swiatelko.AddComponent<LightComponent>();
 
-	std::shared_ptr<Material> material = std::make_shared<Material>() ;
-	material->albedo = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_BaseColor.png");
-	material->normal = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_Normal.png");
-	material->occlusionRoughnessMetallic = Texture("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low_ServiceBell_material_OcclusionRoughnessMetallic.png");
-	model->m_Material = material;
-
-	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
-	cerbMat->albedo = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png");
-	cerbMat->normal = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png");
-	cerbMat->occlusionRoughnessMetallic = Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png");
-	cerberus->m_Material = cerbMat;
-
-	auto model2 = std::make_shared<Model>("res/plane.fbx");
-	auto material2 = std::make_shared<Material>();
-	material2->albedo = Texture("res/brickwall.jpg");
-	material2->normal = Texture("res/brickwall_normal.jpg");
-	material2->occlusionRoughnessMetallic = Texture("res/brickwall_ORM.png");
-	model2->m_Material = material2;
-
-	auto plane = m_ActiveScene->CreateEntity("Plane");
-	plane.AddComponent<MeshRendererComponent>(model2, mainShader, flatShader);
-	plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
-	plane.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
 
 	auto camera = m_ActiveScene->CreateEntity("Camera");
 	camera.AddComponent<CameraComponent>();
+
+	auto sprite = m_ActiveScene->CreateEntity("Sprite");
+	sprite.AddComponent<SpriteRendererComponent>(glm::vec4{1,1,1,1});
 }
 
 void RVEditor::OnUpdate()
