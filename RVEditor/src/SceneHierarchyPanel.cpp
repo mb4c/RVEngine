@@ -145,6 +145,18 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		}
 	}
 
+	if (entity.HasComponent<SpriteRendererComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "SpriteRenderer"))
+		{
+			auto& src = entity.GetComponent<SpriteRendererComponent>();
+			ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
+			ImGui::Checkbox("Billboard", &src.Billboard);
+
+			ImGui::TreePop();
+		}
+	}
+
 	if (entity.HasComponent<CameraComponent>())
 	{
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))

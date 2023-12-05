@@ -88,6 +88,42 @@ void Scene::OnUpdate(float ts)
 
 	}
 
+	auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+	for (auto entity : spriteView)
+	{
+		auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
+
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, sprite.Tex->GetTexture());
+
+		Stencil::DisableStencil();
+		ResourceManager& rm = ResourceManager::instance();
+
+
+		auto model = rm.GetModel("plane");
+		auto shader = rm.GetShader("sprite");
+		auto outlineShader = rm.GetShader("flat");
+
+		shader->Bind();
+		shader->SetVec4("u_Color", sprite.Color);
+		shader->SetBool("u_Billboard", sprite.Billboard);
+
+		Renderer::Submit(shader, model->GetMeshes()->at(0).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
+
+		outlineShader->Bind();
+		outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
+		if((uint32_t)entity == m_SelectedEntity)
+		{
+			Stencil::EnableStencil();
+			auto outlineTransform = transform.GetTransform();
+			outlineTransform = glm::scale(outlineTransform, {1.1, 1.1, 1.1});
+
+			Renderer::Submit(outlineShader, model->GetMeshes()->at(0).m_VertexArray, outlineTransform, (unsigned int)entity);
+			Stencil::DefaultStencil();
+		}
+	}
+
 
 
 }

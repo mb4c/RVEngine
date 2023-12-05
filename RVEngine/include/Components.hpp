@@ -69,6 +69,18 @@ struct MeshRendererComponent
 			: model(std::move(mdl)), shader(std::move(shdr)), outlineShader(std::move(outShdr)) {}
 };
 
+struct SpriteRendererComponent
+{
+	glm::vec4 Color {1,1,1,1};
+	bool Billboard = false;
+	std::shared_ptr<Texture> Tex = ResourceManager::instance().GetTexture("default_missing");
+
+	SpriteRendererComponent() = default;
+	SpriteRendererComponent(const SpriteRendererComponent&) = default;
+	SpriteRendererComponent(glm::vec4 color) : Color(color){}
+	SpriteRendererComponent(std::shared_ptr<Texture> texture) : Tex(texture) {}
+};
+
 struct LightComponent
 {
 	glm::vec3 color = {1, 1, 1};
