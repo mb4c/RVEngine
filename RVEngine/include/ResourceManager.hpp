@@ -36,6 +36,18 @@ public:
 		m_Materials.emplace("brickwall", brickwallMat);
 	};
 
+	template<class T>
+	T Get(const std::string& name, std::unordered_map<std::string, T> map)
+	{
+		if (auto it = map.find(name); it != map.end())
+		{
+			return it->second;
+		} else
+		{
+			return map.at("default_missing");
+		}
+	}
+
 	std::shared_ptr<Model> GetModel(const std::string& name)
 	{
 		return m_Models.at(name);
@@ -48,7 +60,7 @@ public:
 
 	std::shared_ptr<Texture> GetTexture(const std::string& name)
 	{
-		return m_Textures.at(name);
+		return Get<std::shared_ptr<Texture>>(name, m_Textures);
 	}
 
 	std::shared_ptr<Material> GetMaterial(const std::string& name)
