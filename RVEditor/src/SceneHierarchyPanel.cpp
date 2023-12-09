@@ -2,6 +2,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include "Components.hpp"
+#include <Widgets.hpp>
 
 SceneHierarchyPanel::SceneHierarchyPanel(const std::shared_ptr<Scene> &context)
 {
@@ -139,8 +140,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "MeshRenderer"))
 		{
 			auto& mrc = entity.GetComponent<MeshRendererComponent>();
-
-
 			ImGui::TreePop();
 		}
 	}
@@ -150,7 +149,8 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "SpriteRenderer"))
 		{
 			auto& src = entity.GetComponent<SpriteRendererComponent>();
-			ImGui::ColorEdit4("Color", glm::value_ptr(src.Color));
+			ImGui::TextureEditColor("Albedo", src.Tex, glm::value_ptr(src.Color));
+
 			ImGui::Checkbox("Billboard", &src.Billboard);
 
 			ImGui::TreePop();
