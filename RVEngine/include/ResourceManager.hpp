@@ -22,7 +22,7 @@ public:
 		m_Textures.emplace("brickwall_orm", std::make_shared<Texture>(Texture("res/brickwall_ORM.png")));
 
 
-		// Default texutres
+		// Default textures
 		m_Textures.emplace("default_normal", std::make_shared<Texture>(Texture(256,256,{0.5,0.5,1,1})));
 		m_Textures.emplace("default_albedo", std::make_shared<Texture>(Texture(256,256,{1,1,1,1})));
 		m_Textures.emplace("default_missing", std::make_shared<Texture>(Texture("res/missing.png")));
