@@ -166,12 +166,17 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::Checkbox("Fixed aspect ratio", &cc.FixedAspectRatio);
 
 			auto nc = cc.Camera.GetPerspectiveNearClip();
-			if(ImGui::InputFloat("Near clip", &nc))
+			if (ImGui::InputFloat("Near clip", &nc))
 				cc.Camera.SetPerspectiveNearClip(nc);
 
 			auto fc = cc.Camera.GetPerspectiveFarClip();
-			if(ImGui::InputFloat("Far clip", &fc))
+			if (ImGui::InputFloat("Far clip", &fc))
 				cc.Camera.SetPerspectiveFarClip(fc);
+
+			auto fov = cc.Camera.GetPerspectiveVerticalFOV();
+			if (ImGui::DragFloat("Vertical FOV", &fov, 0.001f, 0.01, 1.8))
+				cc.Camera.SetPerspectiveVerticalFOV(fov);
+
 			ImGui::TreePop();
 		}
 	}
