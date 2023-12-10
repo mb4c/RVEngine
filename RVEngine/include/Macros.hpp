@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string_view>
-#include <tracy/Tracy.hpp>
 
 constexpr const char* rv_pretty_function(const char* s)
 {
@@ -13,6 +12,15 @@ constexpr const char* rv_pretty_function(const char* s)
 
 #define RV_PRETTY_FUNCTION rv_pretty_function(__PRETTY_FUNCTION__)
 
+//#define RV_ENABLE_PROFILER
 
-#define RV_PROFILE_SCOPE(name) ZoneScopedN(name)
-#define RV_PROFILE_FUNCTION() RV_PROFILE_SCOPE(RV_PRETTY_FUNCTION)
+#ifdef RV_ENABLE_PROFILER
+	#include <tracy/Tracy.hpp>
+	#define RV_PROFILE_SCOPE(name) ZoneScopedN(name)
+	#define RV_PROFILE_FUNCTION() RV_PROFILE_SCOPE(RV_PRETTY_FUNCTION)
+	#define RV_PROFILE_FRAME() FrameMark;
+#else
+	#define RV_PROFILE_SCOPE(name)
+	#define RV_PROFILE_FUNCTION()
+	#define RV_PROFILE_FRAME();
+#endif

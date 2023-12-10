@@ -14,6 +14,8 @@ find_package(EnTT CONFIG REQUIRED)
 find_package(imguizmo CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
+#TODO: Add option to compile without tracy
+
 file(GLOB_RECURSE engine_src src/*.cpp include/*.hpp)
 add_library(RVEngine SHARED ${engine_src})
 

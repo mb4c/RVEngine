@@ -90,7 +90,7 @@ void Application::Run()
 
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		FrameMark;
+		RV_PROFILE_FRAME();
 		UpdateDeltaTime();
 
 		Renderer::SetClearColor(glm::vec4{clearColor[0], clearColor[1], clearColor[2], 1});
