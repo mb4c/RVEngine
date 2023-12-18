@@ -227,15 +227,8 @@ void Scene::RemoveEntity(Entity entity)
 
 void Scene::DuplicateEntity(Entity entity)
 {
-	auto newEntity = m_Registry.create();
-
-	// create a copy of an entity component by component
-	for(auto &&curr: m_Registry.storage()) {
-		if(auto &storage = curr.second; storage.contains(entity.GetHandle())) {
-			storage.push(newEntity, storage.value(entity.GetHandle()));
-		}
-	}
-
+	Entity newEntity = CreateEntity(entity.GetComponent<TagComponent>().Tag);
+	CopyComponentIfExists(AllComponents{}, newEntity, entity);
 }
 
 void Scene::OnRuntimeStart()
