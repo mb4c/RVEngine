@@ -35,7 +35,6 @@ private:
 	void OnScenePlay();
 	void OnSceneStop();
 
-	bool m_CursorEnabled = true;
 	bool m_ViewportFocused = false;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
@@ -54,23 +53,8 @@ private:
 	glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 	glm::vec3 direction;
 
-	float pitch = 0;
-	float yaw = -90;
-
-	glm::vec3 lightPosition = glm::vec3(0.5f, 0.0f,  0.0f);
-	glm::vec3 lightRotation = glm::vec3(2.0f, 0.0f,  3.0f);
-	glm::vec3 lightColor  	= glm::vec3(1.0f, 1.0f,  1.0f);
-	float lightIntensity = 1.0f;
-
-
-	glm::vec3 albedo = glm::vec3(1.0f, 1.0f,  1.0f);
-	float metallic = 1.0f;
-	float roughness = 1.0f;
-	float ao = 1.0f;
-
-
-	uint32_t m_MeshesCount = 0;
-	float mousedelta[2];
+	float m_CameraPitch = 0;
+	float m_CameraYaw = -90;
 
 	ImVec2 m_ViewportSize {};
 	ImVec2 m_LastViewportSize {};
@@ -85,8 +69,6 @@ private:
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
 	int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-//	SceneSerializer m_Serializer;
-//	m_Serializer.SetContext(m_ActiveScene);
 
 	unsigned int m_DisplayType = 0;
 

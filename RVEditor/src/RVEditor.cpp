@@ -197,30 +197,27 @@ void RVEditor::DrawImGui()
 	Dockspace();
 
 	ImGui::Begin("Settings");
-	ImGui::Text("FPS: %f", GetFPS());
-	mousedelta[0] = m_Input.GetMouseDelta().x;
-	mousedelta[1] = m_Input.GetMouseDelta().y;
-	ImGui::InputFloat2("Mouse Delta", mousedelta);
-	ImGui::InputFloat("Pitch", &pitch);
-	ImGui::InputFloat("Yaw", &yaw);
 
-	ImGui::DragFloat3("LightPos", glm::value_ptr(lightPosition), 0.1);
-	ImGui::ColorEdit3("LightColor", glm::value_ptr(lightColor));
-	ImGui::DragFloat3("LightDir", glm::value_ptr(lightRotation), 0.1);
-	ImGui::DragFloat("LightIntensity", &lightIntensity, 0.1);
+	if (ImGui::TreeNodeEx("Debug", ImGuiTreeNodeFlags_DefaultOpen))
+	{
 
-	ImGui::ColorEdit3("Albedo", glm::value_ptr(albedo));
-	ImGui::DragFloat("Metallic", &metallic, 0.1);
-	ImGui::DragFloat("Roughness", &roughness, 0.1);
-	ImGui::DragFloat("AO", &ao, 0.1);
-	ImGui::InputFloat2("Viewport cursor pos", &m_MouseVieportPos[0]);
-	ImGui::Text("Hovered entity: %u", m_HoveredEntity);
+		ImGui::Text("FPS: %f", GetFPS());
+		float mouseDelta[2];
+		mouseDelta[0] = m_Input.GetMouseDelta().x;
+		mouseDelta[1] = m_Input.GetMouseDelta().y;
+		ImGui::InputFloat2("Mouse Delta", mouseDelta);
+		ImGui::InputFloat("Pitch", &m_CameraPitch);
+		ImGui::InputFloat("Yaw", &m_CameraYaw);
+		ImGui::InputFloat2("Viewport cursor pos", &m_MouseVieportPos[0]);
+		ImGui::Text("Hovered entity: %u", m_HoveredEntity);
 
-	ImGui::DragScalar("Visualizer:", ImGuiDataType_U32, &m_DisplayType);
+		ImGui::DragScalar("Visualizer:", ImGuiDataType_U32, &m_DisplayType);
 
-	std::string drawcalls = "Draw calls: ";
-	drawcalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
-	ImGui::Text("%s", drawcalls.c_str());
+		std::string drawCalls = "Draw calls: ";
+		drawCalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
+		ImGui::Text("%s", drawCalls.c_str());
+		ImGui::TreePop();
+	}
 
 	ImGui::End();
 
@@ -356,17 +353,17 @@ void RVEditor::ProcessInput()
 			SetCursorState(GLFW_CURSOR_DISABLED);
 			glm::vec2 mouseDelta = m_Input.GetMouseDelta();
 			mouseDelta *= 0.12f;
-			yaw += mouseDelta.x;
-			pitch += mouseDelta.y;
+			m_CameraYaw += mouseDelta.x;
+			m_CameraPitch += mouseDelta.y;
 
-			if(pitch > 89.0f)
-				pitch = 89.0f;
-			if(pitch < -89.0f)
-				pitch = -89.0f;
+			if(m_CameraPitch > 89.0f)
+				m_CameraPitch = 89.0f;
+			if(m_CameraPitch < -89.0f)
+				m_CameraPitch = -89.0f;
 
-			direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-			direction.y = sin(glm::radians(pitch));
-			direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+			direction.x = cos(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
+			direction.y = sin(glm::radians(m_CameraPitch));
+			direction.z = sin(glm::radians(m_CameraYaw)) * cos(glm::radians(m_CameraPitch));
 			cameraFront = glm::normalize(direction);
 
 
