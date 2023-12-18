@@ -14,6 +14,7 @@ void SceneHierarchyPanel::SetContext(const std::shared_ptr<Scene> &context)
 {
 	RV_PROFILE_FUNCTION();
 	m_Context = context;
+	m_SelectionContext = {};
 }
 
 void SceneHierarchyPanel::OnRender()
@@ -104,6 +105,14 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
 	RV_PROFILE_FUNCTION();
+
+	if (entity.HasComponent<IDComponent>())
+	{
+		auto& id = entity.GetComponent<IDComponent>().ID;
+
+		ImGui::Text("ID: %lu", (uint64_t)id);
+	}
+
 	if (entity.HasComponent<TagComponent>())
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
@@ -192,5 +201,3 @@ Entity SceneHierarchyPanel::GetSelectedEntity()
 {
 	return m_SelectionContext;
 }
-
-

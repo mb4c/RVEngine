@@ -18,10 +18,18 @@ struct TagComponent
 			: Tag(tag) {}
 };
 
+struct IDComponent
+{
+	UUID ID;
+
+	IDComponent() = default;
+	IDComponent(const IDComponent&) = default;
+};
+
 struct TransformComponent
 {
 	glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
-	glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f };
+	glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f }; // Radians
 	glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
 
 	TransformComponent() = default;

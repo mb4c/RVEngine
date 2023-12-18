@@ -57,6 +57,23 @@ namespace YAML
 		}
 	};
 
+	template<>
+	struct convert<UUID>
+	{
+		static Node encode(const UUID& uuid)
+		{
+			Node node;
+			node.push_back((uint64_t)uuid);
+			return node;
+		}
+
+		static bool decode(const Node& node, UUID& uuid)
+		{
+			uuid = node.as<uint64_t>();
+			return true;
+		}
+	};
+
 }
 
 
@@ -84,7 +101,7 @@ SceneSerializer::SceneSerializer(const std::shared_ptr<Scene>& scene)
 static void SerializeEntity(YAML::Emitter& out, Entity entity)
 {
 	out << YAML::BeginMap;
-	out << YAML::Key << "Entity" << YAML::Value << "2137"; // TODO: This should be UUID
+	out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
 
 	if (entity.HasComponent<TagComponent>())
@@ -217,7 +234,8 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 	{
 		for (auto entity : entities)
 		{
-			uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+			uint64_t uuid = entity["Entity"].as<uint64_t>();
+
 
 			std::string name;
 			auto tagComponent = entity["TagComponent"];
@@ -225,7 +243,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				name = tagComponent["Tag"].as<std::string>();
 
 
-			Entity deserializedEntity = m_Scene->CreateEntity(name);
+			Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 			auto transformComponent = entity["TransformComponent"];
 			if (transformComponent)
