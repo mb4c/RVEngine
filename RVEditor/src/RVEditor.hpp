@@ -30,6 +30,10 @@ private:
 
 	void NewScene();
 	std::filesystem::path SaveSceneAs();
+	void OpenScene(const std::filesystem::path& path);
+
+	void OnScenePlay();
+	void OnSceneStop();
 
 	bool m_CursorEnabled = true;
 	bool m_ViewportFocused = false;
@@ -37,6 +41,7 @@ private:
 	SceneHierarchyPanel m_SceneHierarchyPanel;
 	ContentBrowserPanel m_ContentBrowserPanel;
 	std::shared_ptr<Scene> m_ActiveScene;
+	std::shared_ptr<Scene> m_EditorScene, m_RuntimeScene;
 
 
 	std::shared_ptr<Model> model;
@@ -80,7 +85,14 @@ private:
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
 	int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-	SceneSerializer m_Serializer;
+//	SceneSerializer m_Serializer;
+//	m_Serializer.SetContext(m_ActiveScene);
 
 	unsigned int m_DisplayType = 0;
+
+	enum class SceneState
+	{
+		Edit = 0, Play = 1, Simulate = 2
+	};
+	SceneState m_SceneState = SceneState::Edit;
 };

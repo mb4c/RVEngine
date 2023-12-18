@@ -61,8 +61,22 @@ struct TransformComponent
 	{
 		return Translation;
 	}
-
-
+	void SetRotation(glm::vec3 rotation)
+	{
+		Rotation = glm::radians(rotation);
+	}
+	void SetRotationRad(glm::vec3 rotation)
+	{
+		Rotation = rotation;
+	}
+	glm::vec3 GetRotationRad()
+	{
+		return Rotation;
+	}
+	glm::quat GetRotationQuat()
+	{
+		return glm::quat(Translation);
+	}
 };
 
 struct MeshRendererComponent
@@ -109,3 +123,50 @@ struct CameraComponent
 	CameraComponent() = default;
 	CameraComponent(const CameraComponent&) = default;
 };
+
+//TODO: serialization
+struct BoxColliderComponent
+{
+	glm::vec3 Size = {1, 1, 1};
+	bool Dynamic = true;
+	float Mass = 10;
+	float Restitution = 0.5f;
+	float Friction = 0.2f;
+
+	BoxColliderComponent() = default;
+	BoxColliderComponent(const BoxColliderComponent&) = default;
+};
+
+template<typename... Component>
+struct ComponentGroup
+{
+};
+
+using AllComponents =
+		ComponentGroup<TransformComponent, SpriteRendererComponent,
+		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent>;
+
+template<typename Component>
+std::string GetComponentName()
+{
+	std::string prettyFunction = __PRETTY_FUNCTION__;
+	size_t start = prettyFunction.find("Component = ") + 12;
+	size_t end = prettyFunction.find("]", start);
+//	std::cout << prettyFunction.substr(start, end - start) << std::endl;
+	return prettyFunction.substr(start, end - start);
+}
+
+template<typename Component>
+void PrintComponentName()
+{
+	std::string prettyFunction = __PRETTY_FUNCTION__;
+	size_t start = prettyFunction.find("Component = ") + 12;
+	size_t end = prettyFunction.find("]", start);
+	std::cout << prettyFunction.substr(start, end - start) << std::endl;
+}
+
+template<typename... Components>
+void PrintAllComponentNames(ComponentGroup<Components...>)
+{
+	(PrintComponentName<Components>(), ...);
+}

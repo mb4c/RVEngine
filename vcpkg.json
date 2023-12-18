@@ -37,5 +37,8 @@
   }, {
     "name" : "yaml-cpp",
     "version>=" : "0.7.0#1"
+  }, {
+    "name" : "joltphysics",
+    "version>=" : "4.0.0"
   } ]
 }

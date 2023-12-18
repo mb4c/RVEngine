@@ -34,11 +34,22 @@ public:
 	void RemoveEntity(Entity entity);
 	void DuplicateEntity(Entity entity);
 
-	void OnUpdate(float ts);
+	void OnStart();
+	void OnUpdateEditor(float ts, EditorCamera& editorCamera);
+	void OnUpdateRuntime(float ts);
+	void RenderScene();
+
+	void OnRuntimeStart();
+	void OnRuntimeStop();
+
 	void SetSelectedEntity(uint32_t entity);
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;
+	bool m_IsRunning = false;
+	std::unordered_map<UUID, entt::entity> m_EntityMap;
+	PhysicsManager* m_PhysicsManager = nullptr;
+
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;

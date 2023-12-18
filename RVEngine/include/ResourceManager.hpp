@@ -12,6 +12,8 @@ public:
 	ResourceManager(token)
 	{
 		m_Models.emplace("plane", std::make_shared<Model>("res/plane.fbx"));
+		m_Models.emplace("sphere05", std::make_shared<Model>("res/sphere05.fbx"));
+		m_Models.emplace("cube", std::make_shared<Model>("res/cube.fbx"));
 
 		m_Shaders.emplace("pbr", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl"));
 		m_Shaders.emplace("flat", std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag"));
@@ -34,6 +36,13 @@ public:
 		brickwallMat->normal= GetTexture("brickwall_normal");
 		brickwallMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
 		m_Materials.emplace("brickwall", brickwallMat);
+
+		auto defaultMat = std::make_shared<Material>();
+		defaultMat->albedo = GetTexture("default_albedo");
+		defaultMat->normal= GetTexture("default_normal");
+		defaultMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
+		m_Materials.emplace("default_pbr", defaultMat);
+
 	};
 
 	template<class T>

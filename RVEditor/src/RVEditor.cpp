@@ -18,8 +18,9 @@ void RVEditor::OnInit()
 	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
-	m_ActiveScene = std::make_shared<Scene>();
-	m_Serializer.SetContext(m_ActiveScene);
+//	OpenScene("res/scenes/dupa.rvscene");
+	m_EditorScene = std::make_shared<Scene>();
+	m_ActiveScene = m_EditorScene;
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
@@ -41,20 +42,70 @@ void RVEditor::OnInit()
 
 	cerberus->m_Material = cerbMat;
 
-	auto cerb = m_ActiveScene->CreateEntity("cerberus");
-	cerb.AddComponent<MeshRendererComponent>(cerberus, mainShader, flatShader);
-	cerb.GetComponent<TransformComponent>().Rotate({-90,90,0});
-	cerb.GetComponent<TransformComponent>().Translation = {-0.75,0,-1};
-	cerb.GetComponent<TransformComponent>().SetScale({0.01,0.01,0.01});
-		auto swiatelko = m_ActiveScene->CreateEntity("light");
+	auto swiatelko = m_ActiveScene->CreateEntity("light");
 	swiatelko.AddComponent<LightComponent>();
+	swiatelko.GetComponent<TransformComponent>().SetPosition({0, 0, 3});
 
 
 	auto camera = m_ActiveScene->CreateEntity("Camera");
 	camera.AddComponent<CameraComponent>();
+	camera.GetComponent<TransformComponent>().SetPosition({-4.5,1.75,2});
+	camera.GetComponent<TransformComponent>().SetRotation({-37,-67,16});
+//	ResourceManager& rm = ResourceManager::instance();
 
-	auto sprite = m_ActiveScene->CreateEntity("Sprite");
-	sprite.AddComponent<SpriteRendererComponent>(glm::vec4{1,1,1,1});
+//	auto spheremodel = rm.GetModel("sphere05");
+//	spheremodel->m_Material = rm.GetMaterial("default_pbr");
+//	auto sphere = m_ActiveScene->CreateEntity("Sphere");
+//	sphere.AddComponent<MeshRendererComponent>(spheremodel, mainShader, flatShader);
+//	sphere.GetComponent<TransformComponent>().SetScale({1,1,1});
+//	sphere.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
+
+//	auto planeModel = rm.GetModel("plane");
+//
+//	planeModel->m_Material = rm.GetMaterial("default_pbr");
+//	auto plane = m_ActiveScene->CreateEntity("Plane");
+//	plane.AddComponent<MeshRendererComponent>(planeModel, mainShader, flatShader);
+//	plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+//	plane.GetComponent<TransformComponent>().SetPosition({0, -3, -0.5});
+//	plane.GetComponent<TransformComponent>().SetRotation({-90, 0, 0});
+//	plane.AddComponent<BoxColliderComponent>();
+//	plane.GetComponent<BoxColliderComponent>().Dynamic = false;
+//	plane.GetComponent<BoxColliderComponent>().Scale = {1,0.1,1};
+
+	auto cubeModel = rm.GetModel("cube");
+
+	cubeModel->m_Material = rm.GetMaterial("default_pbr");
+	auto cube = m_ActiveScene->CreateEntity("Cube ten na dole");
+	cube.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+	cube.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+	cube.GetComponent<TransformComponent>().SetPosition({0, -3, 0});
+	cube.GetComponent<TransformComponent>().SetRotation({0, 0, 0});
+	cube.AddComponent<BoxColliderComponent>();
+	cube.GetComponent<BoxColliderComponent>().Dynamic = false;
+	cube.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+
+	auto cube2 = m_ActiveScene->CreateEntity("Cube");
+	cube2.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+	cube2.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+	cube2.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
+	cube2.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
+	cube2.AddComponent<BoxColliderComponent>();
+	cube2.GetComponent<BoxColliderComponent>().Dynamic = true;
+	cube2.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+
+	auto cube3 = m_ActiveScene->CreateEntity("Cube");
+	cube3.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+	cube3.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+	cube3.GetComponent<TransformComponent>().SetPosition({0, 3, 0});
+	cube3.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
+	cube3.AddComponent<BoxColliderComponent>();
+	cube3.GetComponent<BoxColliderComponent>().Dynamic = true;
+	cube3.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+
+//	auto sprite = m_ActiveScene->CreateEntity("Sprite");
+//	sprite.AddComponent<SpriteRendererComponent>(glm::vec4{1,1,1,1});
+	m_ActiveScene->OnStart();
+
 }
 
 void RVEditor::OnUpdate()
@@ -91,21 +142,39 @@ void RVEditor::OnUpdate()
 	Renderer::Clear();
 
 
-	glm::mat4 view;
-	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
-	m_Camera.SetViewMatrix(view);
+	switch (m_SceneState)
+	{
+		case SceneState::Edit:
+		{
+			if (m_ViewportFocused)
+			{
+				glm::mat4 view;
+				view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+				view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
+				m_Camera.SetViewMatrix(view);
 
-	mainShader->Bind();
-	mainShader->SetVec3("u_CamPos", cameraPos);
-	mainShader->SetUInt("u_DisplayType", m_DisplayType);
+				mainShader->Bind();
+				mainShader->SetVec3("u_CamPos", cameraPos);
+				mainShader->SetUInt("u_DisplayType", m_DisplayType);
+			}
+			m_ActiveScene->OnUpdateEditor(GetDeltaTime(), m_Camera);
 
-	m_ActiveScene->OnUpdate(GetDeltaTime());
+			break;
+		}
+		case SceneState::Simulate:
+		{
+//			m_EditorCamera.OnUpdate(ts);
+//
+//			m_ActiveScene->OnUpdateSimulation(ts, m_EditorCamera);
+			break;
+		}
+		case SceneState::Play:
+		{
+			m_ActiveScene->OnUpdateRuntime(GetDeltaTime());
 
-
-
-
-
+			break;
+		}
+	}
 
 	frameBuffer->Unbind();
 }
@@ -184,6 +253,22 @@ void RVEditor::DrawImGui()
 			m_GizmoType = ImGuizmo::OPERATION::SCALE;
 
 		ImGui::Text("|");
+
+		if(m_SceneState == SceneState::Edit)
+		{
+			if (ImGui::Button("Play"))
+			{
+				OnScenePlay();
+			}
+		}
+		else
+		{
+			if (ImGui::Button("Stop"))
+			{
+				OnSceneStop();
+			}
+		}
+
 
 		ImGui::EndMenuBar();
 	}
@@ -264,11 +349,9 @@ void RVEditor::ProcessInput()
 
 	if (m_ViewportFocused)
 	{
-		float cameraSpeed = 0.5f * GetDeltaTime();
+		float cameraSpeed = 2.0f * GetDeltaTime();
 
-
-
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT))
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) && m_SceneState == SceneState::Edit)
 		{
 			SetCursorState(GLFW_CURSOR_DISABLED);
 			glm::vec2 mouseDelta = m_Input.GetMouseDelta();
@@ -381,14 +464,7 @@ void RVEditor::Dockspace()
 												pfd::opt::none).result();
 
 				std::cout << "Selected file: " << selection.at(0) << "\n";
-
-				if(m_Serializer.Deserialize(selection.at(0)))
-				{
-
-				} else
-				{
-					std::cout << "Failed to deserialize scene" << std::endl;
-				}
+				OpenScene(selection.at(0));
 
 			}
 			if ( ImGui::MenuItem( "Save" ) )
@@ -425,7 +501,7 @@ void RVEditor::NewScene()
 	m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_ActiveScene.get()));
 	m_ActiveScene = std::make_shared<Scene>();
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-	m_Serializer.SetContext(m_ActiveScene);
+//	m_Serializer.SetContext(m_ActiveScene);
 }
 
 std::filesystem::path RVEditor::SaveSceneAs()
@@ -440,6 +516,52 @@ std::filesystem::path RVEditor::SaveSceneAs()
 	}
 
 	std::cout << "Saved file: " << selection << "\n";
-	m_Serializer.Serialize(selection);
+
+	SceneSerializer serializer(m_ActiveScene);
+	serializer.Serialize(selection);
 	return selection;
+}
+
+void RVEditor::OpenScene(const std::filesystem::path& path)
+{
+	std::shared_ptr newScene = std::make_shared<Scene>();
+	SceneSerializer serializer(newScene);
+	if(serializer.Deserialize(path))
+	{
+		m_EditorScene = newScene;
+//		m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_EditorScene.get()));
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_ActiveScene = m_EditorScene;
+
+
+	} else
+	{
+		std::cout << "Failed to deserialize scene" << std::endl;
+	}
+}
+
+void RVEditor::OnScenePlay()
+{
+	if (m_SceneState == SceneState::Simulate)
+		OnSceneStop();
+
+	m_SceneState = SceneState::Play;
+
+	m_ActiveScene = Scene::Copy(m_EditorScene);
+	m_ActiveScene->OnRuntimeStart();
+
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
+void RVEditor::OnSceneStop()
+{
+
+	if (m_SceneState == SceneState::Play)
+		m_ActiveScene->OnRuntimeStop();
+
+	m_SceneState = SceneState::Edit;
+
+	m_ActiveScene = m_EditorScene;
+
+	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 }

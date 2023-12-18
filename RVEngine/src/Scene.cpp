@@ -17,14 +17,97 @@ Scene::~Scene()
 Entity Scene::CreateEntity(const std::string& name)
 {
 	RV_PROFILE_FUNCTION();
-	Entity entity = { m_Registry.create(), this };
-	entity.AddComponent<TransformComponent>();
-	auto& tag = entity.AddComponent<TagComponent>();
-	tag.Tag = name.empty() ? "Entity" : name;
-	return entity;
+	return CreateEntityWithUUID(UUID(), name);
 }
 
-void Scene::OnUpdate(float ts)
+void Scene::OnStart()
+{
+	PrintAllComponentNames(AllComponents{});
+}
+
+void Scene::OnUpdateEditor(float ts, EditorCamera& editorCamera)
+{
+	RenderScene();
+}
+
+void Scene::OnUpdateRuntime(float ts)
+{
+	m_PhysicsManager->OnUpdate(ts);
+
+	{
+		auto view = m_Registry.view<TransformComponent, BoxColliderComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
+
+			for (auto body : m_PhysicsManager->GetBodies())
+			{
+				const JPH::BodyLockInterface* lock_interface;
+				lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
+
+// Scoped lock
+				{
+					JPH::BodyLockRead lock(*lock_interface, body);
+					if (lock.Succeeded()) // body_id may no longer be valid
+					{
+						const JPH::Body &bodyobj = lock.GetBody();
+						auto entityId = static_cast<entt::entity>(bodyobj.GetUserData());
+						if (entityId == entity)
+						{
+							auto pos = bodyobj.GetPosition();
+							transform.SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
+							auto rot = bodyobj.GetRotation();
+							transform.SetRotationRad(glm::eulerAngles(glm::quat(rot.GetW(),rot.GetX(),rot.GetY(), rot.GetZ())));
+
+						}
+
+					}
+				}
+
+			}
+
+		}
+	}
+
+
+
+	Camera* mainCamera = nullptr;
+	glm::vec3 cameraPosition;
+	glm::mat4 cameraTransform;
+	{
+		auto view = m_Registry.view<TransformComponent, CameraComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+
+			if (camera.Primary)
+			{
+				mainCamera = &camera.Camera;
+				auto scenecam = (SceneCamera*)mainCamera;
+				scenecam->SetViewportSize(1280,720); // TODO: scene should have viewport size
+				cameraTransform = transform.GetTransform();
+				cameraPosition = transform.GetPosition();
+
+				break;
+			}
+		}
+	}
+
+	if (mainCamera)
+	{
+		Renderer::BeginScene(*mainCamera, cameraTransform);
+		ResourceManager& rm = ResourceManager::instance();
+		auto shader = rm.GetShader("pbr");
+		shader->Bind();
+		shader->SetVec3("u_CamPos", cameraPosition);
+		shader->SetUInt("u_DisplayType", 0);
+
+		RenderScene();
+	}
+
+}
+
+void Scene::RenderScene()
 {
 	RV_PROFILE_FUNCTION();
 
@@ -123,9 +206,6 @@ void Scene::OnUpdate(float ts)
 			Stencil::DefaultStencil();
 		}
 	}
-
-
-
 }
 
 void Scene::SetSelectedEntity(uint32_t entity)
@@ -156,4 +236,112 @@ void Scene::DuplicateEntity(Entity entity)
 		}
 	}
 
+}
+
+void Scene::OnRuntimeStart()
+{
+	m_IsRunning = true;
+	m_PhysicsManager = new PhysicsManager();
+
+	{
+		auto view = m_Registry.view<TransformComponent, BoxColliderComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
+			auto pos = transform.GetPosition();
+			auto scale = boxCollider.Size;
+			entt::entity entityId = entity;
+			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
+//			auto rot = transform.GetRotationQuat();
+			auto id = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(scale.x, scale.y, scale.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+//			auto id = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(scale.x, scale.y, scale.z), Quat(rot.x,rot.y,rot.z,rot.w), (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass);
+//			m_PhysicsManager->SetMass(id->GetID(), boxCollider.Mass);
+		}
+	}
+}
+
+void Scene::OnRuntimeStop()
+{
+	m_IsRunning = false;
+	delete m_PhysicsManager;
+}
+
+std::shared_ptr<Scene> Scene::Copy(std::shared_ptr<Scene> other)
+{
+	std::shared_ptr<Scene> newScene = std::make_shared<Scene>();
+
+//		newScene->m_ViewportWidth = other->m_ViewportWidth;
+//		newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+	auto& srcSceneRegistry = other->m_Registry;
+	auto& dstSceneRegistry = newScene->m_Registry;
+	std::unordered_map<UUID, entt::entity> enttMap;
+
+	// Create entities in new scene
+	auto idView = srcSceneRegistry.view<IDComponent>();
+	for (auto e : idView)
+	{
+		UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+		const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+		entt::entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+		enttMap[uuid] = (entt::entity)newEntity;
+	}
+
+	// Copy components (except IDComponent and TagComponent)
+	CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
+
+	return newScene;
+}
+
+Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
+{
+	Entity entity = { m_Registry.create(), this };
+	entity.AddComponent<IDComponent>(uuid);
+	entity.AddComponent<TransformComponent>();
+	auto& tag = entity.AddComponent<TagComponent>();
+	tag.Tag = name.empty() ? "Entity" : name;
+
+	m_EntityMap[uuid] = entity;
+
+	return entity;
+}
+
+template<typename... Component>
+void Scene::CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src,
+						  const std::unordered_map<UUID, entt::entity>& enttMap)
+{
+	CopyComponent<Component...>(dst, src, enttMap);
+}
+
+template<typename... Component>
+void Scene::CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
+{
+	CopyComponentIfExists<Component...>(dst, src);
+}
+
+template<typename... Component>
+void Scene::CopyComponentIfExists(Entity dst, Entity src)
+{
+	([&]()
+	{
+		if (src.HasComponent<Component>())
+			dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+	}(), ...);
+}
+
+template<typename... Component>
+void
+Scene::CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+{
+	([&]()
+	{
+		auto view = src.view<Component>();
+		for (auto srcEntity : view)
+		{
+			entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+
+			auto& srcComponent = src.get<Component>(srcEntity);
+			dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+		}
+	}(), ...);
 }

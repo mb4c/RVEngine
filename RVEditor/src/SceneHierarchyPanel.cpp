@@ -171,6 +171,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
 		{
 			auto& cc = entity.GetComponent<CameraComponent>();
+			auto& tc = entity.GetComponent<TransformComponent>();
 			ImGui::Checkbox("Primary", &cc.Primary);
 			ImGui::Checkbox("Fixed aspect ratio", &cc.FixedAspectRatio);
 
@@ -185,6 +186,24 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			auto fov = cc.Camera.GetPerspectiveVerticalFOV();
 			if (ImGui::DragFloat("Vertical FOV", &fov, 0.001f, 0.01, 1.8))
 				cc.Camera.SetPerspectiveVerticalFOV(fov);
+
+			if(ImGui::Button("TODO: Copy editor camera transform"))
+			{
+				//TODO: Copy editor camera transform
+			}
+
+			ImGui::TreePop();
+		}
+	}
+
+	if (entity.HasComponent<BoxColliderComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "BoxColliderComponent"))
+		{
+			auto& bcc = entity.GetComponent<BoxColliderComponent>();
+			ImGui::DragFloat3("Scale##2", glm::value_ptr(bcc.Size), 0.01f);
+			ImGui::Checkbox("Dynamic", &bcc.Dynamic);
+			ImGui::DragFloat("Mass", &bcc.Mass);
 
 			ImGui::TreePop();
 		}
