@@ -184,8 +184,12 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				cc.Camera.SetPerspectiveFarClip(fc);
 
 			auto fov = cc.Camera.GetPerspectiveVerticalFOV();
-			if (ImGui::DragFloat("Vertical FOV", &fov, 0.001f, 0.01, 1.8))
+			fov *= 100;
+			if (ImGui::DragFloat("Vertical FOV", &fov, 0.05f, 0.01, 360))
+			{
+				fov /= 100;
 				cc.Camera.SetPerspectiveVerticalFOV(fov);
+			}
 
 			if(ImGui::Button("TODO: Copy editor camera transform"))
 			{
