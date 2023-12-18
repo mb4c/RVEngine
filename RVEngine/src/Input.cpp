@@ -56,7 +56,7 @@ glm::vec2 Input::GetMouseDelta()
 
 float Input::GetScrollDelta()
 {
-	return 0; // TODO: not implemented
+	return m_ScrollDelta;
 }
 
 void Input::UpdateMouseDelta()
@@ -91,8 +91,19 @@ void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 }
 
+void Input::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
+{
+	// NOTE: smooth scrolling is not implemented for X11
+	// https://github.com/glfw/glfw/issues/1376
+
+	auto* input = (Input*)glfwGetWindowUserPointer(window);
+
+	input->m_ScrollDelta = yoffset / 10;
+}
+
 void Input::UpdateKeys()
 {
+	m_ScrollDelta = 0;
 	m_LastKeys = m_Keys;
 }
 

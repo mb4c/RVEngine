@@ -19,6 +19,7 @@ public:
 	float GetScrollDelta();
 	void UpdateMouseDelta();
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 	void UpdateKeys();
 
 private:
@@ -26,6 +27,7 @@ private:
 	glm::vec2 m_LastCursorPos = glm::vec2(0,0);
 	glm::vec2 m_CursorDelta = glm::vec2(0,0);
 	bool m_FirstUpdate = true;
+	double m_ScrollDelta = 0.0;
 
 	std::map<int, bool> m_Keys {};
 	std::map<int, bool> m_LastKeys {};
