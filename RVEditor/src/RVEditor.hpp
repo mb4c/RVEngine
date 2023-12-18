@@ -58,6 +58,7 @@ private:
 
 	float m_CameraPitch = 0;
 	float m_CameraYaw = -90;
+	float m_CameraSpeed = 2;
 
 	ImVec2 m_ViewportSize {};
 	ImVec2 m_LastViewportSize {};

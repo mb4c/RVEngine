@@ -265,6 +265,8 @@ void RVEditor::DrawImGui()
 				OnSceneStop();
 			}
 		}
+		ImGui::PushItemWidth(75);
+		ImGui::DragFloat("Camera speed", &m_CameraSpeed);
 
 
 		ImGui::EndMenuBar();
@@ -356,7 +358,7 @@ void RVEditor::ProcessInput()
 
 	if (m_ViewportFocused)
 	{
-		float cameraSpeed = 2.0f * GetDeltaTime();
+		float cameraSpeed = m_CameraSpeed * GetDeltaTime();
 
 		if (m_Input.GetMouseDown(1) && m_SceneState == SceneState::Edit)
 		{
