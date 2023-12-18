@@ -412,6 +412,9 @@ void RVEditor::ProcessInput()
 				glPolygonMode(GL_FRONT_AND_BACK, newMode);
 			}
 
+			m_CameraSpeed += m_Input.GetScrollDelta();
+			m_CameraSpeed = std::clamp(m_CameraSpeed, 0.0f, 100.0f);
+
 		} else
 		{
 			SetCursorState(GLFW_CURSOR_NORMAL);

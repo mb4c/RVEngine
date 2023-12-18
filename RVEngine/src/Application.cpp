@@ -77,6 +77,7 @@ void Application::Run()
 
 	glfwSetWindowUserPointer(m_Window, &m_Input);
 	glfwSetKeyCallback(m_Window, Input::KeyCallback);
+	glfwSetScrollCallback(m_Window, Input::ScrollCallback);
 
 	ImGui_ImplGlfw_InitForOpenGL(GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
