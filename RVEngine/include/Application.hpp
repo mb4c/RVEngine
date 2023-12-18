@@ -33,6 +33,7 @@ public:
 	static double GetTime();
 	float GetFPS() const;
 	void SetCursorState(int state);
+	int GetCursorState();
 	static void SetVSync(bool vsync);
 
 	Input m_Input{nullptr};

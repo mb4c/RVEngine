@@ -178,7 +178,11 @@ float Application::GetFPS() const
 void Application::SetCursorState(int state)
 {
 	glfwSetInputMode(m_Window, GLFW_CURSOR, state);
+}
 
+int Application::GetCursorState()
+{
+	return glfwGetInputMode(m_Window, GLFW_CURSOR);
 }
 
 void Application::SetVSync(bool vsync)

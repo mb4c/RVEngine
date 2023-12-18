@@ -26,7 +26,10 @@ private:
 	void ProcessInput();
 	void Dockspace();
 
-	bool ClickedInViewPort();
+	bool ClickedInViewport();
+	bool LeftClickedInViewport();
+	bool RightClickedInViewport();
+	bool CursorInViewport() const;
 
 	void NewScene();
 	std::filesystem::path SaveSceneAs();

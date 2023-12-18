@@ -116,7 +116,7 @@ void RVEditor::OnUpdate()
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
-	if (ClickedInViewPort() && !ImGuizmo::IsUsing())
+	if (LeftClickedInViewport() && !ImGuizmo::IsUsing())
 	{
 		if(m_HoveredEntity < 4294967295)
 		{
@@ -270,7 +270,12 @@ void RVEditor::DrawImGui()
 		ImGui::EndMenuBar();
 	}
 
-	m_ViewportFocused = ImGui::IsWindowFocused();
+	if (ImGui::IsWindowFocused() || GetCursorState() == GLFW_CURSOR_DISABLED)
+		m_ViewportFocused = true;
+	else
+		m_ViewportFocused = false;
+
+
 
 	m_ViewportSize = ImGui::GetContentRegionAvail();
 
@@ -344,11 +349,16 @@ void RVEditor::ProcessInput()
 	if(glfwGetKey(GetWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
+	if (ClickedInViewport())
+	{
+		m_ViewportFocused = true;
+	}
+
 	if (m_ViewportFocused)
 	{
 		float cameraSpeed = 2.0f * GetDeltaTime();
 
-		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) && m_SceneState == SceneState::Edit)
+		if (m_Input.GetMouseDown(1) && m_SceneState == SceneState::Edit)
 		{
 			SetCursorState(GLFW_CURSOR_DISABLED);
 			glm::vec2 mouseDelta = m_Input.GetMouseDelta();
@@ -484,14 +494,28 @@ void RVEditor::Dockspace()
 
 }
 
-bool RVEditor::ClickedInViewPort()
+bool RVEditor::ClickedInViewport()
 {
-	if (m_Input.GetMouseDown(0) && m_ViewportFocused && m_MouseVieportPos.x > 0 && m_MouseVieportPos.x < m_ViewportSize.x && m_MouseVieportPos.y > 0 && m_MouseVieportPos.y < m_ViewportSize.y)
+	return LeftClickedInViewport() || RightClickedInViewport();
+}
+
+bool RVEditor::CursorInViewport() const
+{
+	if (m_MouseVieportPos.x > 0 && m_MouseVieportPos.x < m_ViewportSize.x && m_MouseVieportPos.y > 0 && m_MouseVieportPos.y < m_ViewportSize.y)
 		return true;
 	else
 		return false;
 }
 
+bool RVEditor::LeftClickedInViewport()
+{
+	return m_Input.GetMouseDown(0) && CursorInViewport();
+}
+
+bool RVEditor::RightClickedInViewport()
+{
+	return m_Input.GetMouseDown(1) && CursorInViewport();
+}
 
 void RVEditor::NewScene()
 {
