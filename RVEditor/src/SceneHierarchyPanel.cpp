@@ -28,7 +28,7 @@ void SceneHierarchyPanel::OnRender()
 	});
 	if (ImGui::BeginPopupContextWindow())
 	{
-		if (ImGui::BeginMenu("Create 3D..."))
+		if (ImGui::BeginMenu("Create..."))
 		{
 			if (ImGui::MenuItem("Create Plane"))
 			{
@@ -37,12 +37,41 @@ void SceneHierarchyPanel::OnRender()
 				auto shader = rm.GetShader("pbr");
 				auto flatShader = rm.GetShader("flat");
 
-				model->m_Material = rm.GetMaterial("brickwall");
+				model->m_Material = rm.GetMaterial("default_pbr");
 				auto plane = m_Context->CreateEntity("Plane");
-				plane.AddComponent<MeshRendererComponent>(model,shader, flatShader);
-				plane.GetComponent<TransformComponent>().SetScale({0.1,0.1,0.1});
-				plane.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
+				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
+				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+				plane.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
 			}
+			if (ImGui::MenuItem("Create Cube"))
+			{
+				ResourceManager& rm = ResourceManager::instance();
+				auto model = rm.GetModel("cube");
+				auto shader = rm.GetShader("pbr");
+				auto flatShader = rm.GetShader("flat");
+
+				model->m_Material = rm.GetMaterial("default_pbr");
+				auto plane = m_Context->CreateEntity("Cube");
+				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
+				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+				plane.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
+			}
+
+			if (ImGui::MenuItem("Create Sphere"))
+			{
+				ResourceManager& rm = ResourceManager::instance();
+				auto model = rm.GetModel("sphere05");
+				auto shader = rm.GetShader("pbr");
+				auto flatShader = rm.GetShader("flat");
+
+				model->m_Material = rm.GetMaterial("default_pbr");
+				auto plane = m_Context->CreateEntity("Sphere");
+				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
+				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+				plane.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
+			}
+
+
 			ImGui::EndMenu();
 		}
 
