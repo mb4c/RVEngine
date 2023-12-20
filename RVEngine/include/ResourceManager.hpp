@@ -43,6 +43,12 @@ public:
 		defaultMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
 		m_Materials.emplace("default_pbr", defaultMat);
 
+
+		// icons
+		m_Textures.emplace("icon_folder", std::make_shared<Texture>(Texture("res/icons/folder.png")));
+		m_Textures.emplace("icon_file", std::make_shared<Texture>(Texture("res/icons/file.png")));
+
+
 	};
 
 	template<class T>

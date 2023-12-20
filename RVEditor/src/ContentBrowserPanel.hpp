@@ -11,4 +11,5 @@ public:
 private:
 	 std::filesystem::path m_AssetsDirectory = "res";
 	 std::filesystem::path m_CurrentDirectory;
+	 float m_ThumbnailSize = 96;
 };
