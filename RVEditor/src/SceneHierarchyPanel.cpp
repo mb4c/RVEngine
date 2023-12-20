@@ -71,17 +71,17 @@ void SceneHierarchyPanel::OnRender()
 				plane.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
 			}
 
+			if (ImGui::MenuItem("Create Point light"))
+			{
+				auto light = m_Context->CreateEntity("Point light");
+				light.AddComponent<LightComponent>();
+				m_SelectionContext = light;
+				m_Context->SetSelectedEntity(light);
+			}
 
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::MenuItem("New Light"))
-		{
-			auto light = m_Context->CreateEntity("Point light");
-			light.AddComponent<LightComponent>();
-			m_SelectionContext = light;
-			m_Context->SetSelectedEntity(light);
-		}
 		if (GetSelectedEntity())
 		{
 			if (ImGui::MenuItem("Remove entity"))
