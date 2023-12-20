@@ -242,13 +242,11 @@ void Scene::OnRuntimeStart()
 		{
 			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
 			auto pos = transform.GetPosition();
-			auto scale = boxCollider.Size;
+			auto size = boxCollider.Size * transform.Scale;
 			entt::entity entityId = entity;
 			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-//			auto rot = transform.GetRotationQuat();
-			auto id = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(scale.x, scale.y, scale.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
-//			auto id = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(scale.x, scale.y, scale.z), Quat(rot.x,rot.y,rot.z,rot.w), (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass);
-//			m_PhysicsManager->SetMass(id->GetID(), boxCollider.Mass);
+			m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+
 		}
 	}
 }
