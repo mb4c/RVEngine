@@ -30,6 +30,10 @@ void SceneHierarchyPanel::OnRender()
 	{
 		if (ImGui::BeginMenu("Create..."))
 		{
+			if (ImGui::MenuItem("Create empty entity"))
+			{
+				m_Context->CreateEntity("Empty entity");
+			}
 			if (ImGui::MenuItem("Create Plane"))
 			{
 				ResourceManager& rm = ResourceManager::instance();
