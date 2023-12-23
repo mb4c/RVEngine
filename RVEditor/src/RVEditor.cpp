@@ -116,7 +116,7 @@ void RVEditor::OnUpdate()
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
-	if (LeftClickedInViewport() && !ImGuizmo::IsUsing())
+	if (LeftClickedInViewport() && !ImGuizmo::IsUsing() && m_SceneState == SceneState::Edit)
 	{
 		if(m_HoveredEntity < 4294967295)
 		{
