@@ -84,7 +84,7 @@ void Scene::OnUpdateRuntime(float ts)
 			{
 				mainCamera = &camera.Camera;
 				auto scenecam = (SceneCamera*)mainCamera;
-				scenecam->SetViewportSize(1280,720); // TODO: scene should have viewport size
+				scenecam->SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 				cameraTransform = transform.GetTransform();
 				cameraPosition = transform.GetPosition();
 
@@ -295,6 +295,12 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	m_EntityMap[uuid] = entity;
 
 	return entity;
+}
+
+void Scene::SetViewportSize(uint32_t width, uint32_t height)
+{
+	m_ViewportWidth = width;
+	m_ViewportHeight = height;
 }
 
 template<typename... Component>

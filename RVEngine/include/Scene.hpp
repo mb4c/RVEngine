@@ -43,12 +43,15 @@ public:
 	void OnRuntimeStop();
 
 	void SetSelectedEntity(uint32_t entity);
+	void SetViewportSize(uint32_t width, uint32_t height);
+
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;
 	bool m_IsRunning = false;
 	std::unordered_map<UUID, entt::entity> m_EntityMap;
 	PhysicsManager* m_PhysicsManager = nullptr;
+	uint32_t m_ViewportWidth, m_ViewportHeight;
 
 
 	friend class Entity;

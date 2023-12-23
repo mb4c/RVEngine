@@ -574,6 +574,7 @@ void RVEditor::OnScenePlay()
 	m_SceneState = SceneState::Play;
 
 	m_ActiveScene = Scene::Copy(m_EditorScene);
+	m_ActiveScene->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 	m_ActiveScene->OnRuntimeStart();
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
