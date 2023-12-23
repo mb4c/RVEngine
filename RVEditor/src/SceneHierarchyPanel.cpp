@@ -113,7 +113,17 @@ void SceneHierarchyPanel::OnRender()
 //		m_SelectionContext = {};
 
 	if (m_SelectionContext)
+	{
 		DrawComponents(m_SelectionContext);
+		if(ImGui::Button("Add component"))
+		{
+			ImGui::OpenPopup("add_component_popup");
+		}
+		ImGui::AddComponentPopup(m_SelectionContext);
+	}
+
+
+
 	ImGui::End();
 }
 

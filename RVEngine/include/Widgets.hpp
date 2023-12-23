@@ -30,6 +30,29 @@ namespace ImGui
 		return {};
 	}
 
+	void AddComponentPopup(Entity& entity)
+	{
+		ResourceManager& rm = ResourceManager::instance();
+
+		if (ImGui::BeginPopup("add_component_popup"))
+		{
+			ImGui::SeparatorText("Add component");
+
+			if (ImGui::Selectable("Sprite renderer"))
+				entity.AddComponent<SpriteRendererComponent>();
+			if (ImGui::Selectable("Camera"))
+				entity.AddComponent<CameraComponent>();
+			if (ImGui::Selectable("Mesh renderer"))
+				entity.AddComponent<MeshRendererComponent>(rm.GetModel("cube"), rm.GetShader("pbr"), rm.GetShader("flat"));
+			if (ImGui::Selectable("Light"))
+				entity.AddComponent<LightComponent>();
+			if (ImGui::Selectable("Box collider"))
+				entity.AddComponent<BoxColliderComponent>();
+
+			ImGui::EndPopup();
+		}
+	}
+
 	void TextureEditColor(const char* label, std::shared_ptr<Texture>& src, float color[4])
 	{
 		if (ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_None))
