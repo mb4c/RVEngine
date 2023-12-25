@@ -153,7 +153,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		auto& id = entity.GetComponent<IDComponent>().ID;
 
-		ImGui::Text("ID: %lu", (uint64_t)id);
+		ImGui::Text("ID: %lu", (uint64_t) id);
 	}
 
 	if (entity.HasComponent<TagComponent>())
@@ -165,95 +165,83 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 	if (entity.HasComponent<TransformComponent>())
 	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+		if (ImGui::TreeNodeEx((void*) typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen,
+							  "Transform"))
 		{
 			auto& transform = entity.GetComponent<TransformComponent>();
-			ImGui::DragFloat3("Position", glm::value_ptr(transform.Translation),0.01f);
+			ImGui::DragFloat3("Position", glm::value_ptr(transform.Translation), 0.01f);
 			auto rot = glm::degrees(transform.Rotation);
-			ImGui::DragFloat3("Rotation", glm::value_ptr(rot),0.1f);
+			ImGui::DragFloat3("Rotation", glm::value_ptr(rot), 0.1f);
 			transform.Rotation = glm::radians(rot);
-			ImGui::DragFloat3("Scale", glm::value_ptr(transform.Scale),0.1f);
-			ImGui::TreePop();
-		}
-	}
-	if (entity.HasComponent<LightComponent>())
-	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Light"))
-		{
-			auto& lc = entity.GetComponent<LightComponent>();
-			ImGui::ColorEdit3("Color", glm::value_ptr(lc.color));
-			ImGui::DragFloat("Intensity", &lc.intensity, 0.01f);
-
-			ImGui::TreePop();
-		}
-	}
-	if (entity.HasComponent<MeshRendererComponent>())
-	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "MeshRenderer"))
-		{
-			auto& mrc = entity.GetComponent<MeshRendererComponent>();
+			ImGui::DragFloat3("Scale", glm::value_ptr(transform.Scale), 0.1f);
 			ImGui::TreePop();
 		}
 	}
 
-	if (entity.HasComponent<SpriteRendererComponent>())
+	if (ImGui::ComponentTreeNode<LightComponent>(entity))
 	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "SpriteRenderer"))
-		{
-			auto& src = entity.GetComponent<SpriteRendererComponent>();
-			ImGui::TextureEditColor("Albedo", src.Tex, glm::value_ptr(src.Color));
+		auto& lc = entity.GetComponent<LightComponent>();
+		ImGui::ColorEdit3("Color", glm::value_ptr(lc.color));
+		ImGui::DragFloat("Intensity", &lc.intensity, 0.01f);
 
-			ImGui::Checkbox("Billboard", &src.Billboard);
-
-			ImGui::TreePop();
-		}
+		ImGui::TreePop();
 	}
 
-	if (entity.HasComponent<CameraComponent>())
+	if (ImGui::ComponentTreeNode<MeshRendererComponent>(entity))
 	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
-		{
-			auto& cc = entity.GetComponent<CameraComponent>();
-			auto& tc = entity.GetComponent<TransformComponent>();
-			ImGui::Checkbox("Primary", &cc.Primary);
-			ImGui::Checkbox("Fixed aspect ratio", &cc.FixedAspectRatio);
-
-			auto nc = cc.Camera.GetPerspectiveNearClip();
-			if (ImGui::InputFloat("Near clip", &nc))
-				cc.Camera.SetPerspectiveNearClip(nc);
-
-			auto fc = cc.Camera.GetPerspectiveFarClip();
-			if (ImGui::InputFloat("Far clip", &fc))
-				cc.Camera.SetPerspectiveFarClip(fc);
-
-			auto fov = cc.Camera.GetPerspectiveVerticalFOV();
-			fov *= 100;
-			if (ImGui::DragFloat("Vertical FOV", &fov, 0.05f, 0.01, 360))
-			{
-				fov /= 100;
-				cc.Camera.SetPerspectiveVerticalFOV(fov);
-			}
-
-			if(ImGui::Button("TODO: Copy editor camera transform"))
-			{
-				//TODO: Copy editor camera transform
-			}
-
-			ImGui::TreePop();
-		}
+		auto& mrc = entity.GetComponent<MeshRendererComponent>();
+		ImGui::TreePop();
 	}
 
-	if (entity.HasComponent<BoxColliderComponent>())
+	if (ImGui::ComponentTreeNode<SpriteRendererComponent>(entity))
 	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "BoxColliderComponent"))
-		{
-			auto& bcc = entity.GetComponent<BoxColliderComponent>();
-			ImGui::DragFloat3("Scale##2", glm::value_ptr(bcc.Size), 0.01f);
-			ImGui::Checkbox("Dynamic", &bcc.Dynamic);
-			ImGui::DragFloat("Mass", &bcc.Mass);
+		auto& src = entity.GetComponent<SpriteRendererComponent>();
+		ImGui::TextureEditColor("Albedo", src.Tex, glm::value_ptr(src.Color));
 
-			ImGui::TreePop();
+		ImGui::Checkbox("Billboard", &src.Billboard);
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::ComponentTreeNode<CameraComponent>(entity))
+	{
+		auto& cc = entity.GetComponent<CameraComponent>();
+		auto& tc = entity.GetComponent<TransformComponent>();
+		ImGui::Checkbox("Primary", &cc.Primary);
+		ImGui::Checkbox("Fixed aspect ratio", &cc.FixedAspectRatio);
+
+		auto nc = cc.Camera.GetPerspectiveNearClip();
+		if (ImGui::InputFloat("Near clip", &nc))
+			cc.Camera.SetPerspectiveNearClip(nc);
+
+		auto fc = cc.Camera.GetPerspectiveFarClip();
+		if (ImGui::InputFloat("Far clip", &fc))
+			cc.Camera.SetPerspectiveFarClip(fc);
+
+		auto fov = cc.Camera.GetPerspectiveVerticalFOV();
+		fov *= 100;
+		if (ImGui::DragFloat("Vertical FOV", &fov, 0.05f, 0.01, 360))
+		{
+			fov /= 100;
+			cc.Camera.SetPerspectiveVerticalFOV(fov);
 		}
+
+		if(ImGui::Button("TODO: Copy editor camera transform"))
+		{
+			//TODO: Copy editor camera transform
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (ImGui::ComponentTreeNode<BoxColliderComponent>(entity))
+	{
+		auto& bcc = entity.GetComponent<BoxColliderComponent>();
+		ImGui::DragFloat3("Scale##2", glm::value_ptr(bcc.Size), 0.01f);
+		ImGui::Checkbox("Dynamic", &bcc.Dynamic);
+		ImGui::DragFloat("Mass", &bcc.Mass);
+
+		ImGui::TreePop();
 	}
 
 }

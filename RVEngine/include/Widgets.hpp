@@ -78,5 +78,27 @@ namespace ImGui
 		}
 	}
 
+	template <typename Component>
+	bool ComponentTreeNode(Entity entity)
+	{
+		if (entity.HasComponent<Component>())
+		{
+			bool treeOpen = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(),
+											  ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap,
+											  GetComponentName<Component>().c_str());
+			ImGui::SameLine();
+			if (ImGui::Button("x"))
+			{
+				entity.RemoveComponent<Component>();
+				ImGui::TreePop();
+			}
+			if (treeOpen && entity.HasComponent<Component>())
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
 
 }
