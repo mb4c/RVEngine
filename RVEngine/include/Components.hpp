@@ -137,6 +137,19 @@ struct BoxColliderComponent
 	BoxColliderComponent(const BoxColliderComponent&) = default;
 };
 
+//TODO: serialization
+struct SphereColliderComponent
+{
+	float Radius = 0.5;
+	bool Dynamic = true;
+	float Mass = 10;
+	float Restitution = 0.5f;
+	float Friction = 0.2f;
+
+	SphereColliderComponent() = default;
+	SphereColliderComponent(const SphereColliderComponent&) = default;
+};
+
 template<typename... Component>
 struct ComponentGroup
 {
@@ -144,7 +157,7 @@ struct ComponentGroup
 
 using AllComponents =
 		ComponentGroup<TransformComponent, SpriteRendererComponent,
-		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent>;
+		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent, SphereColliderComponent>;
 
 template<typename Component>
 std::string GetComponentName()

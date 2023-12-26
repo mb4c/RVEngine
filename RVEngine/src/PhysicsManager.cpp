@@ -146,7 +146,7 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_
 
 Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, bool dynamic, float mass, float restitution, float friction)
 {
-	BodyCreationSettings bodySettings(new SphereShape(radius), position, Quat::sIdentity(), dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
+	BodyCreationSettings bodySettings(new SphereShape(radius), position, rotation, dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
 	bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
 	bodySettings.mMassPropertiesOverride.mMass = mass;
 	bodySettings.mRestitution = restitution;
@@ -171,10 +171,10 @@ void PhysicsManager::OnUpdate(float dt)
 			// Next step
 			++m_SimulationStep;
 			// Output current position and velocity of the sphere
-			RVec3 position = m_BodyInterface->GetCenterOfMassPosition(body);
-			Vec3 velocity = m_BodyInterface->GetLinearVelocity(body);
-			std::cout << GetMass(body) << std::endl;
-			cout << "Step " << m_SimulationStep << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
+//			RVec3 position = m_BodyInterface->GetCenterOfMassPosition(body);
+//			Vec3 velocity = m_BodyInterface->GetLinearVelocity(body);
+//			std::cout << GetMass(body) << std::endl;
+//			cout << "Step " << m_SimulationStep << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
 		}
 	}
 	// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).

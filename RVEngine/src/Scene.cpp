@@ -69,6 +69,41 @@ void Scene::OnUpdateRuntime(float ts)
 		}
 	}
 
+	{
+		auto view = m_Registry.view<TransformComponent, SphereColliderComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, sphereCollider] = view.get<TransformComponent, SphereColliderComponent>(entity);
+
+			for (auto body : m_PhysicsManager->GetBodies())
+			{
+				const JPH::BodyLockInterface* lock_interface;
+				lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
+
+// Scoped lock
+				{
+					JPH::BodyLockRead lock(*lock_interface, body);
+					if (lock.Succeeded()) // body_id may no longer be valid
+					{
+						const JPH::Body &bodyobj = lock.GetBody();
+						auto entityId = static_cast<entt::entity>(bodyobj.GetUserData());
+						if (entityId == entity)
+						{
+							auto pos = bodyobj.GetPosition();
+							transform.SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
+							auto rot = bodyobj.GetRotation();
+							transform.SetRotationRad(glm::eulerAngles(glm::quat(rot.GetW(),rot.GetX(),rot.GetY(), rot.GetZ())));
+
+						}
+
+					}
+				}
+
+			}
+
+		}
+	}
+
 
 
 	Camera* mainCamera = nullptr;
@@ -249,6 +284,25 @@ void Scene::OnRuntimeStart()
 
 		}
 	}
+
+	{
+		auto view = m_Registry.view<TransformComponent, SphereColliderComponent>();
+		for (auto entity : view)
+		{
+			auto [transform, sphereCollider] = view.get<TransformComponent, SphereColliderComponent>(entity);
+			auto pos = transform.GetPosition();
+
+			float radius = sphereCollider.Radius * glm::compMax(transform.Scale);
+			std::cout << "radius " << radius << std::endl;
+			entt::entity entityId = entity;
+
+			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
+			m_PhysicsManager->CreateSphere(Vec3(pos.x, pos.y, pos.z), radius, rot, (uint64_t)entityId, sphereCollider.Dynamic, sphereCollider.Mass, sphereCollider.Restitution, sphereCollider.Friction);
+
+		}
+	}
+
+
 }
 
 void Scene::OnRuntimeStop()

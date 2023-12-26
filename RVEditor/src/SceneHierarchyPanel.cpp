@@ -244,6 +244,16 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		ImGui::TreePop();
 	}
 
+	if (ImGui::ComponentTreeNode<SphereColliderComponent>(entity))
+	{
+		auto& scc = entity.GetComponent<SphereColliderComponent>();
+		ImGui::DragFloat("Radius##2", &scc.Radius, 0.01f);
+		ImGui::Checkbox("Dynamic", &scc.Dynamic);
+		ImGui::DragFloat("Mass", &scc.Mass);
+
+		ImGui::TreePop();
+	}
+
 }
 
 void SceneHierarchyPanel::SetSelectedEntity(Entity entity)

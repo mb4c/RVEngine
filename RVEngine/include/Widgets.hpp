@@ -48,6 +48,8 @@ namespace ImGui
 				entity.AddComponent<LightComponent>();
 			if (ImGui::Selectable("Box collider"))
 				entity.AddComponent<BoxColliderComponent>();
+			if (ImGui::Selectable("Sphere collider"))
+				entity.AddComponent<SphereColliderComponent>();
 
 			ImGui::EndPopup();
 		}
