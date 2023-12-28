@@ -85,7 +85,10 @@ namespace ImGui
 	{
 		if (entity.HasComponent<Component>())
 		{
-			bool treeOpen = ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(),
+
+			std::size_t nodeId = (std::size_t)entity.GetHandle() ^ typeid(Component).hash_code(); // xor to get unique node id
+
+			bool treeOpen = ImGui::TreeNodeEx((void*)nodeId,
 											  ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap,
 											  GetComponentName<Component>().c_str());
 			ImGui::SameLine();
