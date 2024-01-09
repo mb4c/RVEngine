@@ -228,6 +228,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 		return false;
 
 	std::string sceneName = data["Scene"].as<std::string>();
+	ResourceManager& rm = ResourceManager::instance();
 
 	auto entities = data["Entities"];
 	if (entities)
@@ -280,10 +281,21 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 			{
 				auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
 				mrc.model = std::make_shared<Model>(meshRendererComponent["ModelPath"].as<std::string>());
-				std::shared_ptr<Material> mat = std::make_shared<Material>() ;
-				mat->albedo = std::make_shared<Texture>(Texture(meshRendererComponent["Albedo"].as<std::string>()));
-				mat->normal = std::make_shared<Texture>(Texture(meshRendererComponent["Normal"].as<std::string>()));
-				mat->occlusionRoughnessMetallic = std::make_shared<Texture>(Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
+				std::shared_ptr<Material> mat = std::make_shared<Material>();
+
+				if (!meshRendererComponent["Albedo"].as<std::string>().empty())
+					mat->albedo = std::make_shared<Texture>(Texture(meshRendererComponent["Albedo"].as<std::string>()));
+				else
+					mat->albedo = rm.GetTexture("default_albedo");
+				if (!meshRendererComponent["Normal"].as<std::string>().empty())
+					mat->normal = std::make_shared<Texture>(Texture(meshRendererComponent["Normal"].as<std::string>()));
+				else
+					mat->normal = rm.GetTexture("default_normal");
+				if (!meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>().empty())
+					mat->occlusionRoughnessMetallic = std::make_shared<Texture>(Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
+				else
+					mat->normal = rm.GetTexture("default_albedo");
+
 				mrc.model->m_Material = mat;
 				auto flatShader = std::make_shared<Shader>(meshRendererComponent["VertexShaderPath"].as<std::string>().c_str(), meshRendererComponent["FragmentShaderPath"].as<std::string>().c_str());
 				auto mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
