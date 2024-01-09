@@ -191,5 +191,10 @@ void Application::SetVSync(bool vsync)
 	glfwSwapInterval(vsync);
 }
 
+void Application::SetTitle(const std::string& title)
+{
+	glfwSetWindowTitle(m_Window, title.c_str());
+}
+
 
 

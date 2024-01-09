@@ -6,7 +6,7 @@
 namespace ImGui
 {
 
-	std::string TexturePickerPopup()
+	inline std::string TexturePickerPopup()
 	{
 		if (ImGui::BeginPopup("texture_picker_popup"))
 		{
@@ -30,7 +30,7 @@ namespace ImGui
 		return {};
 	}
 
-	void AddComponentPopup(Entity& entity)
+	inline void AddComponentPopup(Entity& entity)
 	{
 		ResourceManager& rm = ResourceManager::instance();
 
@@ -55,7 +55,7 @@ namespace ImGui
 		}
 	}
 
-	void TextureEditColor(const char* label, std::shared_ptr<Texture>& src, float color[4])
+	inline void TextureEditColor(const char* label, std::shared_ptr<Texture>& src, float color[4])
 	{
 		if (ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_None))
 		{
@@ -81,7 +81,7 @@ namespace ImGui
 	}
 
 	template <typename Component>
-	bool ComponentTreeNode(Entity entity)
+	inline bool ComponentTreeNode(Entity entity)
 	{
 		if (entity.HasComponent<Component>())
 		{

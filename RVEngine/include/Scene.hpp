@@ -45,6 +45,9 @@ public:
 	void SetSelectedEntity(uint32_t entity);
 	void SetViewportSize(uint32_t width, uint32_t height);
 
+	std::string GetName() {  return m_SceneName;};
+	void SetName(const std::string& name) {m_SceneName = name;};
+
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;
@@ -52,7 +55,7 @@ private:
 	std::unordered_map<UUID, entt::entity> m_EntityMap;
 	PhysicsManager* m_PhysicsManager = nullptr;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
-
+	std::string m_SceneName = "Untitled";
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;

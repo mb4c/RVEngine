@@ -35,6 +35,7 @@ public:
 	void SetCursorState(int state);
 	int GetCursorState();
 	static void SetVSync(bool vsync);
+	void SetTitle(const std::string& title);
 
 	Input m_Input{nullptr};
 

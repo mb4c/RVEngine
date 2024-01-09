@@ -12,6 +12,9 @@
 #include <ImGuizmo.h>
 #include <Math.hpp>
 #include "ContentBrowserPanel.hpp"
+#include "NewProjectModal.hpp"
+#include "ProjectSettings.hpp"
+#include <Widgets.hpp>
 
 class RVEditor : public Application
 {
@@ -35,9 +38,14 @@ private:
 	std::filesystem::path SaveSceneAs();
 	std::filesystem::path SaveScene();
 	void OpenScene(const std::filesystem::path& path);
+	void OpenProject(const std::filesystem::path& path);
 
 	void OnScenePlay();
 	void OnSceneStop();
+
+	bool IsAnyPopupOpen();
+
+	void UpdateWindowTitle();
 
 	bool m_ViewportFocused = false;
 
@@ -85,4 +93,5 @@ private:
 	std::filesystem::path m_SavedScenePath;
 
 	NewProjectModal m_NewProjectModal;
+	ProjectSettings m_ProjectSettings;
 };

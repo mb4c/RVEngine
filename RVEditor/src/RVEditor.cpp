@@ -12,45 +12,45 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 
 void RVEditor::OnInit()
 {
-	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
+//	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
-//	OpenScene("res/scenes/dupa.rvscene");
-	m_EditorScene = std::make_shared<Scene>();
-	m_ActiveScene = m_EditorScene;
+	OpenScene("res/scenes/dupa.rvscene");
+//	m_EditorScene = std::make_shared<Scene>();
+//	m_ActiveScene = m_EditorScene;
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 
-	ResourceManager& rm = ResourceManager::instance();
-
-	auto cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
-	rm.AddModel("cerberus", cerberus);
-
-
-	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
-	rm.AddMaterial("cerberus", cerbMat);
-	rm.AddTexture("cerberus_albedo",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png")));
-	rm.AddTexture("cerberus_normal",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png")));
-	rm.AddTexture("cerberus_orm",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png")));
-	cerbMat->albedo = rm.GetTexture("cerberus_albedo");
-	cerbMat->normal = rm.GetTexture("cerberus_normal");
-	cerbMat->occlusionRoughnessMetallic = rm.GetTexture("cerberus_orm");
-
-	cerberus->m_Material = cerbMat;
-
-	auto swiatelko = m_ActiveScene->CreateEntity("light");
-	swiatelko.AddComponent<LightComponent>();
-	swiatelko.GetComponent<TransformComponent>().SetPosition({0, 0, 3});
-
-
-	auto camera = m_ActiveScene->CreateEntity("Camera");
-	camera.AddComponent<CameraComponent>();
-	camera.GetComponent<TransformComponent>().SetPosition({-4.5,1.75,2});
-	camera.GetComponent<TransformComponent>().SetRotation({-37,-67,16});
+//	ResourceManager& rm = ResourceManager::instance();
+//
+//	auto cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
+//	rm.AddModel("cerberus", cerberus);
+//
+//
+//	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
+//	rm.AddMaterial("cerberus", cerbMat);
+//	rm.AddTexture("cerberus_albedo",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png")));
+//	rm.AddTexture("cerberus_normal",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png")));
+//	rm.AddTexture("cerberus_orm",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png")));
+//	cerbMat->albedo = rm.GetTexture("cerberus_albedo");
+//	cerbMat->normal = rm.GetTexture("cerberus_normal");
+//	cerbMat->occlusionRoughnessMetallic = rm.GetTexture("cerberus_orm");
+//
+//	cerberus->m_Material = cerbMat;
+//
+//	auto swiatelko = m_ActiveScene->CreateEntity("light");
+//	swiatelko.AddComponent<LightComponent>();
+//	swiatelko.GetComponent<TransformComponent>().SetPosition({0, 0, 3});
+//
+//
+//	auto camera = m_ActiveScene->CreateEntity("Camera");
+//	camera.AddComponent<CameraComponent>();
+//	camera.GetComponent<TransformComponent>().SetPosition({-8, 4, 4});
+//	camera.GetComponent<TransformComponent>().SetRotation({-30, -65, 0});
 //	ResourceManager& rm = ResourceManager::instance();
 
 //	auto spheremodel = rm.GetModel("sphere05");
@@ -72,35 +72,35 @@ void RVEditor::OnInit()
 //	plane.GetComponent<BoxColliderComponent>().Dynamic = false;
 //	plane.GetComponent<BoxColliderComponent>().Scale = {1,0.1,1};
 
-	auto cubeModel = rm.GetModel("cube");
-
-	cubeModel->m_Material = rm.GetMaterial("default_pbr");
-	auto cube = m_ActiveScene->CreateEntity("Cube ten na dole");
-	cube.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-	cube.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-	cube.GetComponent<TransformComponent>().SetPosition({0, -3, 0});
-	cube.GetComponent<TransformComponent>().SetRotation({0, 0, 0});
-	cube.AddComponent<BoxColliderComponent>();
-	cube.GetComponent<BoxColliderComponent>().Dynamic = false;
-	cube.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
-
-	auto cube2 = m_ActiveScene->CreateEntity("Cube");
-	cube2.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-	cube2.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-	cube2.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
-	cube2.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
-	cube2.AddComponent<BoxColliderComponent>();
-	cube2.GetComponent<BoxColliderComponent>().Dynamic = true;
-	cube2.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
-
-	auto cube3 = m_ActiveScene->CreateEntity("Cube");
-	cube3.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-	cube3.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-	cube3.GetComponent<TransformComponent>().SetPosition({0, 3, 0});
-	cube3.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
-	cube3.AddComponent<BoxColliderComponent>();
-	cube3.GetComponent<BoxColliderComponent>().Dynamic = true;
-	cube3.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+//	auto cubeModel = rm.GetModel("cube");
+//
+//	cubeModel->m_Material = rm.GetMaterial("default_pbr");
+//	auto cube = m_ActiveScene->CreateEntity("Cube ten na dole");
+//	cube.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+//	cube.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+//	cube.GetComponent<TransformComponent>().SetPosition({0, -3, 0});
+//	cube.GetComponent<TransformComponent>().SetRotation({0, 0, 0});
+//	cube.AddComponent<BoxColliderComponent>();
+//	cube.GetComponent<BoxColliderComponent>().Dynamic = false;
+//	cube.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+//
+//	auto cube2 = m_ActiveScene->CreateEntity("Cube");
+//	cube2.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+//	cube2.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+//	cube2.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
+//	cube2.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
+//	cube2.AddComponent<BoxColliderComponent>();
+//	cube2.GetComponent<BoxColliderComponent>().Dynamic = true;
+//	cube2.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+//
+//	auto cube3 = m_ActiveScene->CreateEntity("Cube");
+//	cube3.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
+//	cube3.GetComponent<TransformComponent>().SetScale({1, 1, 1});
+//	cube3.GetComponent<TransformComponent>().SetPosition({0, 3, 0});
+//	cube3.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
+//	cube3.AddComponent<BoxColliderComponent>();
+//	cube3.GetComponent<BoxColliderComponent>().Dynamic = true;
+//	cube3.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
 
 //	auto sprite = m_ActiveScene->CreateEntity("Sprite");
 //	sprite.AddComponent<SpriteRendererComponent>(glm::vec4{1,1,1,1});
@@ -116,7 +116,7 @@ void RVEditor::OnUpdate()
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
-	if (LeftClickedInViewport() && !ImGuizmo::IsUsing() && m_SceneState == SceneState::Edit)
+	if (LeftClickedInViewport() && !ImGuizmo::IsUsing() && m_SceneState == SceneState::Edit && !IsAnyPopupOpen())
 	{
 		if(m_HoveredEntity < 4294967295)
 		{
@@ -217,6 +217,21 @@ void RVEditor::DrawImGui()
 		drawCalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
 		ImGui::Text("%s", drawCalls.c_str());
 		ImGui::TreePop();
+	}
+
+	if (!m_ProjectSettings.ProjectName.empty())
+	{
+		if (ImGui::TreeNodeEx("Project", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::InputText("Project name", &m_ProjectSettings.ProjectName);
+			if (ImGui::Button("Save project"))
+			{
+				m_ProjectSettings.Serialize(m_ProjectSettings.ProjectPath);
+				UpdateWindowTitle();
+			}
+
+			ImGui::TreePop();
+		}
 	}
 
 	ImGui::End();
@@ -351,7 +366,7 @@ void RVEditor::ProcessInput()
 	if(glfwGetKey(GetWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	if (ClickedInViewport())
+	if (ClickedInViewport() && !IsAnyPopupOpen())
 	{
 		m_ViewportFocused = true;
 	}
@@ -461,15 +476,30 @@ void RVEditor::Dockspace()
 
 	ImGui::Begin("DockSpace Demo", nullptr, flags);
 	ImGui::PopStyleVar(3);
-	if ( ImGui::BeginMenuBar() )
+	if (ImGui::BeginMenuBar())
 	{
-		if ( ImGui::BeginMenu( "File" ) )
+		if (ImGui::BeginMenu("File"))
 		{
-			if ( ImGui::MenuItem( "New scene" ) )
+			if (ImGui::MenuItem("New project..."))
+			{
+				m_NewProjectModal.Open();
+				std::cout << "New project menu item selected\n";
+			}
+			if (ImGui::MenuItem("Open project..."))
+			{
+				auto selection = pfd::open_file("Select a file", ".",
+												{"Project files", "*.rvproj"},
+												pfd::opt::none).result();
+
+				std::cout << "Selected file: " << selection.at(0) << "\n";
+				OpenProject(selection.at(0));
+			}
+
+			if (ImGui::MenuItem("New scene"))
 			{
 				NewScene();
 			}
-			if ( ImGui::MenuItem( "Open scene..." ) )
+			if (ImGui::MenuItem("Open scene..."))
 			{
 				auto selection = pfd::open_file("Select a file", ".",
 												{"Scene files", "*.rvscene"},
@@ -477,7 +507,6 @@ void RVEditor::Dockspace()
 
 				std::cout << "Selected file: " << selection.at(0) << "\n";
 				OpenScene(selection.at(0));
-
 			}
 			if (ImGui::MenuItem("Save", nullptr, false, !m_SavedScenePath.empty()))
 			{
@@ -487,12 +516,15 @@ void RVEditor::Dockspace()
 			{
 				m_SavedScenePath = SaveSceneAs();
 			}
-			if ( ImGui::MenuItem( "Exit" ) )
+			if (ImGui::MenuItem("Exit"))
 			{
+				glfwSetWindowShouldClose(GetWindow(), true);
 			}
 			ImGui::EndMenu();
 		}
 	}
+	m_NewProjectModal.Render();
+
 	ImGui::EndMenuBar();
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGui::DockSpace(dockspace_id);
@@ -576,6 +608,12 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 	}
 }
 
+void RVEditor::OpenProject(const std::filesystem::path& path)
+{
+	m_ProjectSettings.Deserialize(path);
+	UpdateWindowTitle();
+}
+
 void RVEditor::OnScenePlay()
 {
 	if (m_SceneState == SceneState::Simulate)
@@ -601,4 +639,14 @@ void RVEditor::OnSceneStop()
 	m_ActiveScene = m_EditorScene;
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+}
+
+bool RVEditor::IsAnyPopupOpen()
+{
+	return m_NewProjectModal.IsOpen();
+}
+
+void RVEditor::UpdateWindowTitle()
+{
+	SetTitle("RVEditor - " + m_ProjectSettings.ProjectName + " - " + m_ActiveScene->GetName());
 }
