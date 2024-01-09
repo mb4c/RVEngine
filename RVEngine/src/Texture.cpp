@@ -46,7 +46,7 @@ uint32_t Texture::FromFile(const std::string& path, bool normalMap)
 	}
 	else
 	{
-		std::cout << "Texture failed to load at path: " << path << std::endl;
+		std::cout << "Texture failed to load: " << (!path.empty() ? path : "No path!") << std::endl;
 		stbi_image_free(data);
 	}
 
