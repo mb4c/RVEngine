@@ -33,6 +33,7 @@ private:
 
 	void NewScene();
 	std::filesystem::path SaveSceneAs();
+	std::filesystem::path SaveScene();
 	void OpenScene(const std::filesystem::path& path);
 
 	void OnScenePlay();
@@ -81,4 +82,7 @@ private:
 		Edit = 0, Play = 1, Simulate = 2
 	};
 	SceneState m_SceneState = SceneState::Edit;
+	std::filesystem::path m_SavedScenePath;
+
+	NewProjectModal m_NewProjectModal;
 };

@@ -479,12 +479,13 @@ void RVEditor::Dockspace()
 				OpenScene(selection.at(0));
 
 			}
-			if ( ImGui::MenuItem( "Save" ) )
+			if (ImGui::MenuItem("Save", nullptr, false, !m_SavedScenePath.empty()))
 			{
+				m_SavedScenePath = SaveScene();
 			}
-			if ( ImGui::MenuItem( "Save as..." ) )
+			if (ImGui::MenuItem("Save as..."))
 			{
-				SaveSceneAs();
+				m_SavedScenePath = SaveSceneAs();
 			}
 			if ( ImGui::MenuItem( "Exit" ) )
 			{
@@ -548,6 +549,14 @@ std::filesystem::path RVEditor::SaveSceneAs()
 	return selection;
 }
 
+std::filesystem::path RVEditor::SaveScene()
+{
+	SceneSerializer serializer(m_ActiveScene);
+	serializer.Serialize(m_SavedScenePath);
+	return m_SavedScenePath;
+}
+
+
 void RVEditor::OpenScene(const std::filesystem::path& path)
 {
 	std::shared_ptr newScene = std::make_shared<Scene>();
@@ -558,6 +567,7 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 //		m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_EditorScene.get()));
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_ActiveScene = m_EditorScene;
+		m_SavedScenePath = path;
 
 
 	} else
