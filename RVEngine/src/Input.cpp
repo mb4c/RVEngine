@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Input.hpp>
+#include <AppData.hpp>
 
 Input::Input(GLFWwindow* window)
 {
@@ -76,18 +77,14 @@ void Input::UpdateMouseDelta()
 
 void Input::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	auto* input = (Input*)glfwGetWindowUserPointer(window);
+	auto* input = (AppData*)glfwGetWindowUserPointer(window);
 
-//	KeyAction ka;
-//	KeyAction lastAction = input->m_Keys[key];
-
-//	if (action == GLFW_PRESS || action == GLFW_REPEAT)
 	if (action)
 	{
-		input->m_Keys[key] = true;
+		input->input->m_Keys[key] = true;
 	} else
 	{
-		input->m_Keys[key] = false;
+		input->input->m_Keys[key] = false;
 	}
 }
 
@@ -96,9 +93,9 @@ void Input::ScrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 	// NOTE: smooth scrolling is not implemented for X11
 	// https://github.com/glfw/glfw/issues/1376
 
-	auto* input = (Input*)glfwGetWindowUserPointer(window);
+	auto* input = (AppData*)glfwGetWindowUserPointer(window);
 
-	input->m_ScrollDelta = yoffset / 10;
+	input->input->m_ScrollDelta = yoffset / 10;
 }
 
 void Input::UpdateKeys()

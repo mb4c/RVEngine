@@ -38,18 +38,19 @@ void Application::Run()
 		return;
 	}
 
-	glfwSetWindowUserPointer(m_Window, reinterpret_cast<void *>(this));
+	m_AppData.app = this;
+	glfwSetWindowUserPointer(m_Window, &m_AppData);
 
 	glfwSetWindowSizeCallback(m_Window, [](GLFWwindow *window, int width, int height)
 	{
-		auto* data = static_cast<Application*>(glfwGetWindowUserPointer(window));
+		auto* data = static_cast<AppData*>(glfwGetWindowUserPointer(window));
 
-		data->m_Width = width;
-		data->m_Height = height;
+		data->app->m_Width = width;
+		data->app->m_Height = height;
 
 		glViewport(0, 0, width, height);
 
-		fmt::print("Resized: {} x {}\n", data->m_Width, data->m_Height);
+		fmt::print("Resized: {} x {}\n", data->app->m_Width, data->app->m_Height);
 	});
 
 	glfwMakeContextCurrent(m_Window);
@@ -74,8 +75,8 @@ void Application::Run()
 
 
 	m_Input = Input(m_Window);
+	m_AppData.input = &m_Input;
 
-	glfwSetWindowUserPointer(m_Window, &m_Input);
 	glfwSetKeyCallback(m_Window, Input::KeyCallback);
 	glfwSetScrollCallback(m_Window, Input::ScrollCallback);
 

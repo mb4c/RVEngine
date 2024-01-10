@@ -13,6 +13,7 @@
 #include <string>
 #include <fmt/core.h>
 #include <Input.hpp>
+#include <AppData.hpp>
 
 class Application
 {
@@ -46,6 +47,7 @@ private:
 	int m_Height;
 	bool m_Vsync;
 	GLFWwindow* m_Window{};
+	AppData m_AppData;
 	void UpdateDeltaTime();
 
 
