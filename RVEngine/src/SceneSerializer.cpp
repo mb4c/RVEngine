@@ -193,7 +193,7 @@ void SceneSerializer::Serialize(const std::filesystem::path& path)
 {
 	YAML::Emitter out;
 	out << YAML::BeginMap;
-	out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+	out << YAML::Key << "Scene" << YAML::Value << path.stem();
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 	m_Scene->m_Registry.each([&](auto entityID)
 							 {
@@ -227,7 +227,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 	if (!data["Scene"])
 		return false;
 
-	std::string sceneName = data["Scene"].as<std::string>();
+	m_Scene->m_SceneName = data["Scene"].as<std::string>();
 	ResourceManager& rm = ResourceManager::instance();
 
 	auto entities = data["Entities"];

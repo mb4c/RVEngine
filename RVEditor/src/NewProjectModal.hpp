@@ -1,7 +1,7 @@
 #pragma once
-#include <Modal.hpp>
+#include "Modal.hpp"
 #include <string>
-#include "../../RVEditor/src/portable-file-dialogs.h"
+#include "portable-file-dialogs.h"
 #include <yaml-cpp/yaml.h>
 
 class NewProjectModal : Modal
