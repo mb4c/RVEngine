@@ -86,3 +86,14 @@ void ContentBrowserPanel::OnRender()
 
 	ImGui::End();
 }
+
+std::filesystem::path ContentBrowserPanel::GetCurrentDirectory()
+{
+	return m_CurrentDirectory;
+}
+
+void ContentBrowserPanel::SetAssetDirectory(std::filesystem::path dir)
+{
+	m_AssetsDirectory = dir;
+	m_CurrentDirectory = m_AssetsDirectory;
+}

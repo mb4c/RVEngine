@@ -114,6 +114,16 @@ void RVEditor::OnUpdate()
 	Renderer::BeginScene(m_Camera);
 	ProcessInput();
 
+	if (m_AppData.fileDropped)
+	{
+		m_AppData.fileDropped = false;
+
+		if(m_ProjectSettings.ProjectPath.empty())
+			std::cout << "No project opened!" << std::endl;
+		else
+			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_ContentBrowserPanel.GetCurrentDirectory());
+	}
+
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
 	if (LeftClickedInViewport() && !ImGuizmo::IsUsing() && m_SceneState == SceneState::Edit && !IsAnyPopupOpen())
@@ -184,6 +194,7 @@ void RVEditor::OnImGuiRender()
 	DrawImGui();
 	m_SceneHierarchyPanel.OnRender();
 	m_ContentBrowserPanel.OnRender();
+	m_AssetImporterModal.Render();
 }
 
 void RVEditor::OnShutdown()
@@ -601,6 +612,7 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 		m_ActiveScene = m_EditorScene;
 		m_SavedScenePath = path;
 
+		UpdateWindowTitle();
 
 	} else
 	{
@@ -612,6 +624,7 @@ void RVEditor::OpenProject(const std::filesystem::path& path)
 {
 	m_ProjectSettings.Deserialize(path);
 	UpdateWindowTitle();
+	m_ContentBrowserPanel.SetAssetDirectory(path.parent_path() /= m_ProjectSettings.ResourcesDirectory);
 }
 
 void RVEditor::OnScenePlay()
@@ -643,10 +656,10 @@ void RVEditor::OnSceneStop()
 
 bool RVEditor::IsAnyPopupOpen()
 {
-	return m_NewProjectModal.IsOpen();
+	return m_NewProjectModal.IsOpen() || m_AssetImporterModal.IsOpen();
 }
 
 void RVEditor::UpdateWindowTitle()
 {
-	SetTitle("RVEditor - " + m_ProjectSettings.ProjectName + " - " + m_ActiveScene->GetName());
+	SetTitle("RVEditor - " + (!m_ProjectSettings.ProjectName.empty() ? m_ProjectSettings.ProjectName : "No project") + " - " + m_ActiveScene->GetName());
 }

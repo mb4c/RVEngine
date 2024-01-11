@@ -14,6 +14,7 @@
 #include "ContentBrowserPanel.hpp"
 #include "NewProjectModal.hpp"
 #include "ProjectSettings.hpp"
+#include "AssetImporter.hpp"
 #include <Widgets.hpp>
 
 class RVEditor : public Application
@@ -94,4 +95,6 @@ private:
 
 	NewProjectModal m_NewProjectModal;
 	ProjectSettings m_ProjectSettings;
+
+	AssetImporter m_AssetImporterModal;
 };

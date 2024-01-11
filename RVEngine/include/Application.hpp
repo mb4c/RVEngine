@@ -39,6 +39,7 @@ public:
 	void SetTitle(const std::string& title);
 
 	Input m_Input{nullptr};
+	AppData m_AppData;
 
 
 private:
@@ -47,10 +48,9 @@ private:
 	int m_Height;
 	bool m_Vsync;
 	GLFWwindow* m_Window{};
-	AppData m_AppData;
 	void UpdateDeltaTime();
 
-
+	static void DropCallback(GLFWwindow* window, int count, const char** paths);
 
 	float deltaTime = 0.0f;	// Time between current frame and last frame
 	float lastFrame = 0.0f; // Time of last frame

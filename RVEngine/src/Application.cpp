@@ -79,6 +79,7 @@ void Application::Run()
 
 	glfwSetKeyCallback(m_Window, Input::KeyCallback);
 	glfwSetScrollCallback(m_Window, Input::ScrollCallback);
+	glfwSetDropCallback(m_Window, DropCallback);
 
 	ImGui_ImplGlfw_InitForOpenGL(GetWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 130");
@@ -195,6 +196,25 @@ void Application::SetVSync(bool vsync)
 void Application::SetTitle(const std::string& title)
 {
 	glfwSetWindowTitle(m_Window, title.c_str());
+}
+
+void Application::DropCallback(GLFWwindow* window, int count, const char** paths)
+{
+	auto* data = static_cast<AppData*>(glfwGetWindowUserPointer(window));
+
+	data->dropPaths.clear();
+
+	for (int i = 0; i < count; ++i)
+	{
+		data->dropPaths.push_back(paths[i]);
+	}
+	data->fileDropped = true;
+
+	std::cout << "Dropped " << data->dropPaths.size() << " files." << std::endl;
+	for (const auto& str : data->dropPaths)
+	{
+		std::cout << str << std::endl;
+	}
 }
 
 
