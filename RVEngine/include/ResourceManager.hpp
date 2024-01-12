@@ -29,6 +29,12 @@ public:
 		m_Textures.emplace("default_albedo", std::make_shared<Texture>(Texture(256,256,{1,1,1,1})));
 		m_Textures.emplace("default_missing", std::make_shared<Texture>(Texture("res/missing.png")));
 
+		//TODO: temp
+		for (auto& it: m_Textures)
+		{
+			it.second->SetName(it.first);
+		}
+
 
 
 		auto brickwallMat = std::make_shared<Material>();

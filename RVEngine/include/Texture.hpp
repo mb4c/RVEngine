@@ -13,7 +13,10 @@ public:
 	void SetTexture(uint32_t id);
 	[[nodiscard]] uint32_t GetTexture() const;
 	std::string GetPath() {return m_Path;};
+	std::string GetName() {return m_Name;};
+	void SetName(std::string name) {m_Name = name;};
 private:
 	uint32_t m_ID{};
 	std::string m_Path;
+	std::string m_Name;
 };

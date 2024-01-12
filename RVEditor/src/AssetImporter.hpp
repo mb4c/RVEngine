@@ -40,4 +40,8 @@ private:
 					   { return std::tolower(c); });
 		return data;
 	}
+
+	void ImportMesh(const std::filesystem::path& path);
+
+	void CreateRVMat(const std::string& materialName);
 };

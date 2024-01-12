@@ -1,5 +1,8 @@
 #include "ContentBrowserPanel.hpp"
 #include "ResourceManager.hpp"
+#include "Widgets.hpp"
+#include <entt/entt.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 ContentBrowserPanel::ContentBrowserPanel()
 	: m_CurrentDirectory(m_AssetsDirectory)
@@ -70,6 +73,11 @@ void ContentBrowserPanel::OnRender()
 				ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
 				if (ImGui::ImageButton(relativePath.filename().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_file")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
 				{
+					if (relativePath.extension() == ".rvmat")
+					{
+						m_ShouldDrawMatInspector = true;
+						m_SelectedMaterial.Deserialize(absolute(relativePath));
+					}
 
 				}
 				ImGui::PopStyleColor();
@@ -85,6 +93,7 @@ void ContentBrowserPanel::OnRender()
 
 
 	ImGui::End();
+	DrawMaterialInspector();
 }
 
 std::filesystem::path ContentBrowserPanel::GetCurrentDirectory()
@@ -96,4 +105,14 @@ void ContentBrowserPanel::SetAssetDirectory(std::filesystem::path dir)
 {
 	m_AssetsDirectory = dir;
 	m_CurrentDirectory = m_AssetsDirectory;
+}
+
+void ContentBrowserPanel::DrawMaterialInspector()
+{
+	ImGui::Begin("Material inspector");
+	if (!m_SelectedMaterial.materialName.empty())
+	{
+		ImGui::TextureEditColor("Albedo", m_SelectedMaterial.albedo, glm::value_ptr(m_SelectedMaterial.albedoColor));
+	}
+	ImGui::End();
 }

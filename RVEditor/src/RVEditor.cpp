@@ -19,6 +19,7 @@ void RVEditor::OnInit()
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
 	OpenScene("res/scenes/dupa.rvscene");
+	OpenProject("/home/lolman/git/RVEngine/cmake-build-debug/dupa/dupa.rvproj");
 //	m_EditorScene = std::make_shared<Scene>();
 //	m_ActiveScene = m_EditorScene;
 
@@ -227,6 +228,7 @@ void RVEditor::DrawImGui()
 		std::string drawCalls = "Draw calls: ";
 		drawCalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
 		ImGui::Text("%s", drawCalls.c_str());
+		//TODO: query opengl for GL_PRIMITIVES_GENERATED and GL_TIME_ELAPSED
 		ImGui::TreePop();
 	}
 

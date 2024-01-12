@@ -21,6 +21,21 @@ void Model::LoadModel(const std::string& path)
 	m_Directory = path.substr(0, path.find_last_of('/'));
 
 	ProcessNode(scene->mRootNode, scene);
+
+	if (!scene->HasMaterials())
+	{
+		std::cout << "No materials found." << std::endl;
+		return;
+	}
+
+	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	{
+		aiMaterial* material = scene->mMaterials[i];
+		aiString materialName;
+		material->Get(AI_MATKEY_NAME, materialName);
+		m_MaterialNames.push_back(materialName.C_Str());
+	}
+
 }
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene)

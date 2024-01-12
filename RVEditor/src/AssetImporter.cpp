@@ -1,7 +1,11 @@
 #include <filesystem>
 #include <iostream>
 #include <utility>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include "AssetImporter.hpp"
+#include <YAMLUtils.hpp>
 
 void AssetImporter::Open(AppData* appdata, ProjectSettings* projectSettings, std::filesystem::path currentDirectory)
 {
@@ -50,7 +54,6 @@ void AssetImporter::Render()
 			// TODO: Display metadata
 			// TODO: Display Image preview
 			// TODO: Display import settings. TextureType, etc
-
 		}
 
 		if (ImGui::Button("Cancel"))
@@ -70,10 +73,15 @@ void AssetImporter::Render()
 			copyPath /= m_AppData->dropPaths.at(0).filename();
 			std::cout << m_CurrentDirectory << std::endl;
 
-			if(std::filesystem::copy_file(m_AppData->dropPaths.at(0), copyPath, std::filesystem::copy_options::overwrite_existing)) //TODO: ask user if he wants to overwrite
+			bool copied = std::filesystem::copy_file(m_AppData->dropPaths.at(0), copyPath, std::filesystem::copy_options::overwrite_existing); //TODO: ask user if he wants to overwrite
+			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension()) == AssetType::MODEL)
 			{
-				EraseFirstElement();
+				ImportMesh(copyPath);
 			}
+
+			if (copied)
+				EraseFirstElement();
+
 
 		}
 
@@ -116,4 +124,60 @@ void AssetImporter::EraseFirstElement()
 	m_AppData->dropPaths.erase(m_AppData->dropPaths.begin());
 	if (m_AppData->dropPaths.empty())
 		Close();
+}
+
+void AssetImporter::ImportMesh(const std::filesystem::path& path)
+{
+	Assimp::Importer import;
+	const aiScene *scene = import.ReadFile(path,  aiProcess_RemoveRedundantMaterials);
+
+	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
+		return;
+	}
+
+	if (!scene->HasMaterials())
+	{
+		std::cout << "No materials found." << std::endl;
+		return;
+	}
+
+	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
+	{
+		aiMaterial* material = scene->mMaterials[i];
+		aiString materialName;
+		material->Get(AI_MATKEY_NAME, materialName);
+//		m_MaterialNames.push_back(materialName.C_Str());
+		std::cout << "Name: " << materialName.C_Str() << std::endl;
+		//TODO: Generate .rvmat material
+		CreateRVMat(materialName.C_Str());
+
+	}
+}
+
+void AssetImporter::CreateRVMat(const std::string& materialName)
+{
+	YAML::Emitter out;
+	out << YAML::BeginMap;
+	out << YAML::Key << "Material" << YAML::Value << materialName;
+	out << YAML::Key << "Shader" << YAML::Value << "default_pbr";
+
+	out << YAML::Key << "Textures";
+	out << YAML::BeginMap;
+		out << YAML::Key << "Albedo" << YAML::Value << "default_albedo";
+		out << YAML::Key << "Normal" << YAML::Value << "default_normal";
+		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << "default_albedo";
+	out << YAML::EndMap;
+
+	out << YAML::Key << "Properties";
+	out << YAML::BeginMap;
+		out << YAML::Key << "AlbedoColor" << YAML::Value << glm::vec4(1,1,1,1);
+		out << YAML::Key << "MetallicValue" << YAML::Value << 0.0f;
+	out << YAML::EndMap;
+
+
+	out << YAML::EndMap;
+	std::ofstream fout(m_CurrentDirectory.string() + "/" + materialName + ".rvmat");
+	fout << out.c_str();
 }
