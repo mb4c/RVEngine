@@ -76,7 +76,9 @@ void ContentBrowserPanel::OnRender()
 					if (relativePath.extension() == ".rvmat")
 					{
 						m_ShouldDrawMatInspector = true;
-						m_SelectedMaterial.Deserialize(absolute(relativePath));
+						std::filesystem::path matPath = m_CurrentDirectory;
+						matPath /= relativePath;
+						m_SelectedMaterial.Deserialize(absolute(matPath));
 					}
 
 				}

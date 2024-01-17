@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include "AssetImporter.hpp"
+#include "Material.hpp"
 #include <YAMLUtils.hpp>
 
 void AssetImporter::Open(AppData* appdata, ProjectSettings* projectSettings, std::filesystem::path currentDirectory)
@@ -150,7 +151,6 @@ void AssetImporter::ImportMesh(const std::filesystem::path& path)
 		material->Get(AI_MATKEY_NAME, materialName);
 //		m_MaterialNames.push_back(materialName.C_Str());
 		std::cout << "Name: " << materialName.C_Str() << std::endl;
-		//TODO: Generate .rvmat material
 		CreateRVMat(materialName.C_Str());
 
 	}
@@ -158,26 +158,7 @@ void AssetImporter::ImportMesh(const std::filesystem::path& path)
 
 void AssetImporter::CreateRVMat(const std::string& materialName)
 {
-	YAML::Emitter out;
-	out << YAML::BeginMap;
-	out << YAML::Key << "Material" << YAML::Value << materialName;
-	out << YAML::Key << "Shader" << YAML::Value << "default_pbr";
-
-	out << YAML::Key << "Textures";
-	out << YAML::BeginMap;
-		out << YAML::Key << "Albedo" << YAML::Value << "default_albedo";
-		out << YAML::Key << "Normal" << YAML::Value << "default_normal";
-		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << "default_albedo";
-	out << YAML::EndMap;
-
-	out << YAML::Key << "Properties";
-	out << YAML::BeginMap;
-		out << YAML::Key << "AlbedoColor" << YAML::Value << glm::vec4(1,1,1,1);
-		out << YAML::Key << "MetallicValue" << YAML::Value << 0.0f;
-	out << YAML::EndMap;
-
-
-	out << YAML::EndMap;
-	std::ofstream fout(m_CurrentDirectory.string() + "/" + materialName + ".rvmat");
-	fout << out.c_str();
+	Material mat;
+	mat.materialName = materialName;
+	mat.Serialize(m_CurrentDirectory.string() + "/" + materialName + ".rvmat");
 }

@@ -10,7 +10,7 @@ class Material
 {
 public:
 	Material();
-	void Serialize(std::filesystem::path file);
+	void Serialize(const std::filesystem::path& file);
 	void Deserialize(const std::filesystem::path& file);
 
 	std::string materialName;
