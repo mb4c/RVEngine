@@ -93,7 +93,6 @@ void ContentBrowserPanel::OnRender()
 
 
 	ImGui::End();
-	DrawMaterialInspector();
 }
 
 std::filesystem::path ContentBrowserPanel::GetCurrentDirectory()
@@ -105,14 +104,4 @@ void ContentBrowserPanel::SetAssetDirectory(std::filesystem::path dir)
 {
 	m_AssetsDirectory = dir;
 	m_CurrentDirectory = m_AssetsDirectory;
-}
-
-void ContentBrowserPanel::DrawMaterialInspector()
-{
-	ImGui::Begin("Material inspector");
-	if (!m_SelectedMaterial.materialName.empty())
-	{
-		ImGui::TextureEditColor("Albedo", m_SelectedMaterial.albedo, glm::value_ptr(m_SelectedMaterial.albedoColor));
-	}
-	ImGui::End();
 }
