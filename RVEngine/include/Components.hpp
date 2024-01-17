@@ -83,12 +83,11 @@ struct MeshRendererComponent
 {
 	std::shared_ptr<Model> model;
 	std::shared_ptr<Shader> shader;
-	std::shared_ptr<Shader> outlineShader;
 
 	MeshRendererComponent() = default;
 	MeshRendererComponent(const MeshRendererComponent&) = default;
 	MeshRendererComponent(std::shared_ptr<Model> mdl, std::shared_ptr<Shader> shdr, std::shared_ptr<Shader> outShdr)
-			: model(std::move(mdl)), shader(std::move(shdr)), outlineShader(std::move(outShdr)) {}
+			: model(std::move(mdl)), shader(std::move(shdr)) {}
 };
 
 struct SpriteRendererComponent
@@ -150,6 +149,18 @@ struct SphereColliderComponent
 	SphereColliderComponent(const SphereColliderComponent&) = default;
 };
 
+//TODO: serialization
+struct SkyboxComponent
+{
+	unsigned int envCubemap;
+	unsigned int irradianceMap;
+	unsigned int prefilterMap;
+	unsigned int brdfLUTTexture;
+
+	SkyboxComponent() = default;
+	SkyboxComponent(const SkyboxComponent&) = default;
+};
+
 template<typename... Component>
 struct ComponentGroup
 {
@@ -157,7 +168,7 @@ struct ComponentGroup
 
 using AllComponents =
 		ComponentGroup<TransformComponent, SpriteRendererComponent,
-		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent, SphereColliderComponent>;
+		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent, SphereColliderComponent, SkyboxComponent>;
 
 template<typename Component>
 std::string GetComponentName()

@@ -4,6 +4,7 @@
 #include "Components.hpp"
 #include "SceneSerializer.hpp"
 #include "portable-file-dialogs.h"
+#include "EnvironmentMap.hpp"
 
 RVEditor::RVEditor(const std::string &title, int width, int height) : Application(title, width, height)
 {
@@ -13,98 +14,43 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 void RVEditor::OnInit()
 {
 //	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
+	ResourceManager& rm = ResourceManager::instance();
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
-	mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
+	mainShader = rm.GetShader("pbr");
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
-	OpenScene("res/scenes/dupa.rvscene");
-	OpenProject("/home/lolman/git/RVEngine/cmake-build-debug/dupa/dupa.rvproj");
-//	m_EditorScene = std::make_shared<Scene>();
-//	m_ActiveScene = m_EditorScene;
+	m_EditorScene = std::make_shared<Scene>();
+	m_ActiveScene = m_EditorScene;
+
+	EnvironmentMap envMap("res/buikslotermeerplein_4k.hdr");
+	envMap.Capture();
+
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 
-//	ResourceManager& rm = ResourceManager::instance();
-//
-//	auto cerberus = std::make_shared<Model>("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX");
-//	rm.AddModel("cerberus", cerberus);
-//
-//
-//	std::shared_ptr<Material> cerbMat = std::make_shared<Material>() ;
-//	rm.AddMaterial("cerberus", cerbMat);
-//	rm.AddTexture("cerberus_albedo",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.png")));
-//	rm.AddTexture("cerberus_normal",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.png")));
-//	rm.AddTexture("cerberus_orm",std::make_shared<Texture>(Texture("/home/lolman/Downloads/Cerberus_by_Andrew_Maximov/Textures/Cerberus_ORM.png")));
-//	cerbMat->albedo = rm.GetTexture("cerberus_albedo");
-//	cerbMat->normal = rm.GetTexture("cerberus_normal");
-//	cerbMat->occlusionRoughnessMetallic = rm.GetTexture("cerberus_orm");
-//
-//	cerberus->m_Material = cerbMat;
-//
-//	auto swiatelko = m_ActiveScene->CreateEntity("light");
-//	swiatelko.AddComponent<LightComponent>();
-//	swiatelko.GetComponent<TransformComponent>().SetPosition({0, 0, 3});
-//
-//
-//	auto camera = m_ActiveScene->CreateEntity("Camera");
-//	camera.AddComponent<CameraComponent>();
-//	camera.GetComponent<TransformComponent>().SetPosition({-8, 4, 4});
-//	camera.GetComponent<TransformComponent>().SetRotation({-30, -65, 0});
-//	ResourceManager& rm = ResourceManager::instance();
+	auto skybox = m_ActiveScene->CreateEntity("skybox");
+	skybox.AddComponent<SkyboxComponent>().envCubemap = envMap.envCubemap;
+	skybox.GetComponent<SkyboxComponent>().irradianceMap = envMap.irradianceMap;
+	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
+	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
 
-//	auto spheremodel = rm.GetModel("sphere05");
-//	spheremodel->m_Material = rm.GetMaterial("default_pbr");
-//	auto sphere = m_ActiveScene->CreateEntity("Sphere");
-//	sphere.AddComponent<MeshRendererComponent>(spheremodel, mainShader, flatShader);
-//	sphere.GetComponent<TransformComponent>().SetScale({1,1,1});
-//	sphere.GetComponent<TransformComponent>().SetPosition({0,0,-0.035});
+	auto shader = rm.GetShader("pbr");
 
-//	auto planeModel = rm.GetModel("plane");
-//
-//	planeModel->m_Material = rm.GetMaterial("default_pbr");
-//	auto plane = m_ActiveScene->CreateEntity("Plane");
-//	plane.AddComponent<MeshRendererComponent>(planeModel, mainShader, flatShader);
-//	plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-//	plane.GetComponent<TransformComponent>().SetPosition({0, -3, -0.5});
-//	plane.GetComponent<TransformComponent>().SetRotation({-90, 0, 0});
-//	plane.AddComponent<BoxColliderComponent>();
-//	plane.GetComponent<BoxColliderComponent>().Dynamic = false;
-//	plane.GetComponent<BoxColliderComponent>().Scale = {1,0.1,1};
+	auto plane = m_ActiveScene->CreateEntity("cube");
+	plane.AddComponent<MeshRendererComponent>();
+	plane.GetComponent<MeshRendererComponent>().shader = shader;
+	plane.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+	plane.GetComponent<TransformComponent>().SetPosition({2,0,0});
+	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
 
-//	auto cubeModel = rm.GetModel("cube");
-//
-//	cubeModel->m_Material = rm.GetMaterial("default_pbr");
-//	auto cube = m_ActiveScene->CreateEntity("Cube ten na dole");
-//	cube.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-//	cube.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-//	cube.GetComponent<TransformComponent>().SetPosition({0, -3, 0});
-//	cube.GetComponent<TransformComponent>().SetRotation({0, 0, 0});
-//	cube.AddComponent<BoxColliderComponent>();
-//	cube.GetComponent<BoxColliderComponent>().Dynamic = false;
-//	cube.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
-//
-//	auto cube2 = m_ActiveScene->CreateEntity("Cube");
-//	cube2.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-//	cube2.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-//	cube2.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
-//	cube2.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
-//	cube2.AddComponent<BoxColliderComponent>();
-//	cube2.GetComponent<BoxColliderComponent>().Dynamic = true;
-//	cube2.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
-//
-//	auto cube3 = m_ActiveScene->CreateEntity("Cube");
-//	cube3.AddComponent<MeshRendererComponent>(cubeModel, mainShader, flatShader);
-//	cube3.GetComponent<TransformComponent>().SetScale({1, 1, 1});
-//	cube3.GetComponent<TransformComponent>().SetPosition({0, 3, 0});
-//	cube3.GetComponent<TransformComponent>().SetRotation({35, 0, 0});
-//	cube3.AddComponent<BoxColliderComponent>();
-//	cube3.GetComponent<BoxColliderComponent>().Dynamic = true;
-//	cube3.GetComponent<BoxColliderComponent>().Size = {1, 1, 1};
+	auto sphere = m_ActiveScene->CreateEntity("sphere");
+	sphere.AddComponent<MeshRendererComponent>();
+	sphere.GetComponent<MeshRendererComponent>().shader = shader;
+	sphere.GetComponent<MeshRendererComponent>().model = rm.GetModel("sphere05");
+	rm.GetModel("sphere05")->m_Material = rm.GetMaterial("brickwall");
 
-//	auto sprite = m_ActiveScene->CreateEntity("Sprite");
-//	sprite.AddComponent<SpriteRendererComponent>(glm::vec4{1,1,1,1});
 	m_ActiveScene->OnStart();
 
 }

@@ -18,6 +18,12 @@ public:
 		m_Shaders.emplace("pbr", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl"));
 		m_Shaders.emplace("flat", std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag"));
 		m_Shaders.emplace("sprite", std::make_shared<Shader>("res/shaders/Sprite.vert", "res/shaders/Sprite.frag"));
+		m_Shaders.emplace("cubemap", std::make_shared<Shader>("res/shaders/Cubemap_vert.glsl", "res/shaders/Cubemap_frag.glsl"));
+		m_Shaders.emplace("convolution", std::make_shared<Shader>("res/shaders/Cubemap_vert.glsl", "res/shaders/Convolution_frag.glsl"));
+		m_Shaders.emplace("skybox", std::make_shared<Shader>("res/shaders/Skybox_vert.glsl", "res/shaders/Skybox_frag.glsl"));
+		m_Shaders.emplace("prefilter", std::make_shared<Shader>("res/shaders/Prefilter_vert.glsl", "res/shaders/Prefilter_frag.glsl"));
+		m_Shaders.emplace("brdf", std::make_shared<Shader>("res/shaders/brdf_vert.glsl", "res/shaders/brdf_frag.glsl"));
+
 
 		m_Textures.emplace("brickwall_albedo", std::make_shared<Texture>(Texture("res/brickwall.jpg")));
 		m_Textures.emplace("brickwall_normal", std::make_shared<Texture>(Texture("res/brickwall_normal.jpg")));

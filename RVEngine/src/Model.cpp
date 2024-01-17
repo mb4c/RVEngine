@@ -11,7 +11,8 @@ void Model::LoadModel(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path,  aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+	const aiScene *scene = import.ReadFile(path,  aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
+	m_Path = path;
 
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -91,6 +92,10 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		{
 			vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
 			vertex.Bitangent = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+		}
+		else
+		{
+			std::cout << m_Path << " HasTangentsAndBitangents() == false" <<  std::endl;
 		}
 
 		vertices.push_back(vertex);

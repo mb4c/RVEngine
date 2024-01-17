@@ -36,6 +36,9 @@ void Renderer::BeginScene(EditorCamera &camera)
 {
 	RV_PROFILE_FUNCTION();
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * camera.GetViewMatrix();
+	s_SceneData->ViewMatrix = camera.GetViewMatrix();
+	s_SceneData->ProjectionMatrix = camera.GetProjection();
+
 	RenderStats::GetInstance().DrawCalls = 0;
 
 }
@@ -44,6 +47,8 @@ void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
 {
 	RV_PROFILE_FUNCTION();
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
+	s_SceneData->ViewMatrix = glm::inverse(transform);
+	s_SceneData->ProjectionMatrix = camera.GetProjection();
 	RenderStats::GetInstance().DrawCalls = 0;
 }
 
@@ -58,6 +63,8 @@ void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_p
 	RV_PROFILE_FUNCTION();
 	shader->Bind();
 	shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+	shader->SetMat4("u_View", s_SceneData->ViewMatrix);
+	shader->SetMat4("u_Projection", s_SceneData->ProjectionMatrix);
 	shader->SetMat4("u_Transform", transform);
 	shader->SetMat3("u_NormalMatrix", glm::transpose(glm::inverse(glm::mat3(transform))));
 	shader->SetUInt("u_ObjectIndex", entity + 1);

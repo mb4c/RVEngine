@@ -209,10 +209,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 					mat->normal = rm.GetTexture("default_albedo");
 
 				mrc.model->m_Material = mat;
-				auto flatShader = std::make_shared<Shader>(meshRendererComponent["VertexShaderPath"].as<std::string>().c_str(), meshRendererComponent["FragmentShaderPath"].as<std::string>().c_str());
-				auto mainShader = std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl");
-				mrc.outlineShader = flatShader;
-				mrc.shader = mainShader;
+ 				mrc.shader = rm.GetShader("pbr");
 			}
 
 			auto lightComponent = entity["LightComponent"];

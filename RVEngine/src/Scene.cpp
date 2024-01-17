@@ -122,7 +122,6 @@ void Scene::OnUpdateRuntime(float ts)
 				scenecam->SetViewportSize(m_ViewportWidth, m_ViewportHeight);
 				cameraTransform = transform.GetTransform();
 				cameraPosition = transform.GetPosition();
-
 				break;
 			}
 		}
@@ -135,7 +134,6 @@ void Scene::OnUpdateRuntime(float ts)
 		auto shader = rm.GetShader("pbr");
 		shader->Bind();
 		shader->SetVec3("u_CamPos", cameraPosition);
-		shader->SetUInt("u_DisplayType", 0);
 
 		RenderScene();
 	}
@@ -147,6 +145,18 @@ void Scene::RenderScene()
 	RV_PROFILE_FUNCTION();
 
 	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent ,LightComponent>);
+	unsigned int irrMap;
+	unsigned int prefMap;
+	unsigned int brdfLUT;
+
+	auto skyView = m_Registry.view<TransformComponent, SkyboxComponent>();
+	for (auto entity : skyView)
+	{
+		auto [transform, sky] = skyView.get<TransformComponent, SkyboxComponent>(entity);
+		irrMap = sky.irradianceMap;
+		prefMap = sky.prefilterMap;
+		brdfLUT = sky.brdfLUTTexture;
+	}
 
 	std::vector<std::tuple<TransformComponent, LightComponent>> lights;
 	for (auto entity : lightGroup)
@@ -172,6 +182,18 @@ void Scene::RenderScene()
 			// bind orm map
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic->GetTexture());
+
+
+
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irrMap);
+
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, prefMap);
+
+			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, brdfLUT);
+
 			Stencil::DisableStencil();
 
 			mesh.shader->Bind();
@@ -191,15 +213,18 @@ void Scene::RenderScene()
 
 
 			Renderer::Submit(mesh.shader, mesh.model->GetMeshes()->at(i).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
-			mesh.outlineShader->Bind();
-			mesh.outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
+			ResourceManager& rm = ResourceManager::instance();
+
+			auto outlineShader = rm.GetShader("flat");
+			outlineShader->Bind();
+			outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
 			if((uint32_t)entity == m_SelectedEntity)
 			{
 				Stencil::EnableStencil();
 				auto outlineTransform = transform.GetTransform();
 				outlineTransform = glm::scale(outlineTransform, {1.1, 1.1, 1.1});
 
-				Renderer::Submit(mesh.outlineShader, mesh.model->GetMeshes()->at(i).m_VertexArray, outlineTransform, (unsigned int)entity);
+				Renderer::Submit(outlineShader, mesh.model->GetMeshes()->at(i).m_VertexArray, outlineTransform, (unsigned int)entity);
 				Stencil::DefaultStencil();
 			}
 		}
@@ -241,6 +266,22 @@ void Scene::RenderScene()
 			Stencil::DefaultStencil();
 		}
 	}
+
+	auto skyboxView = m_Registry.view<TransformComponent, SkyboxComponent>();
+	for (auto entity : skyboxView)
+	{
+		auto [transform, skybox] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
+		// render skybox (render as last to prevent overdraw)
+		ResourceManager& rm = ResourceManager::instance();
+		auto model = rm.GetModel("cube");
+		auto backgroundShader = rm.GetShader("skybox");
+		backgroundShader->Bind();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.envCubemap);
+		Renderer::Submit(backgroundShader, model->GetMeshes()->at(0).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
+	}
+
+
 }
 
 void Scene::SetSelectedEntity(uint32_t entity)

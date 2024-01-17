@@ -12,6 +12,10 @@ layout(binding=0) uniform sampler2D albedoMap;
 layout(binding=1) uniform sampler2D normalMap;
 layout(binding=2) uniform sampler2D occlusionRoughnessMetallic;
 
+layout(binding=3) uniform samplerCube irradianceMap;
+layout(binding=4)  uniform samplerCube prefilterMap;
+layout(binding=5)  uniform sampler2D brdfLUT;
+
 // lights
 #define MAX_LIGHTS 32
 uniform vec3 lightPositions[MAX_LIGHTS];
@@ -23,9 +27,9 @@ uniform uint u_DisplayType;
 
 const float PI = 3.14159265359;
 
-vec3 getNormalFromMap(vec2 tempUv)
+vec3 getNormalFromMap()
 {
-    vec3 tangentNormal = texture(normalMap, tempUv).xyz;
+    vec3 tangentNormal = texture(normalMap, TexCoords).xyz;
     tangentNormal = tangentNormal * 2.0 - 1.0;
 
     return normalize(TBN * tangentNormal);
@@ -71,6 +75,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
 // ----------------------------------------------------------------------------
 void main()
 {
@@ -79,8 +88,9 @@ void main()
     float metallic  = texture(occlusionRoughnessMetallic, TexCoords).b;
     float roughness = texture(occlusionRoughnessMetallic, TexCoords).g;
 
-    vec3 N = getNormalFromMap(TexCoords);
+    vec3 N = getNormalFromMap();
     vec3 V = normalize(u_CamPos - WorldPos);
+    vec3 R = reflect(-V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -125,9 +135,28 @@ void main()
         Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }
 
-    // ambient lighting (note that the next IBL tutorial will replace
-    // this ambient lighting with environment lighting).
-    vec3 ambient = vec3(0.03) * albedo * ao;
+    // ambient lighting (we now use IBL as the ambient term)
+    vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+    vec3 kS = F;
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - metallic;
+
+
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 diffuse      = irradiance * albedo;
+
+    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * MAX_REFLECTION_LOD).rgb;
+    float NdotV = max(dot(N, V), 0.0);
+    vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+//    vec2 brdf = texture(brdfLUT, vec2(NdotV, roughness)).rg;
+//    vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+    vec3 specular = prefilteredColor * (F0 * brdf.x + brdf.y);
+
+    vec3 ambient = (kD * diffuse + specular) * ao;
+
 
     vec3 color = ambient + Lo;
 
@@ -154,7 +183,7 @@ void main()
             FragColor = vec4(vec3(metallic), 1.0);
             break;
         case 5: // Vertex normal
-            FragColor = vec4(Normal, 1.0);
+            FragColor = vec4(Normal * 0.5 + 0.5, 1.0);
             break;
         case 6: // World position
             FragColor = vec4(WorldPos, 1.0);
@@ -166,8 +195,26 @@ void main()
             FragColor = vec4(TBN * vec3(1), 1.0);
             break;
         case 9: // Normal mapped
-            FragColor = vec4(getNormalFromMap(TexCoords), 1.0);
-        break;
+            FragColor = vec4(getNormalFromMap() * 0.5 + 0.5, 1.0);
+            break;
+        case 10: // Specular
+            FragColor = vec4(specular, 1.0);
+            break;
+        case 11: // ambient
+            FragColor = vec4(ambient, 1.0);
+            break;
+        case 12: // prefiltered color
+            FragColor = vec4(prefilteredColor, 1.0);
+            break;
+        case 13: // diffuse
+            FragColor = vec4(diffuse, 1.0);
+            break;
+        case 14: // r
+            FragColor = vec4(R, 1.0);
+            break;
+        case 15: // v
+            FragColor = vec4(V, 1.0);
+            break;
     }
 
 

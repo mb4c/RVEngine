@@ -7,6 +7,7 @@ layout (location = 3) in vec3 a_Tangent;
 layout (location = 4) in vec3 a_Bitangent;
 
 uniform mat4 u_ViewProjection;
+uniform mat4 u_View;
 uniform mat4 u_Transform;
 uniform mat3 u_NormalMatrix;
 
@@ -23,11 +24,9 @@ void main()
 
     Normal = normalize(u_NormalMatrix * a_Normal);
 
-    mat3 M = mat3(u_Transform);
-    vec3 T = normalize(M * a_Tangent);
-    vec3 N = normalize(M * a_Normal);
-    T = normalize(T - dot(T, N) * N);
-    vec3 B = cross(N, T);
+    vec3 T = normalize(vec3(u_NormalMatrix * a_Tangent));
+    vec3 B = normalize(vec3(u_NormalMatrix * a_Bitangent));
+    vec3 N = normalize(vec3(u_NormalMatrix * a_Normal));
     TBN = mat3(T, B, N);
 
     gl_Position =  u_ViewProjection * vec4(WorldPos, 1.0);
