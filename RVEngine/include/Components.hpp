@@ -94,12 +94,12 @@ struct SpriteRendererComponent
 {
 	glm::vec4 Color {1,1,1,1};
 	bool Billboard = false;
-	std::shared_ptr<Texture> Tex = ResourceManager::instance().GetTexture("default_albedo");
+	std::shared_ptr<Texture2D> Tex = ResourceManager::instance().GetTexture("default_albedo");
 
 	SpriteRendererComponent() = default;
 	SpriteRendererComponent(const SpriteRendererComponent&) = default;
 	SpriteRendererComponent(glm::vec4 color) : Color(color){}
-	SpriteRendererComponent(std::shared_ptr<Texture> texture) : Tex(texture) {}
+	SpriteRendererComponent(std::shared_ptr<Texture2D> texture) : Tex(texture) {}
 };
 
 struct LightComponent

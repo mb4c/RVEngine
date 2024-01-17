@@ -60,7 +60,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	RV_PROFILE_FUNCTION();
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<Texture> textures;
+	std::vector<Texture2D> textures;
 
 	for(unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{

@@ -196,15 +196,15 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				std::shared_ptr<Material> mat = std::make_shared<Material>();
 
 				if (!meshRendererComponent["Albedo"].as<std::string>().empty())
-					mat->albedo = std::make_shared<Texture>(Texture(meshRendererComponent["Albedo"].as<std::string>()));
+					mat->albedo = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["Albedo"].as<std::string>()));
 				else
 					mat->albedo = rm.GetTexture("default_albedo");
 				if (!meshRendererComponent["Normal"].as<std::string>().empty())
-					mat->normal = std::make_shared<Texture>(Texture(meshRendererComponent["Normal"].as<std::string>()));
+					mat->normal = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["Normal"].as<std::string>()));
 				else
 					mat->normal = rm.GetTexture("default_normal");
 				if (!meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>().empty())
-					mat->occlusionRoughnessMetallic = std::make_shared<Texture>(Texture(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
+					mat->occlusionRoughnessMetallic = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
 				else
 					mat->normal = rm.GetTexture("default_albedo");
 

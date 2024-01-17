@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <Texture.hpp>
+#include <Texture2D.hpp>
 
 namespace ImGui
 {
@@ -55,7 +55,7 @@ namespace ImGui
 		}
 	}
 
-	inline void TextureEditColor(const char* label, std::shared_ptr<Texture>& src, float color[4])
+	inline void TextureEditColor(const char* label, std::shared_ptr<Texture2D>& src, float color[4])
 	{
 		if (ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_None))
 		{
@@ -69,7 +69,7 @@ namespace ImGui
 
 			if (!newTex.empty())
 			{
-				std::shared_ptr<Texture> tex = rm.GetTexture(newTex);
+				std::shared_ptr<Texture2D> tex = rm.GetTexture(newTex);
 				src = tex;
 			}
 

@@ -4,7 +4,7 @@
 #include <Shader.hpp>
 #include <unordered_map>
 #include <Model.hpp>
-#include <Texture.hpp>
+#include <Texture2D.hpp>
 
 class ResourceManager : public Singleton<ResourceManager>
 {
@@ -25,15 +25,15 @@ public:
 		m_Shaders.emplace("brdf", std::make_shared<Shader>("res/shaders/brdf_vert.glsl", "res/shaders/brdf_frag.glsl"));
 
 
-		m_Textures.emplace("brickwall_albedo", std::make_shared<Texture>(Texture("res/brickwall.jpg")));
-		m_Textures.emplace("brickwall_normal", std::make_shared<Texture>(Texture("res/brickwall_normal.jpg")));
-		m_Textures.emplace("brickwall_orm", std::make_shared<Texture>(Texture("res/brickwall_ORM.png")));
+		m_Textures.emplace("brickwall_albedo", std::make_shared<Texture2D>(Texture2D("res/brickwall.jpg")));
+		m_Textures.emplace("brickwall_normal", std::make_shared<Texture2D>(Texture2D("res/brickwall_normal.jpg")));
+		m_Textures.emplace("brickwall_orm", std::make_shared<Texture2D>(Texture2D("res/brickwall_ORM.png")));
 
 
 		// Default textures
-		m_Textures.emplace("default_normal", std::make_shared<Texture>(Texture(256,256,{0.5,0.5,1,1})));
-		m_Textures.emplace("default_albedo", std::make_shared<Texture>(Texture(256,256,{1,1,1,1})));
-		m_Textures.emplace("default_missing", std::make_shared<Texture>(Texture("res/missing.png")));
+		m_Textures.emplace("default_normal", std::make_shared<Texture2D>(Texture2D(256, 256, {0.5, 0.5, 1, 1})));
+		m_Textures.emplace("default_albedo", std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1})));
+		m_Textures.emplace("default_missing", std::make_shared<Texture2D>(Texture2D("res/missing.png")));
 
 		//TODO: temp
 		for (auto& it: m_Textures)
@@ -57,8 +57,8 @@ public:
 
 
 		// icons
-		m_Textures.emplace("icon_folder", std::make_shared<Texture>(Texture("res/icons/folder.png")));
-		m_Textures.emplace("icon_file", std::make_shared<Texture>(Texture("res/icons/file.png")));
+		m_Textures.emplace("icon_folder", std::make_shared<Texture2D>(Texture2D("res/icons/folder.png")));
+		m_Textures.emplace("icon_file", std::make_shared<Texture2D>(Texture2D("res/icons/file.png")));
 
 
 	};
@@ -85,9 +85,9 @@ public:
 		return m_Shaders.at(name);
 	}
 
-	std::shared_ptr<Texture> GetTexture(const std::string& name)
+	std::shared_ptr<Texture2D> GetTexture(const std::string& name)
 	{
-		return Get<std::shared_ptr<Texture>>(name, m_Textures);
+		return Get<std::shared_ptr<Texture2D>>(name, m_Textures);
 	}
 
 	std::shared_ptr<Material> GetMaterial(const std::string& name)
@@ -104,7 +104,7 @@ public:
 		m_Shaders.emplace(name, shader);
 	}
 
-	void AddTexture(const std::string& name, const std::shared_ptr<Texture>& texture)
+	void AddTexture(const std::string& name, const std::shared_ptr<Texture2D>& texture)
 	{
 		m_Textures.emplace(name, texture);
 	}
@@ -116,6 +116,6 @@ public:
 
 	std::unordered_map<std::string, std::shared_ptr<Shader>> m_Shaders;
 	std::unordered_map<std::string, std::shared_ptr<Model>> m_Models;
-	std::unordered_map<std::string, std::shared_ptr<Texture>> m_Textures;
+	std::unordered_map<std::string, std::shared_ptr<Texture2D>> m_Textures;
 	std::unordered_map<std::string, std::shared_ptr<Material>> m_Materials;
 };

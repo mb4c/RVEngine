@@ -1,7 +1,7 @@
 #include <Mesh.hpp>
 #include <Macros.hpp>
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture2D> textures)
 {
 	RV_PROFILE_FUNCTION();
 

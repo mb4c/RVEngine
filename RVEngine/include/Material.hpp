@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "Texture.hpp"
+#include "Texture2D.hpp"
 #include "Shader.hpp"
 #include <filesystem>
 
@@ -14,9 +14,9 @@ public:
 
 	std::string materialName;
 	std::shared_ptr<Shader> shader;
-	std::shared_ptr<Texture> albedo;
-	std::shared_ptr<Texture> normal;
-	std::shared_ptr<Texture> occlusionRoughnessMetallic;
+	std::shared_ptr<Texture2D> albedo;
+	std::shared_ptr<Texture2D> normal;
+	std::shared_ptr<Texture2D> occlusionRoughnessMetallic;
 
 	glm::vec4 albedoColor = {1,1,1,1};
 	float metallicValue = 0;

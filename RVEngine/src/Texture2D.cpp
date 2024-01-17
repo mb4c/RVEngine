@@ -1,16 +1,16 @@
 #include <glad/glad.h>
 #include <stb_image.h>
 #include <iostream>
-#include <Texture.hpp>
+#include <Texture2D.hpp>
 #include <Macros.hpp>
 
-Texture::Texture(const std::string& path, bool normalMap)
+Texture2D::Texture2D(const std::string& path, bool normalMap)
 {
 	m_ID = FromFile(path);
 	m_Path = path;
 }
 
-uint32_t Texture::FromFile(const std::string& path, bool normalMap)
+uint32_t Texture2D::FromFile(const std::string& path, bool normalMap)
 {
 	RV_PROFILE_FUNCTION();
 
@@ -53,17 +53,17 @@ uint32_t Texture::FromFile(const std::string& path, bool normalMap)
 	return textureID;
 }
 
-void Texture::SetTexture(uint32_t id)
+void Texture2D::SetTexture(uint32_t id)
 {
 	m_ID = id;
 }
 
-uint32_t Texture::GetTexture() const
+uint32_t Texture2D::GetTexture() const
 {
 	return m_ID;
 }
 
-Texture::Texture(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap)
+Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap)
 {
 	RV_PROFILE_FUNCTION();
 

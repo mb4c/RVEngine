@@ -7,7 +7,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <Texture.hpp>
+#include <Texture2D.hpp>
 #include <Macros.hpp>
 #include <Material.hpp>
 
@@ -24,7 +24,7 @@ public:
 private:
 	std::shared_ptr<std::vector<Mesh>> m_Meshes = std::make_shared<std::vector<Mesh>>();
 	std::string m_Directory;
-	std::vector<Texture> m_TexturesLoaded;
+	std::vector<Texture2D> m_TexturesLoaded;
 	std::string m_Path;
 	std::vector<std::string> m_MaterialNames; // mesh material names used for generating engine materials
 	void LoadModel(const std::string& path);

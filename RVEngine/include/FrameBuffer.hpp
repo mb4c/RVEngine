@@ -2,7 +2,7 @@
 
 
 #include <cstdint>
-#include <Texture.hpp>
+#include <Texture2D.hpp>
 #include <glm/vec2.hpp>
 
 struct PixelInfo {
