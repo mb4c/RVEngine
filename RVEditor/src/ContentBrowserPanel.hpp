@@ -17,6 +17,5 @@ private:
 	 float m_ThumbnailSize = 96;
 
 
-	 bool m_ShouldDrawMatInspector = false;
 	 Material m_SelectedMaterial;
 };
