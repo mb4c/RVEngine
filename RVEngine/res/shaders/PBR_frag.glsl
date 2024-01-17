@@ -25,6 +25,15 @@ uniform vec3 u_CamPos;
 uniform uint u_ObjectIndex;
 uniform uint u_DisplayType;
 
+uniform bool u_UseAlbedo;
+uniform bool u_UseNormal;
+uniform bool u_UseORM;
+
+uniform vec4 u_AlbedoColor;
+uniform float u_RoughnessVal;
+uniform float u_MetallicVal;
+
+
 const float PI = 3.14159265359;
 
 vec3 getNormalFromMap()
@@ -83,12 +92,27 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 // ----------------------------------------------------------------------------
 void main()
 {
-    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
-    float ao = texture(occlusionRoughnessMetallic, TexCoords).r;
-    float metallic  = texture(occlusionRoughnessMetallic, TexCoords).b;
-    float roughness = texture(occlusionRoughnessMetallic, TexCoords).g;
+    vec3 albedo = u_AlbedoColor.rgb;
+    vec3 N = Normal;
+    float ao = 1;
+    float metallic = u_MetallicVal;
+    float roughness = u_RoughnessVal;
 
-    vec3 N = getNormalFromMap();
+    if(u_UseAlbedo)
+    {
+        albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    }
+    if(u_UseNormal)
+    {
+        N = getNormalFromMap();
+    }
+    if(u_UseORM)
+    {
+        ao = texture(occlusionRoughnessMetallic, TexCoords).r;
+        metallic  = texture(occlusionRoughnessMetallic, TexCoords).b;
+        roughness = texture(occlusionRoughnessMetallic, TexCoords).g;
+    }
+
     vec3 V = normalize(u_CamPos - WorldPos);
     vec3 R = reflect(-V, N);
 

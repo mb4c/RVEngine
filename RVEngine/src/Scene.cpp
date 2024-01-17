@@ -197,6 +197,13 @@ void Scene::RenderScene()
 			Stencil::DisableStencil();
 
 			mesh.shader->Bind();
+			std::shared_ptr<Material> mat = mesh.model->GetMaterial();
+			mesh.shader->SetBool("u_UseAlbedo", mat->useAlbedo);
+			mesh.shader->SetBool("u_UseNormal", mat->useNormal);
+			mesh.shader->SetBool("u_UseORM", mat->useORM);
+			mesh.shader->SetVec4("u_AlbedoColor", mat->albedoColor);
+			mesh.shader->SetFloat("u_RoughnessVal", mat->roughnessValue);
+			mesh.shader->SetFloat("u_MetallicVal", mat->metallicValue);
 
 			for (int k = 0; k < 32; ++k)
 			{

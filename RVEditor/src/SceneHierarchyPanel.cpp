@@ -190,6 +190,31 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	if (ImGui::ComponentTreeNode<MeshRendererComponent>(entity))
 	{
 		auto& mrc = entity.GetComponent<MeshRendererComponent>();
+		std::shared_ptr<Material> mat = mrc.model->GetMaterial();
+		ImGui::Text("UUID: %lu", (uint64_t)mat->uuid);
+		ImGui::Text("Material: %s", mat->materialName.c_str());
+		ImGui::Checkbox("Use albedo texture", &mat->useAlbedo);
+
+		if (mat->useAlbedo)
+			ImGui::TextureEdit("Albedo", mat->albedo);
+		else
+			ImGui::ColorEdit4("Albedo", glm::value_ptr(mat->albedoColor));
+
+		ImGui::Checkbox("Use normal map", &mat->useNormal);
+		if (mat->useNormal)
+		{
+			ImGui::TextureEdit("Normal", mat->normal);
+		}
+		ImGui::Checkbox("Use ORM texture", &mat->useORM);
+		if (mat->useORM)
+		{
+			ImGui::TextureEdit("OcclusionRoughnessMetallic", mat->occlusionRoughnessMetallic);
+		}
+		else
+		{
+			ImGui::DragFloat("Roughness", &mat->roughnessValue, 0.01, 0, 1);
+			ImGui::DragFloat("Metallic", &mat->metallicValue, 0.01, 0, 1);
+		}
 		ImGui::TreePop();
 	}
 

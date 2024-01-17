@@ -80,6 +80,27 @@ namespace ImGui
 		}
 	}
 
+	inline void TextureEdit(const char* label, std::shared_ptr<Texture2D>& src)
+	{
+		if (ImGui::ImageButton((void*) (intptr_t) src->GetTexture(), ImVec2(48, 48)))
+		{
+			ImGui::OpenPopup("texture_picker_popup");
+		}
+
+		ResourceManager& rm = ResourceManager::instance();
+		std::string newTex = ImGui::TexturePickerPopup();
+
+		if (!newTex.empty())
+		{
+			std::shared_ptr<Texture2D> tex = rm.GetTexture(newTex);
+			src = tex;
+		}
+
+		ImGui::SameLine();
+		ImGui::Text("%s", label);
+
+	}
+
 	template <typename Component>
 	inline bool ComponentTreeNode(Entity entity)
 	{
