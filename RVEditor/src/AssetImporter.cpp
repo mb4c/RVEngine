@@ -79,6 +79,10 @@ void AssetImporter::Render()
 			{
 				ImportMesh(copyPath);
 			}
+			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension()) == AssetType::IMAGE)
+			{
+				ImportTexture(copyPath);
+			}
 
 			if (copied)
 				EraseFirstElement();
@@ -148,8 +152,22 @@ void AssetImporter::ImportMesh(const std::filesystem::path& path)
 	{
 		aiMaterial* material = scene->mMaterials[i];
 		aiString materialName;
+
+		aiString texturePath;
+
+		if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0 && material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS)
+		{
+			std::filesystem::path texPath = m_AppData->dropPaths.at(0).parent_path();
+			texPath /= texturePath.C_Str();
+
+			std::string texPathStr = texPath;
+			std::replace( texPathStr.begin(), texPathStr.end(), '\\', '/' ); //HACK: std::filesystem::path::make_preferred doesn't work so we do this instead
+			texPath = texPathStr;
+
+			ImportTexture(texPath);
+		}
+
 		material->Get(AI_MATKEY_NAME, materialName);
-//		m_MaterialNames.push_back(materialName.C_Str());
 		std::cout << "Name: " << materialName.C_Str() << std::endl;
 		CreateRVMat(materialName.C_Str());
 
@@ -161,4 +179,33 @@ void AssetImporter::CreateRVMat(const std::string& materialName)
 	Material mat;
 	mat.materialName = materialName;
 	mat.Serialize(m_CurrentDirectory.string() + "/" + materialName + ".rvmat");
+}
+
+void AssetImporter::ImportTexture(const std::filesystem::path& path)
+{
+	std::cout << "Importing texture: " << path << std::endl;
+
+	auto resDir = m_ProjectSettings->ProjectPath.parent_path();
+	resDir /= m_ProjectSettings->ResourcesDirectory;
+
+	auto copyDir = m_CurrentDirectory;
+	copyDir /= path.filename();
+
+	if (!std::filesystem::exists(copyDir)) //HACK: we have to check manually because copy_options::overwrite_existing doesn't work on gcc
+	{
+		std::filesystem::copy_file(path, copyDir, std::filesystem::copy_options::overwrite_existing);
+	}
+
+
+
+	auto relativePath = std::filesystem::relative(copyDir, resDir);
+	std::cout << "path: " << path << std::endl;
+	std::cout << "resd: " << resDir << std::endl;
+	std::cout << "relp: " << relativePath << std::endl;
+	std::cout << "copy: " << copyDir << std::endl;
+
+	Texture2D tex;
+	tex.SetRelPath(relativePath);
+	tex.Serialize(copyDir.parent_path().string() + "/" + copyDir.stem().string() + "." + "rvtex2d");
+
 }

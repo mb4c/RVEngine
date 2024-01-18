@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <glm/vec4.hpp>
+#include <filesystem>
+#include "UUID.hpp"
 
 class Texture2D
 {
@@ -15,8 +17,16 @@ public:
 	std::string GetPath() {return m_Path;};
 	std::string GetName() {return m_Name;};
 	void SetName(std::string name) {m_Name = name;};
+
+	void SetRelPath(std::string path) {m_RelativePath = path;};
+
+	void Serialize(const std::filesystem::path& file);
+	void Deserialize(const std::filesystem::path& file);
 private:
 	uint32_t m_ID{};
 	std::string m_Path;
 	std::string m_Name;
+	UUID m_UUID;
+	bool m_IsNormalMap = false;
+	std::string m_RelativePath;
 };

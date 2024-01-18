@@ -42,6 +42,7 @@ private:
 	}
 
 	void ImportMesh(const std::filesystem::path& path);
-
 	void CreateRVMat(const std::string& materialName);
+
+	void ImportTexture(const std::filesystem::path& path);
 };

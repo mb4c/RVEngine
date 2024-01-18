@@ -3,6 +3,9 @@
 #include <iostream>
 #include <Texture2D.hpp>
 #include <Macros.hpp>
+#include <YAMLUtils.hpp>
+#include <fstream>
+#include "ResourceManager.hpp"
 
 Texture2D::Texture2D(const std::string& path, bool normalMap)
 {
@@ -92,6 +95,38 @@ Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool norm
 
 
 	m_ID = textureID;
+}
+
+void Texture2D::Serialize(const std::filesystem::path& file)
+{
+
+	YAML::Emitter out;
+	out << YAML::BeginMap;
+	out << YAML::Key << "Texture2D" << YAML::Value << m_UUID;
+	out << YAML::Key << "IsNormalMap" << YAML::Value << m_IsNormalMap;
+	out << YAML::Key << "RelativePath" << YAML::Value << m_RelativePath;
+
+	out << YAML::EndMap;
+
+	std::ofstream fout(file);
+	fout << out.c_str();
+}
+
+void Texture2D::Deserialize(const std::filesystem::path& file)
+{
+	ResourceManager& rm = ResourceManager::instance();
+
+	std::ifstream stream(file);
+	std::stringstream strStream;
+	strStream << stream.rdbuf();
+
+	YAML::Node data = YAML::Load(strStream.str());
+	if (!data["Texture2D"])
+		std::cout << "No data!" << std::endl;
+
+	m_UUID = data["Texture2D"].as<uint64_t>();
+	m_IsNormalMap = data["IsNormalMap"].as<bool>();
+	m_RelativePath = data["RelativePath"].as<std::string>();
 }
 
 

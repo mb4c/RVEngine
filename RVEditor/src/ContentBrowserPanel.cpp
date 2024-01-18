@@ -12,6 +12,8 @@ ContentBrowserPanel::ContentBrowserPanel()
 
 void ContentBrowserPanel::OnRender()
 {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
 	ImGui::Begin("Content Browser", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
@@ -94,6 +96,7 @@ void ContentBrowserPanel::OnRender()
 
 
 	ImGui::End();
+	ImGui::PopStyleVar(1);
 }
 
 std::filesystem::path ContentBrowserPanel::GetCurrentDirectory()
