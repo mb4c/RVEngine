@@ -11,7 +11,7 @@
 #include "SceneSerializer.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>
-#include "ContentBrowserPanel.hpp"
+#include "AssetsPanel.hpp"
 #include "NewProjectModal.hpp"
 #include "ProjectSettings.hpp"
 #include "AssetImporter.hpp"
@@ -51,7 +51,7 @@ private:
 	bool m_ViewportFocused = false;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
-	ContentBrowserPanel m_ContentBrowserPanel;
+	AssetsPanel m_AssetsPanel;
 	std::shared_ptr<Scene> m_ActiveScene;
 	std::shared_ptr<Scene> m_EditorScene, m_RuntimeScene;
 

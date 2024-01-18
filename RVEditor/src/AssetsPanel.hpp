@@ -4,10 +4,10 @@
 #include <filesystem>
 #include "Entity.hpp"
 
-class ContentBrowserPanel
+class AssetsPanel
 {
 public:
-	ContentBrowserPanel();
+	AssetsPanel();
 	void OnRender();
 	std::filesystem::path GetCurrentDirectory();
 	void SetAssetDirectory(std::filesystem::path dir);

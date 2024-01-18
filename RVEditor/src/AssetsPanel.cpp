@@ -1,20 +1,20 @@
-#include "ContentBrowserPanel.hpp"
+#include "AssetsPanel.hpp"
 #include "ResourceManager.hpp"
 #include "Widgets.hpp"
 #include <entt/entt.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-ContentBrowserPanel::ContentBrowserPanel()
+AssetsPanel::AssetsPanel()
 	: m_CurrentDirectory(m_AssetsDirectory)
 {
 
 }
 
-void ContentBrowserPanel::OnRender()
+void AssetsPanel::OnRender()
 {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("Content Browser", nullptr, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Assets", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
 		ImGui::PushItemWidth(128);
@@ -99,12 +99,12 @@ void ContentBrowserPanel::OnRender()
 	ImGui::PopStyleVar(1);
 }
 
-std::filesystem::path ContentBrowserPanel::GetCurrentDirectory()
+std::filesystem::path AssetsPanel::GetCurrentDirectory()
 {
 	return m_CurrentDirectory;
 }
 
-void ContentBrowserPanel::SetAssetDirectory(std::filesystem::path dir)
+void AssetsPanel::SetAssetDirectory(std::filesystem::path dir)
 {
 	m_AssetsDirectory = dir;
 	m_CurrentDirectory = m_AssetsDirectory;

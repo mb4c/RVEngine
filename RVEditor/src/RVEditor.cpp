@@ -68,7 +68,7 @@ void RVEditor::OnUpdate()
 		if(m_ProjectSettings.ProjectPath.empty())
 			std::cout << "No project opened!" << std::endl;
 		else
-			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_ContentBrowserPanel.GetCurrentDirectory());
+			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_AssetsPanel.GetCurrentDirectory());
 	}
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
@@ -140,7 +140,7 @@ void RVEditor::OnImGuiRender()
 {
 	DrawImGui();
 	m_SceneHierarchyPanel.OnRender();
-	m_ContentBrowserPanel.OnRender();
+	m_AssetsPanel.OnRender();
 	m_AssetImporterModal.Render();
 }
 
@@ -572,7 +572,7 @@ void RVEditor::OpenProject(const std::filesystem::path& path)
 {
 	m_ProjectSettings.Deserialize(path);
 	UpdateWindowTitle();
-	m_ContentBrowserPanel.SetAssetDirectory(path.parent_path() /= m_ProjectSettings.ResourcesDirectory);
+	m_AssetsPanel.SetAssetDirectory(path.parent_path() /= m_ProjectSettings.ResourcesDirectory);
 }
 
 void RVEditor::OnScenePlay()
