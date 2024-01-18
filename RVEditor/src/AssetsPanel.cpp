@@ -1,8 +1,6 @@
 #include "AssetsPanel.hpp"
 #include "ResourceManager.hpp"
 #include "Widgets.hpp"
-#include <entt/entt.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 AssetsPanel::AssetsPanel()
 	: m_CurrentDirectory(m_AssetsDirectory)
@@ -21,16 +19,6 @@ void AssetsPanel::OnRender()
 		ImGui::DragFloat("Thumbnail size", &m_ThumbnailSize, 1, 32, 128);
 		ImGui::EndMenuBar();
 	}
-
-//	{
-//		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
-//		ImGui::BeginChild("ChildL", ImVec2(ImGui::GetContentRegionAvail().x * 0.15f, ImGui::GetContentRegionAvail().y), window_flags);
-//		ImGui::Text("TODO");
-//		ImGui::EndChild();
-//	}
-//	ImGui::SameLine();
-
-
 
 	{
 		ResourceManager& rm = ResourceManager::instance();

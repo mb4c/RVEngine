@@ -13,7 +13,6 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 
 void RVEditor::OnInit()
 {
-//	model = std::make_shared<Model>("/home/lolman/git/horror-assets/Models/ServiceBell/Export/ServiceBell_low.fbx");
 	ResourceManager& rm = ResourceManager::instance();
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
@@ -555,7 +554,6 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 	if(serializer.Deserialize(path))
 	{
 		m_EditorScene = newScene;
-//		m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_EditorScene.get()));
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_ActiveScene = m_EditorScene;
 		m_SavedScenePath = path;
