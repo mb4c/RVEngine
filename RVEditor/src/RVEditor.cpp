@@ -133,6 +133,7 @@ void RVEditor::OnUpdate()
 	}
 
 	frameBuffer->Unbind();
+	Renderer::EndScene();
 }
 
 void RVEditor::OnImGuiRender()
@@ -170,10 +171,12 @@ void RVEditor::DrawImGui()
 
 		ImGui::DragScalar("Visualizer:", ImGuiDataType_U32, &m_DisplayType);
 
-		std::string drawCalls = "Draw calls: ";
-		drawCalls.append(std::to_string(RenderStats::GetInstance().DrawCalls));
-		ImGui::Text("%s", drawCalls.c_str());
-		//TODO: query opengl for GL_PRIMITIVES_GENERATED and GL_TIME_ELAPSED
+		ImGui::Text("Draw calls: %d", RenderStats::GetInstance().DrawCalls);
+
+		ImGui::Text("%u tris", Renderer::GetPrimitivesGenerated());
+
+		float timeElapsedInMilliseconds = static_cast<float>(Renderer::GetTimeElapsed()) / 1000000.0f;
+		ImGui::Text("%f ms", timeElapsedInMilliseconds);
 		ImGui::TreePop();
 	}
 

@@ -37,12 +37,17 @@ public:
 									 const GLchar* message,
 									 const void* userParam);
 
+	static GLuint GetPrimitivesGenerated();
+	static GLuint GetTimeElapsed();
+
 private:
 	struct SceneData
 	{
 		glm::mat4 ViewProjectionMatrix;
 		glm::mat4 ViewMatrix;
 		glm::mat4 ProjectionMatrix;
+		GLuint PrimitivesQuery;
+		GLuint TimeElapsedQuery;
 	};
 
 	static std::unique_ptr<SceneData> s_SceneData;

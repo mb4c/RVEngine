@@ -136,6 +136,7 @@ void Scene::OnUpdateRuntime(float ts)
 		shader->SetVec3("u_CamPos", cameraPosition);
 
 		RenderScene();
+		Renderer::EndScene();
 	}
 
 }

@@ -18,6 +18,9 @@ void Renderer::Init()
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(DebugMessageCallback, 0);
+
+	glGenQueries(1, &s_SceneData->PrimitivesQuery);
+	glGenQueries(1, &s_SceneData->TimeElapsedQuery);
 }
 
 void Renderer::Shutdown()
@@ -35,6 +38,8 @@ void Renderer::OnWindowResize(int width, int height)
 void Renderer::BeginScene(EditorCamera &camera)
 {
 	RV_PROFILE_FUNCTION();
+	glBeginQuery(GL_PRIMITIVES_GENERATED, s_SceneData->PrimitivesQuery);
+	glBeginQuery(GL_TIME_ELAPSED, s_SceneData->TimeElapsedQuery);
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * camera.GetViewMatrix();
 	s_SceneData->ViewMatrix = camera.GetViewMatrix();
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
@@ -46,6 +51,8 @@ void Renderer::BeginScene(EditorCamera &camera)
 void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
 {
 	RV_PROFILE_FUNCTION();
+	glBeginQuery(GL_PRIMITIVES_GENERATED, s_SceneData->PrimitivesQuery);
+	glBeginQuery(GL_TIME_ELAPSED, s_SceneData->TimeElapsedQuery);
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
 	s_SceneData->ViewMatrix = glm::inverse(transform);
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
@@ -55,7 +62,8 @@ void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
 void Renderer::EndScene()
 {
 	RV_PROFILE_FUNCTION();
-
+	glEndQuery(GL_PRIMITIVES_GENERATED);
+	glEndQuery(GL_TIME_ELAPSED);
 }
 
 void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4 &transform, unsigned int entity)
@@ -175,4 +183,18 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 		}
 	}();
 	std::cout << src_str << ", " << type_str << ", " << severity_str << ", " << id << ": " << message << '\n';
+}
+
+GLuint Renderer::GetPrimitivesGenerated()
+{
+	GLuint primitivesGenerated;
+	glGetQueryObjectuiv(s_SceneData->PrimitivesQuery, GL_QUERY_RESULT, &primitivesGenerated);
+	return primitivesGenerated;
+}
+
+GLuint Renderer::GetTimeElapsed()
+{
+	GLuint timeElapsed;
+	glGetQueryObjectuiv(s_SceneData->TimeElapsedQuery, GL_QUERY_RESULT, &timeElapsed);
+	return timeElapsed;
 }
