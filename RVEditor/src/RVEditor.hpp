@@ -83,6 +83,7 @@ private:
 	std::shared_ptr<FrameBuffer> frameBuffer;
 
 	int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+	int32_t m_SelectedGizmo = 0;
 
 	unsigned int m_DisplayType = 0;
 

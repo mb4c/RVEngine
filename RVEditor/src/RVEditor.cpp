@@ -174,6 +174,7 @@ void RVEditor::DrawImGui()
 		ImGui::Text("Draw calls: %d", RenderStats::GetInstance().DrawCalls);
 
 		ImGui::Text("%u tris", Renderer::GetPrimitivesGenerated());
+		ImGui::Text("Gizmo: %d", m_GizmoType);
 
 		float timeElapsedInMilliseconds = static_cast<float>(Renderer::GetTimeElapsed()) / 1000000.0f;
 		ImGui::Text("%f ms", timeElapsedInMilliseconds);
@@ -203,29 +204,31 @@ void RVEditor::DrawImGui()
 	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
-		ImGui::Text("Gizmo: ");
-
-		bool translate = false;
-		bool rotate = false;
-		bool scale = false;
+		const char* items[] = {"Translate", "Rotate", "Scale"};
 
 		if (m_GizmoType == ImGuizmo::OPERATION::TRANSLATE)
-			translate = true;
+			m_SelectedGizmo = 0;
 		if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
-			rotate = true;
+			m_SelectedGizmo = 1;
 		if (m_GizmoType == ImGuizmo::OPERATION::SCALE)
-			scale = true;
+			m_SelectedGizmo = 2;
 
-		if(ImGui::RadioButton("T", translate))
-			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+		ImGui::PushItemWidth(ImGui::CalcTextSize("Translate").x*2);
+		ImGui::Combo("Gizmo", &m_SelectedGizmo, items, IM_ARRAYSIZE(items));
 
-		if(ImGui::RadioButton("R", rotate))
-			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 
-		if(ImGui::RadioButton("S", scale))
-			m_GizmoType = ImGuizmo::OPERATION::SCALE;
-
-		ImGui::Text("|");
+		switch (m_SelectedGizmo)
+		{
+			case 0:
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			case 1:
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			case 2:
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
+		}
 
 		if(m_SceneState == SceneState::Edit)
 		{
