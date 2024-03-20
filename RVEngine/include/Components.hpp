@@ -175,7 +175,7 @@ std::string GetComponentName()
 {
 	std::string prettyFunction = __PRETTY_FUNCTION__;
 	size_t start = prettyFunction.find("Component = ") + 12;
-	size_t end = prettyFunction.find(";", start);
+	size_t end = prettyFunction.find(']', start);
 //	std::cout << prettyFunction.substr(start, end - start) << std::endl;
 	return prettyFunction.substr(start, end - start);
 }
@@ -185,7 +185,7 @@ void PrintComponentName()
 {
 	std::string prettyFunction = __PRETTY_FUNCTION__;
 	size_t start = prettyFunction.find("Component = ") + 12;
-	size_t end = prettyFunction.find("]", start);
+	size_t end = prettyFunction.find(']', start);
 	std::cout << prettyFunction.substr(start, end - start) << std::endl;
 }
 
