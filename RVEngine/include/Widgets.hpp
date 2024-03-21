@@ -128,4 +128,18 @@ namespace ImGui
 		return false;
 	}
 
+	inline void AlignForWidth(float width, float alignment = 0.5f, float avail = 0.0f)
+	{
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (avail == 0.0f)
+		{
+			avail = ImGui::GetContentRegionAvail().x;
+		}
+
+		float off = (avail - width) * alignment;
+		if (off > 0.0f)
+			ImGui::SetCursorPosX( + off);
+//			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+	}
+
 }

@@ -225,6 +225,8 @@ void RVEditor::DrawImGui()
 	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
+		float avail = ImGui::GetWindowContentRegionWidth();
+
 		const char* items[] = {"Translate", "Rotate", "Scale"};
 
 		if (m_GizmoType == ImGuizmo::OPERATION::TRANSLATE)
@@ -251,6 +253,9 @@ void RVEditor::DrawImGui()
 				break;
 		}
 
+		float width = 0.0f;
+		width += ImGui::CalcTextSize(ICON_FA_PLAY).x;
+		ImGui::AlignForWidth(width, 0.5, avail);
 		if(m_SceneState == SceneState::Edit)
 		{
 			if (ImGui::Button(ICON_FA_PLAY))
@@ -265,6 +270,8 @@ void RVEditor::DrawImGui()
 				OnSceneStop();
 			}
 		}
+
+		ImGui::AlignForWidth(ImGui::CalcTextSize("Camera speed").x + 85, 1, avail);
 		ImGui::PushItemWidth(75);
 		ImGui::DragFloat("Camera speed", &m_CameraSpeed);
 
