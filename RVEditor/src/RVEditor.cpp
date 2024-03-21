@@ -5,6 +5,9 @@
 #include "SceneSerializer.hpp"
 #include "portable-file-dialogs.h"
 #include "EnvironmentMap.hpp"
+#include "roboto.cpp"
+#include "fa-solid-900.cpp"
+#include "IconsFontAwesome6.h"
 
 RVEditor::RVEditor(const std::string &title, int width, int height) : Application(title, width, height)
 {
@@ -13,6 +16,24 @@ RVEditor::RVEditor(const std::string &title, int width, int height) : Applicatio
 
 void RVEditor::OnInit()
 {
+	float fontSize = 15;
+	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(roboto_compressed_data, roboto_compressed_size, fontSize);
+
+
+	ImGuiIO& io = ImGui::GetIO();
+//	io.Fonts->AddFontDefault();
+	float baseFontSize = fontSize; // 13.0f is the size of the default font. Change to the font size you use.
+	float iconFontSize = baseFontSize * 2.0f / 3.0f; // FontAwesome fonts need
+
+	// merge in icons from Font Awesome
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+	ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	icons_config.PixelSnapH = true;
+	icons_config.GlyphMinAdvanceX = iconFontSize;
+	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(fa_solid_900_compressed_data, fa_solid_900_compressed_size, iconFontSize, &icons_config, icons_ranges);
+
+
 	ResourceManager& rm = ResourceManager::instance();
 
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
@@ -232,14 +253,14 @@ void RVEditor::DrawImGui()
 
 		if(m_SceneState == SceneState::Edit)
 		{
-			if (ImGui::Button("Play"))
+			if (ImGui::Button(ICON_FA_PLAY))
 			{
 				OnScenePlay();
 			}
 		}
 		else
 		{
-			if (ImGui::Button("Stop"))
+			if (ImGui::Button(ICON_FA_STOP))
 			{
 				OnSceneStop();
 			}

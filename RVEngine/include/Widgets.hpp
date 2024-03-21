@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <Texture2D.hpp>
+#include "../../RVEditor/src/IconsFontAwesome6.h"
 
 namespace ImGui
 {
@@ -113,7 +114,7 @@ namespace ImGui
 											  ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap,
 											  GetComponentName<Component>().c_str());
 			ImGui::SameLine();
-			if (ImGui::Button("x"))
+			if (ImGui::Button(ICON_FA_XMARK))
 			{
 				entity.RemoveComponent<Component>();
 				ImGui::TreePop();
