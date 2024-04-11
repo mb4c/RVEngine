@@ -329,8 +329,8 @@ void Scene::OnRuntimeStart()
 			auto size = boxCollider.Size * transform.Scale;
 			entt::entity entityId = entity;
 			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-			m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
-
+			auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+			boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 		}
 	}
 
@@ -346,7 +346,8 @@ void Scene::OnRuntimeStart()
 			entt::entity entityId = entity;
 
 			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-			m_PhysicsManager->CreateSphere(Vec3(pos.x, pos.y, pos.z), radius, rot, (uint64_t)entityId, sphereCollider.Dynamic, sphereCollider.Mass, sphereCollider.Restitution, sphereCollider.Friction);
+			auto body = m_PhysicsManager->CreateSphere(Vec3(pos.x, pos.y, pos.z), radius, rot, (uint64_t)entityId, sphereCollider.Dynamic, sphereCollider.Mass, sphereCollider.Restitution, sphereCollider.Friction);
+			sphereCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 
 		}
 	}
@@ -404,6 +405,39 @@ void Scene::SetViewportSize(uint32_t width, uint32_t height)
 {
 	m_ViewportWidth = width;
 	m_ViewportHeight = height;
+}
+
+void Scene::SetPhysicsPosition(Entity entity, glm::vec3 pos)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	m_PhysicsManager->GetBodyInterface()->SetPosition(bodyID, RVec3Arg(pos.x, pos.y, pos.z), EActivation::Activate);
+}
+
+void Scene::SetGravityFactor(Entity entity, float gravityFactor)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	m_PhysicsManager->GetBodyInterface()->SetGravityFactor(bodyID, gravityFactor);
+}
+
+void Scene::SetVelocity(Entity entity, glm::vec3 velocity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	m_PhysicsManager->GetBodyInterface()->SetLinearVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
 }
 
 template<typename... Component>

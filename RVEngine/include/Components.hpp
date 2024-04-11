@@ -128,14 +128,17 @@ struct CameraComponent
 	CameraComponent(const CameraComponent&) = default;
 };
 
+
 //TODO: serialization
 struct BoxColliderComponent
 {
+
 	glm::vec3 Size = {1, 1, 1};
 	bool Dynamic = true;
 	float Mass = 10;
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
+	uint32_t IndexSequence;
 
 	BoxColliderComponent() = default;
 	BoxColliderComponent(const BoxColliderComponent&) = default;
@@ -149,6 +152,7 @@ struct SphereColliderComponent
 	float Mass = 10;
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
+	uint32_t IndexSequence;
 
 	SphereColliderComponent() = default;
 	SphereColliderComponent(const SphereColliderComponent&) = default;

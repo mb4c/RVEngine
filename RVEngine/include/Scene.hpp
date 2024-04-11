@@ -48,6 +48,10 @@ public:
 	std::string GetName() {  return m_SceneName;};
 	void SetName(const std::string& name) {m_SceneName = name;};
 
+	void SetPhysicsPosition(Entity entity, glm::vec3 pos);
+	void SetGravityFactor(Entity entity, float gravityFactor);
+	void SetVelocity(Entity entity, glm::vec3 velocity);
+
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;
