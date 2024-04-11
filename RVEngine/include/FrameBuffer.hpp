@@ -26,6 +26,7 @@ public:
 	void Resize(uint32_t width, uint32_t height);
 	uint32_t GetColorTexture() { return texture;}
 	uint32_t GetEntityID(glm::vec2 pos);
+	uint32_t GetFBO(){return fbo;}
 private:
 	uint32_t m_Width;
 	uint32_t m_Height;
