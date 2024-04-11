@@ -100,6 +100,11 @@ void Application::Run()
 		Renderer::Clear();
 
 		{
+			RV_PROFILE_SCOPE("OnUpdate");
+			OnUpdate();
+		}
+
+		{
 			RV_PROFILE_SCOPE("OnImGuiRender");
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -111,12 +116,6 @@ void Application::Run()
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
-
-		{
-			RV_PROFILE_SCOPE("OnUpdate");
-			OnUpdate();
-		}
-
 
 		{
 			RV_PROFILE_SCOPE("Swap Buffers");
