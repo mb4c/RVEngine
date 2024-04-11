@@ -44,6 +44,11 @@ struct TransformComponent
 		return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
 	}
 
+	void Translate(glm::vec3 translation)
+	{
+		Translation += translation;
+	}
+
 	// Rotate in degrees
 	void Rotate(glm::vec3 rotation)
 	{
