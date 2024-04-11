@@ -14,13 +14,14 @@
 class Model
 {
 public:
-
+	Model() = default;
 	Model(const std::string& path);
 	std::shared_ptr<std::vector<Mesh>> GetMeshes(){ RV_PROFILE_FUNCTION(); return m_Meshes;};
 	std::shared_ptr<Material> GetMaterial() { RV_PROFILE_FUNCTION(); return m_Material;};
 	std::shared_ptr<Material> m_Material;
 	std::string GetPath(){ return m_Path; };
-
+	void AddMesh(const Mesh& mesh){m_Meshes->push_back(mesh);}
+	void ClearMeshes() {m_Meshes->clear();}
 private:
 	std::shared_ptr<std::vector<Mesh>> m_Meshes = std::make_shared<std::vector<Mesh>>();
 	std::string m_Directory;
