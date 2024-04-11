@@ -21,9 +21,10 @@ struct Vertex
 class Mesh
 {
 public:
+	Mesh() = default;
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture2D> textures);
-//	Mesh();
-
+	void SetupBuffers();
+	void RecalculateNormals();
 	std::vector<Vertex> m_Vertices;
 	std::vector<uint32_t> m_Indices;
 	std::vector<Texture2D> m_Textures;
