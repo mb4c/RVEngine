@@ -128,8 +128,6 @@ struct CameraComponent
 	CameraComponent(const CameraComponent&) = default;
 };
 
-
-//TODO: serialization
 struct BoxColliderComponent
 {
 
@@ -144,7 +142,6 @@ struct BoxColliderComponent
 	BoxColliderComponent(const BoxColliderComponent&) = default;
 };
 
-//TODO: serialization
 struct SphereColliderComponent
 {
 	float Radius = 0.5;

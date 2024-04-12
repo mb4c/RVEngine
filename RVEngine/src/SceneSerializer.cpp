@@ -97,6 +97,36 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap;
 	}
 
+	if (entity.HasComponent<BoxColliderComponent>())
+	{
+		out << YAML::Key << "BoxColliderComponent";
+		out << YAML::BeginMap;
+
+		auto& bcc = entity.GetComponent<BoxColliderComponent>();
+		out << YAML::Key << "Size" << YAML::Value << bcc.Size;
+		out << YAML::Key << "Dynamic" << YAML::Value << bcc.Dynamic;
+		out << YAML::Key << "Mass" << YAML::Value << bcc.Mass;
+		out << YAML::Key << "Restitution" << YAML::Value << bcc.Restitution;
+		out << YAML::Key << "Friction" << YAML::Value << bcc.Friction;
+
+		out << YAML::EndMap;
+	}
+
+	if (entity.HasComponent<SphereColliderComponent>())
+	{
+		out << YAML::Key << "SphereColliderComponent";
+		out << YAML::BeginMap;
+
+		auto& scc = entity.GetComponent<SphereColliderComponent>();
+		out << YAML::Key << "Radius" << YAML::Value << scc.Radius;
+		out << YAML::Key << "Dynamic" << YAML::Value << scc.Dynamic;
+		out << YAML::Key << "Mass" << YAML::Value << scc.Mass;
+		out << YAML::Key << "Restitution" << YAML::Value << scc.Restitution;
+		out << YAML::Key << "Friction" << YAML::Value << scc.Friction;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 
 }
@@ -219,6 +249,28 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				lc.color = lightComponent["Color"].as<glm::vec3>();
 				lc.intensity = lightComponent["Intensity"].as<float>();
 
+			}
+
+			auto boxCollider = entity["BoxColliderComponent"];
+			if (boxCollider)
+			{
+				auto& bcc = deserializedEntity.AddComponent<BoxColliderComponent>();
+				bcc.Size = boxCollider["Size"].as<glm::vec3>();
+				bcc.Dynamic = boxCollider["Dynamic"].as<bool>();
+				bcc.Mass = boxCollider["Mass"].as<float>();
+				bcc.Restitution = boxCollider["Restitution"].as<float>();
+				bcc.Friction = boxCollider["Friction"].as<float>();
+			}
+
+			auto sphereCollider = entity["SphereColliderComponent"];
+			if (sphereCollider)
+			{
+				auto& scc = deserializedEntity.AddComponent<SphereColliderComponent>();
+				scc.Radius = sphereCollider["Radius"].as<float>();
+				scc.Dynamic = sphereCollider["Dynamic"].as<bool>();
+				scc.Mass = sphereCollider["Mass"].as<float>();
+				scc.Restitution = sphereCollider["Restitution"].as<float>();
+				scc.Friction = sphereCollider["Friction"].as<float>();
 			}
 		}
 	}
