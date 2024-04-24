@@ -40,8 +40,7 @@ public:
 
 	Input m_Input{nullptr};
 	AppData m_AppData;
-
-
+	bool m_IsEditor = false;
 private:
 	std::string m_Title;
 	int m_Width;

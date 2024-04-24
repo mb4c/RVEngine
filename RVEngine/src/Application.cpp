@@ -99,23 +99,47 @@ void Application::Run()
 		Renderer::SetClearColor(glm::vec4{clearColor[0], clearColor[1], clearColor[2], 1});
 		Renderer::Clear();
 
+		if (!m_IsEditor)
 		{
-			RV_PROFILE_SCOPE("OnImGuiRender");
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-			ImGuizmo::BeginFrame();
+			{
+				RV_PROFILE_SCOPE("OnUpdate");
+				OnUpdate();
+			}
+			{
+				RV_PROFILE_SCOPE("OnImGuiRender");
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+				ImGuizmo::BeginFrame();
+				OnImGuiRender();
 
-			OnImGuiRender();
+				ImGui::Render();
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			}
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		} else
+		{
+			{
+				RV_PROFILE_SCOPE("OnImGuiRender");
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+				ImGuizmo::BeginFrame();
+				OnImGuiRender();
+
+				ImGui::Render();
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			}
+
+			{
+				RV_PROFILE_SCOPE("OnUpdate");
+				OnUpdate();
+
+			}
 		}
 
-		{
-			RV_PROFILE_SCOPE("OnUpdate");
-			OnUpdate();
-		}
+
 
 
 		{
