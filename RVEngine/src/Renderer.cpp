@@ -22,6 +22,8 @@ void Renderer::Init()
 	glGenQueries(1, &s_SceneData->PrimitivesQuery);
 	glGenQueries(1, &s_SceneData->TimeElapsedQuery);
 	s_SceneData->QueryActive = false;
+	s_SceneData->QueryResultsReady = false;
+
 }
 
 void Renderer::Shutdown()
@@ -77,6 +79,7 @@ void Renderer::EndScene()
 		glEndQuery(GL_PRIMITIVES_GENERATED);
 		glEndQuery(GL_TIME_ELAPSED);
 		s_SceneData->QueryActive = false;
+		s_SceneData->QueryResultsReady = true;
 	}
 }
 
@@ -201,14 +204,26 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 
 GLuint Renderer::GetPrimitivesGenerated()
 {
-	GLuint primitivesGenerated;
-	glGetQueryObjectuiv(s_SceneData->PrimitivesQuery, GL_QUERY_RESULT, &primitivesGenerated);
-	return primitivesGenerated;
+	if (s_SceneData->QueryResultsReady)
+	{
+		GLuint primitivesGenerated;
+		glGetQueryObjectuiv(s_SceneData->PrimitivesQuery, GL_QUERY_RESULT, &primitivesGenerated);
+		return primitivesGenerated;
+	} else
+	{
+		return 0;
+	}
 }
 
 GLuint Renderer::GetTimeElapsed()
 {
-	GLuint timeElapsed;
-	glGetQueryObjectuiv(s_SceneData->TimeElapsedQuery, GL_QUERY_RESULT, &timeElapsed);
-	return timeElapsed;
+	if (s_SceneData->QueryResultsReady)
+	{
+		GLuint timeElapsed;
+		glGetQueryObjectuiv(s_SceneData->TimeElapsedQuery, GL_QUERY_RESULT, &timeElapsed);
+		return timeElapsed;
+	} else
+	{
+		return 0;
+	}
 }

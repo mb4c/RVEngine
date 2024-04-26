@@ -49,6 +49,7 @@ private:
 		GLuint PrimitivesQuery;
 		GLuint TimeElapsedQuery;
 		bool QueryActive;
+		bool QueryResultsReady;
 	};
 
 	static std::unique_ptr<SceneData> s_SceneData;
