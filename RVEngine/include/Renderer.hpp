@@ -48,6 +48,7 @@ private:
 		glm::mat4 ProjectionMatrix;
 		GLuint PrimitivesQuery;
 		GLuint TimeElapsedQuery;
+		bool QueryActive;
 	};
 
 	static std::unique_ptr<SceneData> s_SceneData;

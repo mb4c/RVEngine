@@ -11,7 +11,7 @@
 
 RVEditor::RVEditor(const std::string &title, int width, int height) : Application(title, width, height)
 {
-
+	m_IsEditor = true;
 }
 
 void RVEditor::OnInit()
