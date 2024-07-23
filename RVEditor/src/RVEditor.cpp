@@ -58,18 +58,25 @@ void RVEditor::OnInit()
 
 	auto shader = rm.GetShader("pbr");
 
-	auto plane = m_ActiveScene->CreateEntity("cube");
-	plane.AddComponent<MeshRendererComponent>();
-	plane.GetComponent<MeshRendererComponent>().shader = shader;
-	plane.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
-	plane.GetComponent<TransformComponent>().SetPosition({2,0,0});
+	auto cube = m_ActiveScene->CreateEntity("cube");
+	cube.AddComponent<MeshRendererComponent>();
+	cube.GetComponent<MeshRendererComponent>().shader = shader;
+	cube.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+	cube.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
 	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
 
 	auto sphere = m_ActiveScene->CreateEntity("sphere");
 	sphere.AddComponent<MeshRendererComponent>();
 	sphere.GetComponent<MeshRendererComponent>().shader = shader;
 	sphere.GetComponent<MeshRendererComponent>().model = rm.GetModel("sphere05");
+	sphere.GetComponent<TransformComponent>().SetPosition({2, 0, 0});
 	rm.GetModel("sphere05")->m_Material = rm.GetMaterial("brickwall");
+
+	sphere.SetParent(cube);
+	skybox.SetParent(cube);
+
+	std::cout << "Children: "  << cube.GetChildren().size() << std::endl;
+	std::cout << "Dupa: "  << cube.GetChild(0).GetComponent<TagComponent>().Tag << std::endl;
 
 	m_ActiveScene->OnStart();
 
@@ -323,18 +330,24 @@ void RVEditor::DrawImGui()
 		{
 			auto& tc = selectedEntity.GetComponent<TransformComponent>();
 			glm::mat4 transform = tc.GetTransform();
+			glm::mat4 deltaTransform = glm::mat4(1);
 
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform));
+			//TODO: Rotation is broken
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), glm::value_ptr(deltaTransform));
 
 			if(ImGuizmo::IsUsing())
 			{
 				glm::vec3 translation, rotation, scale;
+//				glm::mat4 t = tc.GetLocalTransform();
+//				t = t * deltaTransform;
 				Math::DecomposeTransform(transform, translation, rotation, scale);
-
+//				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(t), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+//				glm::vec3 deltaRotation = rotation - tc.Rotation;
 				tc.Translation = translation;
-//			glm::vec3 deltaRot = rotation - tc.Rotation;
 				tc.Rotation = rotation;
 				tc.Scale = scale;
+				tc.IsDirty = true;
+
 			}
 		}
 

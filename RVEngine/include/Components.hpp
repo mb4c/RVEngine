@@ -31,36 +31,47 @@ struct TransformComponent
 	glm::vec3 Translation{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 Rotation{ 0.0f, 0.0f, 0.0f }; // Radians
 	glm::vec3 Scale{ 1.0f, 1.0f, 1.0f };
+	glm::mat4 GlobalTransform = glm::mat4(1);
+
+	bool IsDirty = true;
 
 	TransformComponent() = default;
 	TransformComponent(const TransformComponent&) = default;
 	TransformComponent(const glm::vec3 & translation)
 			: Translation(translation) {}
 
-	glm::mat4 GetTransform() const
+	glm::mat4 GetLocalTransform() const
 	{
 		glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
 		return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
 	}
+	glm::mat4 GetTransform() const
+	{
+		return GlobalTransform;
+	}
 
 	void Translate(glm::vec3 translation)
 	{
 		Translation += translation;
+		IsDirty = true;
 	}
 
 	// Rotate in degrees
 	void Rotate(glm::vec3 rotation)
 	{
 		Rotation += glm::radians(rotation);
+		IsDirty = true;
 	}
 	void SetScale(glm::vec3 scale)
 	{
 		Scale = scale;
+		IsDirty = true;
 	}
 	void SetPosition(glm::vec3 position)
 	{
 		Translation = position;
+		IsDirty = true;
 	}
 	glm::vec3 GetPosition()
 	{
@@ -69,10 +80,12 @@ struct TransformComponent
 	void SetRotation(glm::vec3 rotation)
 	{
 		Rotation = glm::radians(rotation);
+		IsDirty = true;
 	}
 	void SetRotationRad(glm::vec3 rotation)
 	{
 		Rotation = rotation;
+		IsDirty = true;
 	}
 	glm::vec3 GetRotationRad()
 	{
@@ -167,6 +180,15 @@ struct SkyboxComponent
 	SkyboxComponent(const SkyboxComponent&) = default;
 };
 
+//TODO: serialization
+struct RelationshipComponent
+{
+	entt::entity first{entt::null};
+	entt::entity prev{entt::null};
+	entt::entity next{entt::null};
+	entt::entity parent{entt::null};
+};
+
 template<typename... Component>
 struct ComponentGroup
 {
@@ -174,16 +196,19 @@ struct ComponentGroup
 
 using AllComponents =
 		ComponentGroup<TransformComponent, SpriteRendererComponent,
-		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent, SphereColliderComponent, SkyboxComponent>;
+		CameraComponent, MeshRendererComponent, LightComponent, BoxColliderComponent, SphereColliderComponent, SkyboxComponent, RelationshipComponent>;
 
 template<typename Component>
 std::string GetComponentName()
 {
 	std::string prettyFunction = __PRETTY_FUNCTION__;
 	size_t start = prettyFunction.find("Component = ") + 12;
-	size_t end = prettyFunction.find(']', start);
+	size_t end = prettyFunction.find(';', start);
+//	std::cout << prettyFunction << std::endl;
 //	std::cout << prettyFunction.substr(start, end - start) << std::endl;
+
 	return prettyFunction.substr(start, end - start);
+
 }
 
 template<typename Component>
@@ -192,6 +217,7 @@ void PrintComponentName()
 	std::string prettyFunction = __PRETTY_FUNCTION__;
 	size_t start = prettyFunction.find("Component = ") + 12;
 	size_t end = prettyFunction.find(']', start);
+	std::cout << prettyFunction << std::endl;
 	std::cout << prettyFunction.substr(start, end - start) << std::endl;
 }
 

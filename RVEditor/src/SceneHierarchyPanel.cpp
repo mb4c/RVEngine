@@ -21,11 +21,17 @@ void SceneHierarchyPanel::OnRender()
 {
 	RV_PROFILE_FUNCTION();
 	ImGui::Begin("Scene hierarchy");
+
+	// Iterate over all entities and draw root entities
 	m_Context->m_Registry.each([this](auto entityID)
-	{
-		Entity entity {entityID, m_Context.get()};
-		DrawEntityNode(entity);
-	});
+							   {
+								   Entity entity{entityID, m_Context.get()};
+								   if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
+								   {
+									   DrawEntityNode(entity);
+								   }
+							   });
+
 	if (ImGui::BeginPopupContextWindow())
 	{
 		if (ImGui::BeginMenu("Create..."))
@@ -131,16 +137,23 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
 	RV_PROFILE_FUNCTION();
 	auto& tag = entity.GetComponent<TagComponent>().Tag;
+	ImGuiTreeNodeFlags flags =
+			((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	bool opened = ImGui::TreeNodeEx((void*) (uint32_t) entity.GetHandle(), flags, "%s", tag.c_str());
 
-	ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
-	bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity, flags, "%s", tag.c_str());
 	if (ImGui::IsItemClicked() || ImGui::IsItemClicked(1))
 	{
 		m_SelectionContext = entity;
 		m_Context->SetSelectedEntity(entity);
 	}
+
 	if (opened)
 	{
+		// Recursively draw children
+		for (auto& child: entity.GetChildren())
+		{
+			DrawEntityNode(child);
+		}
 		ImGui::TreePop();
 	}
 }
@@ -162,6 +175,21 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 		ImGui::InputText("Tag", &tag);
 	}
+
+//	if (entity.HasComponent<RelationshipComponent>())
+//	{
+//		ImGui::Text("Entity: %lu", (uint64_t) entity.GetHandle());
+//		unsigned long children = entity.GetChildren().size();
+//		ImGui::Text("Children: %lu", (uint64_t) children);
+//		auto& first = entity.GetComponent<RelationshipComponent>().first;
+//		ImGui::Text("First: %lu", (uint64_t) first);
+//		auto& prev = entity.GetComponent<RelationshipComponent>().prev;
+//		ImGui::Text("Prev: %lu", (uint64_t) prev);
+//		auto& next = entity.GetComponent<RelationshipComponent>().next;
+//		ImGui::Text("Next: %lu", (uint64_t) next);
+//		auto& parent = entity.GetComponent<RelationshipComponent>().parent;
+//		ImGui::Text("Parent: %lu", (uint64_t) parent);
+//	}
 
 	if (entity.HasComponent<TransformComponent>())
 	{

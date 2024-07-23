@@ -66,6 +66,17 @@ public:
 	entt::entity GetHandle() { return m_EntityHandle;};
 	UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 
+	void SetParent(Entity entity);
+	Entity GetParent();
+	Entity Find(std::string name);
+	Entity GetChild(uint32_t index);
+	std::vector<Entity> GetChildren();
+	bool IsChildOf(Entity entity);
+	bool HasParent();
+
+	static void UpdateGlobalTransform(Entity entity);
+
+
 
 private:
 	entt::entity m_EntityHandle{ entt::null };

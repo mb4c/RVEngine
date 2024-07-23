@@ -144,6 +144,14 @@ void Scene::OnUpdateRuntime(float ts)
 void Scene::RenderScene()
 {
 	RV_PROFILE_FUNCTION();
+	m_Registry.each([this](auto entityID)
+							   {
+								   Entity entity{entityID, this};
+								   if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
+								   {
+									   Entity::UpdateGlobalTransform(entity);
+								   }
+							   });
 
 	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent ,LightComponent>);
 	unsigned int irrMap;
@@ -393,6 +401,7 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
 	Entity entity = { m_Registry.create(), this };
 	entity.AddComponent<IDComponent>(uuid);
 	entity.AddComponent<TransformComponent>();
+	entity.AddComponent<RelationshipComponent>();
 	auto& tag = entity.AddComponent<TagComponent>();
 	tag.Tag = name.empty() ? "Entity" : name;
 
