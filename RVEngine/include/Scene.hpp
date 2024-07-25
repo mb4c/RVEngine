@@ -51,6 +51,11 @@ public:
 	void SetPhysicsPosition(Entity entity, glm::vec3 pos);
 	void SetGravityFactor(Entity entity, float gravityFactor);
 	void SetVelocity(Entity entity, glm::vec3 velocity);
+	void AddVelocity(Entity entity, glm::vec3 velocity);
+	void SetAngularVelocity(Entity entity, glm::vec3 velocity);
+
+	glm::vec3 GetVelocity(Entity entity);
+	glm::vec3 GetAngularVelocity(Entity entity);
 
 private:
 	entt::registry m_Registry;

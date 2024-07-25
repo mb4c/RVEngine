@@ -449,6 +449,52 @@ void Scene::SetVelocity(Entity entity, glm::vec3 velocity)
 	m_PhysicsManager->GetBodyInterface()->SetLinearVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
 }
 
+void Scene::AddVelocity(Entity entity, glm::vec3 velocity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	m_PhysicsManager->GetBodyInterface()->AddLinearVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
+}
+
+void Scene::SetAngularVelocity(Entity entity, glm::vec3 velocity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	m_PhysicsManager->GetBodyInterface()->SetAngularVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
+}
+
+glm::vec3 Scene::GetVelocity(Entity entity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	Vec3 vel = m_PhysicsManager->GetBodyInterface()->GetLinearVelocity(bodyID);
+	return {vel.GetX(),vel.GetY(),vel.GetZ()};
+}
+
+glm::vec3 Scene::GetAngularVelocity(Entity entity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	Vec3 vel = m_PhysicsManager->GetBodyInterface()->GetAngularVelocity(bodyID);
+	return {vel.GetX(),vel.GetY(),vel.GetZ()};
+}
+
 template<typename... Component>
 void Scene::CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src,
 						  const std::unordered_map<UUID, entt::entity>& enttMap)
