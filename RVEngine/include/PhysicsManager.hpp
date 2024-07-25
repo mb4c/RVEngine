@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BodyUserData.hpp"
+
 #include <Jolt/Jolt.h>
 
 // Jolt includes
@@ -167,7 +169,7 @@ public:
 	virtual ValidateResult OnContactValidate(const Body& inBody1, const Body& inBody2, RVec3Arg inBaseOffset,
 											 const CollideShapeResult& inCollisionResult) override
 	{
-		cout << "Contact validate callback" << endl;
+//		cout << "Contact validate callback" << endl;
 
 		// Allows you to ignore a contact before it is created (using layers to not make objects collide is cheaper!)
 		return ValidateResult::AcceptAllContactsForThisBodyPair;
@@ -176,18 +178,30 @@ public:
 	virtual void OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold,
 								ContactSettings& ioSettings) override
 	{
-		cout << "A contact was added" << endl;
+//		cout << "A contact was added" << endl;
+		BodyUserData* bud = reinterpret_cast<BodyUserData*>(inBody1.GetUserData());
+		bud->isColliding = true;
+		BodyUserData* bud2 = reinterpret_cast<BodyUserData*>(inBody2.GetUserData());
+		bud2->isColliding = true;
 	}
 
 	virtual void OnContactPersisted(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold,
 									ContactSettings& ioSettings) override
 	{
-		cout << "A contact was persisted" << endl;
+//		cout << "A contact was persisted" << endl;
+//		BodyUserData* bud = reinterpret_cast<BodyUserData*>(inBody1.GetUserData());
+//		bud->isColliding = true;
+//		BodyUserData* bud2 = reinterpret_cast<BodyUserData*>(inBody2.GetUserData());
+//		bud2->isColliding = true;
 	}
 
 	virtual void OnContactRemoved(const SubShapeIDPair& inSubShapePair) override
 	{
-		cout << "A contact was removed" << endl;
+//		cout << "A contact was removed" << endl;
+//		BodyUserData* bud = reinterpret_cast<BodyUserData*>(inBody1.GetUserData());
+//		bud->isColliding = false;
+//		BodyUserData* bud2 = reinterpret_cast<BodyUserData*>(inBody2.GetUserData());
+//		bud2->isColliding = false;
 	}
 };
 
@@ -197,12 +211,12 @@ class MyBodyActivationListener : public BodyActivationListener
 public:
 	virtual void OnBodyActivated(const BodyID& inBodyID, uint64 inBodyUserData) override
 	{
-		cout << "A body got activated" << endl;
+//		cout << "A body got activated" << endl;
 	}
 
 	virtual void OnBodyDeactivated(const BodyID& inBodyID, uint64 inBodyUserData) override
 	{
-		cout << "A body went to sleep" << endl;
+//		cout << "A body went to sleep" << endl;
 	}
 };
 
@@ -214,8 +228,10 @@ public:
 	void StartSimulation();
 	void ShutdownSimulation();
 	void OnUpdate(float dt);
-	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
-	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
+	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
+//	Body* CreateBox(uint64_t entity, TransformComponent tc, BoxColliderComponent bcc);
+
+	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
 	std::vector<BodyID> GetBodies() {return m_Bodies;};
 	BodyInterface* GetBodyInterface(){return m_BodyInterface;};
 	void SetMass(BodyID body, float mass);

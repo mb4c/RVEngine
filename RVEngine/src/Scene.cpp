@@ -51,7 +51,9 @@ void Scene::OnUpdateRuntime(float ts)
 					if (lock.Succeeded()) // body_id may no longer be valid
 					{
 						const JPH::Body &bodyobj = lock.GetBody();
-						auto entityId = static_cast<entt::entity>(bodyobj.GetUserData());
+						BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
+
+						auto entityId = static_cast<entt::entity>(bud->entityID);
 						if (entityId == entity)
 						{
 							auto pos = bodyobj.GetPosition();
@@ -86,7 +88,9 @@ void Scene::OnUpdateRuntime(float ts)
 					if (lock.Succeeded()) // body_id may no longer be valid
 					{
 						const JPH::Body &bodyobj = lock.GetBody();
-						auto entityId = static_cast<entt::entity>(bodyobj.GetUserData());
+						BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
+
+						auto entityId = static_cast<entt::entity>(bud->entityID);
 						if (entityId == entity)
 						{
 							auto pos = bodyobj.GetPosition();
@@ -337,7 +341,8 @@ void Scene::OnRuntimeStart()
 			auto size = boxCollider.Size * transform.Scale;
 			entt::entity entityId = entity;
 			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-			auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+			auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+//			auto body = m_PhysicsManager->CreateBox((uint64_t)entityId, transform, boxCollider);
 			boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 		}
 	}
@@ -350,11 +355,11 @@ void Scene::OnRuntimeStart()
 			auto pos = transform.GetPosition();
 
 			float radius = sphereCollider.Radius * glm::compMax(transform.Scale);
-			std::cout << "radius " << radius << std::endl;
+//			std::cout << "radius " << radius << std::endl;
 			entt::entity entityId = entity;
 
 			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-			auto body = m_PhysicsManager->CreateSphere(Vec3(pos.x, pos.y, pos.z), radius, rot, (uint64_t)entityId, sphereCollider.Dynamic, sphereCollider.Mass, sphereCollider.Restitution, sphereCollider.Friction);
+			auto body = m_PhysicsManager->CreateSphere(Vec3(pos.x, pos.y, pos.z), radius, rot, (uint64_t)entityId, &sphereCollider.userData, sphereCollider.Dynamic, sphereCollider.Mass, sphereCollider.Restitution, sphereCollider.Friction);
 			sphereCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 
 		}

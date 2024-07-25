@@ -8,6 +8,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include "SceneCamera.hpp"
 
+#include "BodyUserData.hpp"
+
 struct TagComponent
 {
 	std::string Tag;
@@ -150,6 +152,7 @@ struct BoxColliderComponent
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
 	uint32_t IndexSequence;
+	BodyUserData userData;
 
 	BoxColliderComponent() = default;
 	BoxColliderComponent(const BoxColliderComponent&) = default;
@@ -163,6 +166,7 @@ struct SphereColliderComponent
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
 	uint32_t IndexSequence;
+	BodyUserData userData;
 
 	SphereColliderComponent() = default;
 	SphereColliderComponent(const SphereColliderComponent&) = default;

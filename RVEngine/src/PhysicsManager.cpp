@@ -120,7 +120,7 @@ void PhysicsManager::ShutdownSimulation()
 	Factory::sInstance = nullptr;
 }
 
-Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, bool dynamic, float mass, float restitution, float friction)
+Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution, float friction)
 {
 	BoxShapeSettings bodyShapeSettings(size);
 
@@ -136,15 +136,48 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_
 	bodySettings.mFriction = friction;
 	// Create the actual rigid body
 	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
-	body->SetUserData(entity);
+	bud->entityID = entity;
+	void* ptr = bud;
+	body->SetUserData(reinterpret_cast<uintptr_t>(ptr));
 
 	// Add it to the world
 	m_BodyInterface->AddBody(body->GetID(), EActivation::Activate);
 	m_Bodies.push_back(body->GetID());
 	return body;
 }
+//
+//Body* PhysicsManager::CreateBox(uint64_t entity, TransformComponent tc, BoxColliderComponent bcc)
+//{
+//	auto shapeSize = bcc.Size * tc.Scale;
+//	auto pos = tc.GetPosition();
+//	Vec3 position(pos.x,pos.y,pos.z);
+////	entt::entity entityId = entity;
+//	auto rotation = JPH::Quat::sEulerAngles(Vec3(tc.GetRotationRad().x,tc.GetRotationRad().y,tc.GetRotationRad().z));
+//
+//	BoxShapeSettings bodyShapeSettings(Vec3(shapeSize.x,shapeSize.y,shapeSize.z));
+//
+//	// Create the shape
+//	ShapeSettings::ShapeResult bodyShapeResult = bodyShapeSettings.Create();
+//
+//	ShapeRefC bodyShape = bodyShapeResult.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
+//	// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
+//
+//	BodyCreationSettings bodySettings(bodyShape, position, rotation, bcc.Dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
+//	bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
+//	bodySettings.mMassPropertiesOverride.mMass = bcc.Mass;
+//	bodySettings.mRestitution = bcc.Restitution;
+//	bodySettings.mFriction = bcc.Friction;
+//	// Create the actual rigid body
+//	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
+//	body->SetUserData(entity);
+//
+//	// Add it to the world
+//	m_BodyInterface->AddBody(body->GetID(), EActivation::Activate);
+//	m_Bodies.push_back(body->GetID());
+//	return body;
+//}
 
-Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, bool dynamic, float mass, float restitution, float friction)
+Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution, float friction)
 {
 	BodyCreationSettings bodySettings(new SphereShape(radius), position, rotation, dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
 	bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
@@ -153,8 +186,9 @@ Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, u
 	bodySettings.mFriction = friction;
 
 	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
-	body->SetUserData(entity);
-
+	bud->entityID = entity;
+	void* ptr = bud;
+	body->SetUserData(reinterpret_cast<uintptr_t>(ptr));
 	// Add it to the world
 	m_BodyInterface->AddBody(body->GetID(), EActivation::Activate);
 	m_Bodies.push_back(body->GetID());
