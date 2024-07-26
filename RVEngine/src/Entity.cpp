@@ -116,3 +116,19 @@ void Entity::UpdateGlobalTransform(Entity entity)
 //	}
 }
 
+Entity Entity::OnContactAdded()
+{
+	Entity other;
+	if (IsColliding() && HasComponent<SphereColliderComponent>())
+	{
+		other = Entity(static_cast<entt::entity>(GetComponent<SphereColliderComponent>().userData.otherID), m_Scene);
+		return other;
+	}
+	else if (IsColliding() && HasComponent<BoxColliderComponent>())
+	{
+		other = Entity(static_cast<entt::entity>(GetComponent<BoxColliderComponent>().userData.otherID), m_Scene);
+		return other;
+	}
+
+	return Entity();
+}

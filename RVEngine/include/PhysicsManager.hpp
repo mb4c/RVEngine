@@ -183,6 +183,9 @@ public:
 		bud->isColliding = true;
 		BodyUserData* bud2 = reinterpret_cast<BodyUserData*>(inBody2.GetUserData());
 		bud2->isColliding = true;
+
+		bud->otherID = bud2->entityID;
+		bud2->otherID = bud->entityID;
 	}
 
 	virtual void OnContactPersisted(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold,

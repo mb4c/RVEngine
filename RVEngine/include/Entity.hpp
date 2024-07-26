@@ -77,6 +77,9 @@ public:
 
 	static void UpdateGlobalTransform(Entity entity);
 
+	bool IsColliding();
+
+	Entity OnContactAdded();
 
 
 private:
