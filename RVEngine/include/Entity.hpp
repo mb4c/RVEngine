@@ -74,11 +74,9 @@ public:
 	std::vector<Entity> GetChildren();
 	bool IsChildOf(Entity entity);
 	bool HasParent();
-
 	static void UpdateGlobalTransform(Entity entity);
 
 	bool IsColliding();
-
 	Entity OnContactAdded();
 
 

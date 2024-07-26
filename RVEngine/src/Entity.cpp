@@ -116,6 +116,25 @@ void Entity::UpdateGlobalTransform(Entity entity)
 //	}
 }
 
+bool Entity::IsColliding()
+{
+	bool isColliding = false;
+	if(HasComponent<SphereColliderComponent>())
+	{
+		auto& sc = GetComponent<SphereColliderComponent>();
+		isColliding = sc.userData.isColliding;
+		sc.userData.isColliding = false;
+	}
+	if(HasComponent<BoxColliderComponent>())
+	{
+		auto& bc = GetComponent<BoxColliderComponent>();
+		isColliding = bc.userData.isColliding;
+		bc.userData.isColliding = false;
+	}
+
+	return isColliding;
+}
+
 Entity Entity::OnContactAdded()
 {
 	Entity other;
