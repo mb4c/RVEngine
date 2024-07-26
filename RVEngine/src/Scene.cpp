@@ -22,7 +22,7 @@ Entity Scene::CreateEntity(const std::string& name)
 
 void Scene::OnStart()
 {
-	PrintAllComponentNames(AllComponents{});
+//	PrintAllComponentNames(AllComponents{});
 }
 
 void Scene::OnUpdateEditor(float ts, EditorCamera& editorCamera)
