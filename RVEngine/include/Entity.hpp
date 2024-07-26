@@ -63,8 +63,9 @@ public:
 		return !(*this == other);
 	}
 
-	entt::entity GetHandle() { return m_EntityHandle;};
+	entt::entity GetHandle() { return m_EntityHandle; };
 	UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+	bool IsValid() { return m_EntityHandle != entt::null; }
 
 	void SetParent(Entity entity);
 	Entity GetParent();
