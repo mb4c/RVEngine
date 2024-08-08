@@ -7,13 +7,13 @@
 #include <fstream>
 #include "ResourceManager.hpp"
 
-Texture2D::Texture2D(const std::string& path, bool normalMap)
+Texture2D::Texture2D(const std::string& path, bool normalMap, bool nearestFiltering)
 {
-	m_ID = FromFile(path);
+	m_ID = FromFile(path, normalMap, nearestFiltering);
 	m_Path = path;
 }
 
-uint32_t Texture2D::FromFile(const std::string& path, bool normalMap)
+uint32_t Texture2D::FromFile(const std::string& path, bool normalMap, bool nearestFiltering)
 {
 	RV_PROFILE_FUNCTION();
 
@@ -40,10 +40,19 @@ uint32_t Texture2D::FromFile(const std::string& path, bool normalMap)
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		if (nearestFiltering)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		} else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+
 
 		stbi_image_free(data);
 	}
@@ -66,7 +75,7 @@ uint32_t Texture2D::GetTexture() const
 	return m_ID;
 }
 
-Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap)
+Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap, bool nearestFiltering)
 {
 	RV_PROFILE_FUNCTION();
 
@@ -90,8 +99,15 @@ Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool norm
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (nearestFiltering)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	} else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 
 
 	m_ID = textureID;

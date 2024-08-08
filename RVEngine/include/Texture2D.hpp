@@ -8,10 +8,10 @@ class Texture2D
 {
 public:
 	Texture2D() = default;
-	explicit Texture2D(const std::string& path, bool normalMap = false);
-	explicit Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap = false);
+	explicit Texture2D(const std::string& path, bool normalMap = false, bool nearestFiltering = false);
+	explicit Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool normalMap = false, bool nearestFiltering = false);
 
-	static uint32_t FromFile(const std::string& path, bool normalMap = false);
+	static uint32_t FromFile(const std::string& path, bool normalMap = false, bool nearestFiltering = false);
 	void SetTexture(uint32_t id);
 	[[nodiscard]] uint32_t GetTexture() const;
 	std::string GetPath() {return m_Path;};
