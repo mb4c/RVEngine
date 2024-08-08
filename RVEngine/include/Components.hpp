@@ -44,17 +44,20 @@ struct TransformComponent
 
 	glm::mat4 GetLocalTransform() const
 	{
+		RV_PROFILE_FUNCTION();
 		glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
 		return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
 	}
 	glm::mat4 GetTransform() const
 	{
+		RV_PROFILE_FUNCTION();
 		return GlobalTransform;
 	}
 
 	void Translate(glm::vec3 translation)
 	{
+		RV_PROFILE_FUNCTION();
 		Translation += translation;
 		IsDirty = true;
 	}
@@ -62,39 +65,47 @@ struct TransformComponent
 	// Rotate in degrees
 	void Rotate(glm::vec3 rotation)
 	{
+		RV_PROFILE_FUNCTION();
 		Rotation += glm::radians(rotation);
 		IsDirty = true;
 	}
 	void SetScale(glm::vec3 scale)
 	{
+		RV_PROFILE_FUNCTION();
 		Scale = scale;
 		IsDirty = true;
 	}
 	void SetPosition(glm::vec3 position)
 	{
+		RV_PROFILE_FUNCTION();
 		Translation = position;
 		IsDirty = true;
 	}
 	glm::vec3 GetPosition()
 	{
+		RV_PROFILE_FUNCTION();
 		return Translation;
 	}
 	void SetRotation(glm::vec3 rotation)
 	{
+		RV_PROFILE_FUNCTION();
 		Rotation = glm::radians(rotation);
 		IsDirty = true;
 	}
 	void SetRotationRad(glm::vec3 rotation)
 	{
+		RV_PROFILE_FUNCTION();
 		Rotation = rotation;
 		IsDirty = true;
 	}
 	glm::vec3 GetRotationRad()
 	{
+		RV_PROFILE_FUNCTION();
 		return Rotation;
 	}
 	glm::quat GetRotationQuat()
 	{
+		RV_PROFILE_FUNCTION();
 		return glm::quat(Translation);
 	}
 };
