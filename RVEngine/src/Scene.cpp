@@ -433,6 +433,18 @@ void Scene::SetPhysicsPosition(Entity entity, glm::vec3 pos)
 	m_PhysicsManager->GetBodyInterface()->SetPosition(bodyID, RVec3Arg(pos.x, pos.y, pos.z), EActivation::Activate);
 }
 
+glm::vec3 Scene::GetPhysicsPosition(Entity entity)
+{
+	BodyID bodyID;
+	if (entity.HasComponent<BoxColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
+	if (entity.HasComponent<SphereColliderComponent>())
+		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	auto pos = m_PhysicsManager->GetBodyInterface()->GetPosition(bodyID);
+	return {pos.GetX(), pos.GetY(), pos.GetZ()};
+}
+
 void Scene::SetGravityFactor(Entity entity, float gravityFactor)
 {
 	BodyID bodyID;

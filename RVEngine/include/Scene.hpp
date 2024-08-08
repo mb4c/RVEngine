@@ -50,6 +50,7 @@ public:
 	void SetName(const std::string& name) {m_SceneName = name;};
 
 	void SetPhysicsPosition(Entity entity, glm::vec3 pos);
+	glm::vec3 GetPhysicsPosition(Entity entity);
 	void SetGravityFactor(Entity entity, float gravityFactor);
 	void SetVelocity(Entity entity, glm::vec3 velocity);
 	void AddVelocity(Entity entity, glm::vec3 velocity);
