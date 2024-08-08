@@ -97,6 +97,7 @@ void main()
     float ao = 1;
     float metallic = u_MetallicVal;
     float roughness = u_RoughnessVal;
+    float alpha = texture(albedoMap, TexCoords).a;
 
     if(u_UseAlbedo)
     {
@@ -192,7 +193,7 @@ void main()
     switch (u_DisplayType)
     {
         case 0: // LIT
-            FragColor = vec4(color, 1.0);
+            FragColor = vec4(color, alpha);
             break;
         case 1: // ALBEDO
             FragColor = vec4(albedo, 1.0);
