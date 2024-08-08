@@ -321,10 +321,11 @@ void Scene::RemoveEntity(Entity entity)
 	}
 }
 
-void Scene::DuplicateEntity(Entity entity)
+Entity Scene::DuplicateEntity(Entity entity)
 {
 	Entity newEntity = CreateEntity(entity.GetComponent<TagComponent>().Tag);
 	CopyComponentIfExists(AllComponents{}, newEntity, entity);
+	return newEntity;
 }
 
 void Scene::OnRuntimeStart()

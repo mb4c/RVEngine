@@ -32,7 +32,8 @@ public:
 
 	Entity CreateEntity(const std::string& name = std::string());
 	void RemoveEntity(Entity entity);
-	void DuplicateEntity(Entity entity);
+	Entity DuplicateEntity(Entity entity);
+	uint32_t GetEntityCount();
 
 	void OnStart();
 	void OnUpdateEditor(float ts, EditorCamera& editorCamera);

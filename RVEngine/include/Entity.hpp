@@ -79,6 +79,7 @@ public:
 	bool IsColliding();
 	Entity OnContactAdded();
 
+	Entity Instantiate();
 
 private:
 	entt::entity m_EntityHandle{ entt::null };

@@ -151,3 +151,17 @@ Entity Entity::OnContactAdded()
 
 	return Entity();
 }
+
+Entity Entity::Instantiate()
+{
+	auto entity = m_Scene->DuplicateEntity(*this);
+	if (entity.HasComponent<BoxColliderComponent>())
+	{
+		auto& bc = entity.GetComponent<BoxColliderComponent>();
+		BodyUserData bud;
+		bc.userData = bud;
+		bc.IndexSequence = 0;
+
+	}
+	return entity;
+}
