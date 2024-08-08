@@ -27,11 +27,13 @@ void Scene::OnStart()
 
 void Scene::OnUpdateEditor(float ts, EditorCamera& editorCamera)
 {
+	RV_PROFILE_FUNCTION();
 	RenderScene();
 }
 
 void Scene::OnUpdateRuntime(float ts)
 {
+	RV_PROFILE_FUNCTION();
 	m_PhysicsManager->OnUpdate(ts);
 
 	{
@@ -39,72 +41,48 @@ void Scene::OnUpdateRuntime(float ts)
 		for (auto entity : view)
 		{
 			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
-
-			for (auto body : m_PhysicsManager->GetBodies())
+			if (boxCollider.IndexSequence == 0)
 			{
-				const JPH::BodyLockInterface* lock_interface;
-				lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
-
-// Scoped lock
-				{
-					JPH::BodyLockRead lock(*lock_interface, body);
-					if (lock.Succeeded()) // body_id may no longer be valid
-					{
-						const JPH::Body &bodyobj = lock.GetBody();
-						BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
-
-						auto entityId = static_cast<entt::entity>(bud->entityID);
-						if (entityId == entity)
-						{
-							auto pos = bodyobj.GetPosition();
-							transform.SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
-							auto rot = bodyobj.GetRotation();
-							transform.SetRotationRad(glm::eulerAngles(glm::quat(rot.GetW(),rot.GetX(),rot.GetY(), rot.GetZ())));
-
-						}
-
-					}
-				}
-
+				auto pos = transform.GetPosition();
+				auto size = boxCollider.Size * transform.Scale;
+				entt::entity entityId = entity;
+				auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
+				auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+//			auto body = m_PhysicsManager->CreateBox((uint64_t)entityId, transform, boxCollider);
+				boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 			}
-
 		}
 	}
 
+
 	{
-		auto view = m_Registry.view<TransformComponent, SphereColliderComponent>();
-		for (auto entity : view)
+		RV_PROFILE_SCOPE("UpdatePhysicsTransform");
+
+		for (auto body : m_PhysicsManager->GetBodies())
 		{
-			auto [transform, sphereCollider] = view.get<TransformComponent, SphereColliderComponent>(entity);
-
-			for (auto body : m_PhysicsManager->GetBodies())
+			const JPH::BodyLockInterface* lock_interface;
+			lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface();
+			// Scoped lock
 			{
-				const JPH::BodyLockInterface* lock_interface;
-				lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface(); // Or GetBodyLockInterfaceNoLock
-
-// Scoped lock
+				JPH::BodyLockRead lock(*lock_interface, body);
+				if (lock.Succeeded()) // body_id may no longer be valid
 				{
-					JPH::BodyLockRead lock(*lock_interface, body);
-					if (lock.Succeeded()) // body_id may no longer be valid
+					const JPH::Body &bodyobj = lock.GetBody();
+					BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
+
+					auto entity = Entity(static_cast<entt::entity>(bud->entityID), this);
+					if (entity.HasComponent<BoxColliderComponent>() || entity.HasComponent<SphereColliderComponent>())
 					{
-						const JPH::Body &bodyobj = lock.GetBody();
-						BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
-
-						auto entityId = static_cast<entt::entity>(bud->entityID);
-						if (entityId == entity)
-						{
-							auto pos = bodyobj.GetPosition();
-							transform.SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
-							auto rot = bodyobj.GetRotation();
-							transform.SetRotationRad(glm::eulerAngles(glm::quat(rot.GetW(),rot.GetX(),rot.GetY(), rot.GetZ())));
-
-						}
+						auto& transform = entity.GetComponent<TransformComponent>();
+						auto pos = bodyobj.GetPosition();
+						transform.SetPosition(glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ()));
+						auto rot = bodyobj.GetRotation();
+						transform.SetRotationRad(glm::eulerAngles(glm::quat(rot.GetW(),rot.GetX(),rot.GetY(), rot.GetZ())));
 
 					}
+
 				}
-
 			}
-
 		}
 	}
 
@@ -333,20 +311,6 @@ void Scene::OnRuntimeStart()
 	m_IsRunning = true;
 	m_PhysicsManager = new PhysicsManager();
 
-	{
-		auto view = m_Registry.view<TransformComponent, BoxColliderComponent>();
-		for (auto entity : view)
-		{
-			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
-			auto pos = transform.GetPosition();
-			auto size = boxCollider.Size * transform.Scale;
-			entt::entity entityId = entity;
-			auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-			auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
-//			auto body = m_PhysicsManager->CreateBox((uint64_t)entityId, transform, boxCollider);
-			boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
-		}
-	}
 
 	{
 		auto view = m_Registry.view<TransformComponent, SphereColliderComponent>();
