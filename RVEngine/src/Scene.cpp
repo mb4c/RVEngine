@@ -513,6 +513,11 @@ glm::vec3 Scene::GetAngularVelocity(Entity entity)
 	return {vel.GetX(),vel.GetY(),vel.GetZ()};
 }
 
+uint32_t Scene::GetEntityCount()
+{
+	return m_Registry.size();
+}
+
 template<typename... Component>
 void Scene::CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src,
 						  const std::unordered_map<UUID, entt::entity>& enttMap)
