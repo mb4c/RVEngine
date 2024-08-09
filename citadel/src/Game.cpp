@@ -78,14 +78,16 @@ void Game::OnImGuiRender()
 {
 	RV_PROFILE_FUNCTION();
 
-	ImGui::Begin("Settings");
+	ImGui::Begin("Debug");
 
 	uint32_t entities = m_ActiveScene->GetEntityCount();
 	ImGui::Text("Entities %u", entities);
 	uint32_t drawCalls = RenderStats::GetInstance().DrawCalls;
 	ImGui::Text("Draw calls %u", drawCalls);
+	float frameTime = GetDeltaTime();
+	ImGui::Text("Frame time %.2f ms", frameTime * 1000);
 	float gpuTime = static_cast<float>(Renderer::GetTimeElapsed()) / 1000000.0f;
-	ImGui::Text("GPU time %f ms", gpuTime);
+	ImGui::Text("GPU time %.2f ms", gpuTime);
 	ImGui::End();
 
 
