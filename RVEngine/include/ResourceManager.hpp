@@ -47,6 +47,9 @@ public:
 		brickwallMat->albedo = GetTexture("brickwall_albedo");
 		brickwallMat->normal= GetTexture("brickwall_normal");
 		brickwallMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
+		brickwallMat->useAlbedo = true;
+		brickwallMat->useNormal = true;
+		brickwallMat->useORM = true;
 		m_Materials.emplace("brickwall", brickwallMat);
 
 		auto defaultMat = std::make_shared<Material>();
