@@ -1,5 +1,6 @@
 #include <glad/glad.h>
-#include <stb_image.h>
+#include <OpenImageIO/imageio.h>
+#include <OpenImageIO/imagebuf.h>
 #include <iostream>
 #include <Texture2D.hpp>
 #include <Macros.hpp>
@@ -21,23 +22,24 @@ uint32_t Texture2D::FromFile(const std::string& path, bool normalMap, bool neare
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 
-	int width, height, nrComponents;
-	unsigned char *data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
-	if (data)
+	OIIO::ImageBuf data(path);
+	data = data.copy(OIIO::TypeDesc::UCHAR);
+
+	if (!data.has_error())
 	{
 		GLenum format;
-		if (nrComponents == 1)
+		if (data.spec().nchannels == 1)
 			format = GL_RED;
-		else if (nrComponents == 3)
+		else if (data.spec().nchannels == 3)
 			format = GL_RGB;
-		else if (nrComponents == 4)
+		else if (data.spec().nchannels == 4)
 			format = GL_RGBA;
 
 		if (normalMap)
 			format = GL_RGBA;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, data.spec().width, data.spec().height, 0, format, GL_UNSIGNED_BYTE, data.localpixels());
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
@@ -54,12 +56,10 @@ uint32_t Texture2D::FromFile(const std::string& path, bool normalMap, bool neare
 		}
 
 
-		stbi_image_free(data);
 	}
 	else
 	{
 		std::cout << "Texture failed to load: " << (!path.empty() ? path : "No path!") << std::endl;
-		stbi_image_free(data);
 	}
 
 	return textureID;
