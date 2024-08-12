@@ -18,11 +18,14 @@ public:
 	std::shared_ptr<Shader> shader;
 	std::shared_ptr<Texture2D> albedo;
 	std::shared_ptr<Texture2D> normal;
-	std::shared_ptr<Texture2D> occlusionRoughnessMetallic;
+	std::shared_ptr<Texture2D> occlusion;
+	std::shared_ptr<Texture2D> roughness;
+	std::shared_ptr<Texture2D> metallic;
+	std::shared_ptr<Texture2D> emission;
 
-	bool useAlbedo;
-	bool useNormal;
-	bool useORM;
+	bool useAlbedo = true;
+	bool useNormal = true;
+//	bool useORM;
 
 	glm::vec4 albedoColor = {1,1,1,1};
 	float roughnessValue = 0;

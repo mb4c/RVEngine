@@ -25,9 +25,7 @@ public:
 private:
 	std::shared_ptr<std::vector<Mesh>> m_Meshes = std::make_shared<std::vector<Mesh>>();
 	std::string m_Directory;
-	std::vector<Texture2D> m_TexturesLoaded;
 	std::string m_Path;
-	std::vector<std::string> m_MaterialNames; // mesh material names used for generating engine materials
 	void LoadModel(const std::string& path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);

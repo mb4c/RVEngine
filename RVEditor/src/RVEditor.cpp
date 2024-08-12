@@ -58,25 +58,49 @@ void RVEditor::OnInit()
 
 	auto shader = rm.GetShader("pbr");
 
-	auto cube = m_ActiveScene->CreateEntity("cube");
-	cube.AddComponent<MeshRendererComponent>();
-	cube.GetComponent<MeshRendererComponent>().shader = shader;
-	cube.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
-	cube.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
-	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
+//	auto cube = m_ActiveScene->CreateEntity("cube");
+//	cube.AddComponent<MeshRendererComponent>();
+//	cube.GetComponent<MeshRendererComponent>().shader = shader;
+//	cube.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+//	cube.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
+//	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
+//
+//	auto sphere = m_ActiveScene->CreateEntity("sphere");
+//	sphere.AddComponent<MeshRendererComponent>();
+//	sphere.GetComponent<MeshRendererComponent>().shader = shader;
+//	sphere.GetComponent<MeshRendererComponent>().model = rm.GetModel("sphere05");
+//	sphere.GetComponent<TransformComponent>().SetPosition({2, 0, 0});
+//	rm.GetModel("sphere05")->m_Material = rm.GetMaterial("brickwall");
+//
+//	sphere.SetParent(cube);
+//	skybox.SetParent(cube);
+//
+//	std::cout << "Children: "  << cube.GetChildren().size() << std::endl;
+//	std::cout << "Dupa: "  << cube.GetChild(0).GetComponent<TagComponent>().Tag << std::endl;
 
-	auto sphere = m_ActiveScene->CreateEntity("sphere");
-	sphere.AddComponent<MeshRendererComponent>();
-	sphere.GetComponent<MeshRendererComponent>().shader = shader;
-	sphere.GetComponent<MeshRendererComponent>().model = rm.GetModel("sphere05");
-	sphere.GetComponent<TransformComponent>().SetPosition({2, 0, 0});
-	rm.GetModel("sphere05")->m_Material = rm.GetMaterial("brickwall");
 
-	sphere.SetParent(cube);
-	skybox.SetParent(cube);
+	auto helmet = m_ActiveScene->CreateEntity("helmet");
+	helmet.AddComponent<MeshRendererComponent>();
+	helmet.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	helmet.GetComponent<MeshRendererComponent>().model = rm.GetModel("helmet");
+	helmet.GetComponent<TransformComponent>().SetPosition({0, 0, -5});
+	helmet.GetComponent<TransformComponent>().SetRotation({90, 0, 0});
 
-	std::cout << "Children: "  << cube.GetChildren().size() << std::endl;
-	std::cout << "Dupa: "  << cube.GetChild(0).GetComponent<TagComponent>().Tag << std::endl;
+	auto boombox = m_ActiveScene->CreateEntity("boombox");
+	boombox.AddComponent<MeshRendererComponent>();
+	boombox.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	boombox.GetComponent<MeshRendererComponent>().model = rm.GetModel("boombox");
+	boombox.GetComponent<TransformComponent>().SetPosition({-2, 0, -5});
+	boombox.GetComponent<TransformComponent>().SetRotation({0, 180, 0});
+	boombox.GetComponent<TransformComponent>().SetScale({25, 25, 25});
+
+	auto sas = m_ActiveScene->CreateEntity("maxwell");
+	sas.AddComponent<MeshRendererComponent>();
+	sas.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	sas.GetComponent<MeshRendererComponent>().model = rm.GetModel("maxwell");
+	sas.GetComponent<TransformComponent>().SetPosition({2, 0, -5});
+	sas.GetComponent<TransformComponent>().SetRotation({-90, -90, 0});
+	sas.GetComponent<TransformComponent>().SetScale({0.05, 0.05, 0.05});
 
 	m_ActiveScene->OnStart();
 
