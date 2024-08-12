@@ -15,6 +15,7 @@ void Game::OnInit()
 	Renderer::SetClearColor({0, 0, 0, 1});
 
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
+	m_LastViewportSize = glm::vec2{GetWindowSize().x, GetWindowSize().y};
 
 	m_ActiveScene = std::make_shared<Scene>();
 	EnvironmentMap envMap("res/overcast_soil_puresky_4k.hdr");
@@ -30,9 +31,9 @@ void Game::OnInit()
 	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
 	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
 
-	auto camera = m_ActiveScene->CreateEntity("Camera");
-	camera.AddComponent<CameraComponent>();
-	camera.GetComponent<TransformComponent>().SetPosition({0,0,16});
+	m_Camera = m_ActiveScene->CreateEntity("Camera");
+	m_Camera.AddComponent<CameraComponent>();
+	m_Camera.GetComponent<TransformComponent>().SetPosition({0,0,16});
 
 	m_Player = m_ActiveScene->CreateEntity("Player");
 	m_Player.AddComponent<MeshRendererComponent>();
@@ -71,7 +72,7 @@ void Game::OnUpdate()
 	RV_PROFILE_FUNCTION();
 //	Renderer::BeginScene();
 	ProcessInput();
-
+	OnResize();
 
 	glm::vec2 input{0,0};
 	if (m_Input.GetKeyDown(GLFW_KEY_W))
@@ -169,4 +170,17 @@ void Game::OpenProject(const filesystem::path& path)
 //	m_ProjectSettings.Deserialize(path);
 //	UpdateWindowTitle();
 //	m_AssetsPanel.SetAssetDirectory(path.parent_path() /= m_ProjectSettings.ResourcesDirectory);
+}
+
+void Game::OnResize()
+{
+	uint32_t width = GetWindowSize().x;
+	uint32_t height = GetWindowSize().y;
+	if (m_LastViewportSize != glm::vec2{width, height})
+	{
+
+		frameBuffer = std::make_shared<FrameBuffer>(width, height);
+		m_ActiveScene->SetViewportSize(width,height);
+		m_LastViewportSize = glm::vec2{width, height};
+	}
 }

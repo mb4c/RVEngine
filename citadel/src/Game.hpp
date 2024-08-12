@@ -22,13 +22,16 @@ private:
 	void OnShutdown() override;
 	void OnImGuiRender() override;
 	void ProcessInput();
+	void OnResize();
 	void OpenScene(const std::filesystem::path& path);
 	void OpenProject(const std::filesystem::path& path);
 	std::shared_ptr<Scene> m_ActiveScene;
 	std::shared_ptr<FrameBuffer> frameBuffer;
 	std::filesystem::path m_SavedScenePath;
+	glm::vec2 m_LastViewportSize{};
 
 	Entity m_Player;
+	Entity m_Camera;
 	float m_MoveSpeed = 4;
 
 };
