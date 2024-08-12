@@ -27,6 +27,7 @@ public:
 		m_Shaders.emplace("prefilter", std::make_shared<Shader>("res/shaders/Prefilter_vert.glsl", "res/shaders/Prefilter_frag.glsl"));
 		m_Shaders.emplace("brdf", std::make_shared<Shader>("res/shaders/brdf_vert.glsl", "res/shaders/brdf_frag.glsl"));
 
+		m_Shaders.emplace("grid", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/grid_frag.glsl"));
 
 		m_Textures.emplace("brickwall_albedo", std::make_shared<Texture2D>(Texture2D("res/brickwall.jpg")));
 		m_Textures.emplace("brickwall_normal", std::make_shared<Texture2D>(Texture2D("res/brickwall_normal.jpg")));
