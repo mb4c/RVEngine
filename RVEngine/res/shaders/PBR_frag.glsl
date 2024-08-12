@@ -10,11 +10,14 @@ in mat3 TBN;
 
 layout(binding=0) uniform sampler2D albedoMap;
 layout(binding=1) uniform sampler2D normalMap;
-layout(binding=2) uniform sampler2D occlusionRoughnessMetallic;
+layout(binding=2) uniform sampler2D occlusionMap;
+layout(binding=3) uniform sampler2D roughnessMap;
+layout(binding=4) uniform sampler2D metallicMap;
+layout(binding=5) uniform sampler2D emissionMap;
 
-layout(binding=3) uniform samplerCube irradianceMap;
-layout(binding=4)  uniform samplerCube prefilterMap;
-layout(binding=5)  uniform sampler2D brdfLUT;
+layout(binding=6) uniform samplerCube irradianceMap;
+layout(binding=7)  uniform samplerCube prefilterMap;
+layout(binding=8)  uniform sampler2D brdfLUT;
 
 // lights
 #define MAX_LIGHTS 32
@@ -27,7 +30,6 @@ uniform uint u_DisplayType;
 
 uniform bool u_UseAlbedo;
 uniform bool u_UseNormal;
-uniform bool u_UseORM;
 
 uniform vec4 u_AlbedoColor;
 uniform float u_RoughnessVal;
@@ -126,12 +128,9 @@ void main()
     {
         N = getNormalFromMap();
     }
-    if(u_UseORM)
-    {
-        ao = texture(occlusionRoughnessMetallic, TexCoords).r;
-        metallic  = texture(occlusionRoughnessMetallic, TexCoords).b;
-        roughness = texture(occlusionRoughnessMetallic, TexCoords).g;
-    }
+    ao = texture(occlusionMap, TexCoords).r;
+    roughness  = texture(roughnessMap, TexCoords).g;
+    metallic = texture(metallicMap, TexCoords).b;
 
     vec3 V = normalize(u_CamPos - WorldPos);
     vec3 R = reflect(-V, N);
@@ -202,7 +201,7 @@ void main()
     vec3 ambient = (kD * diffuse + specular) * ao;
 
 
-    vec3 color = ambient + Lo;
+    vec3 color = ambient + Lo + texture(emissionMap, TexCoords).rgb;
 
     // HDR tonemapping
     color = PBRNeutralToneMapping(color);
