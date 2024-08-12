@@ -27,4 +27,8 @@ private:
 	std::shared_ptr<Scene> m_ActiveScene;
 	std::shared_ptr<FrameBuffer> frameBuffer;
 	std::filesystem::path m_SavedScenePath;
+
+	Entity m_Player;
+	float m_MoveSpeed = 4;
+
 };

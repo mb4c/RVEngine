@@ -17,7 +17,7 @@ void Game::OnInit()
 	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
 
 	m_ActiveScene = std::make_shared<Scene>();
-	EnvironmentMap envMap("res/buikslotermeerplein_4k.hdr");
+	EnvironmentMap envMap("res/overcast_soil_puresky_4k.hdr");
 	envMap.Capture();
 
 
@@ -29,6 +29,30 @@ void Game::OnInit()
 	skybox.GetComponent<SkyboxComponent>().irradianceMap = envMap.irradianceMap;
 	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
 	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
+
+	auto camera = m_ActiveScene->CreateEntity("Camera");
+	camera.AddComponent<CameraComponent>();
+	camera.GetComponent<TransformComponent>().SetPosition({0,0,16});
+
+	m_Player = m_ActiveScene->CreateEntity("Player");
+	m_Player.AddComponent<MeshRendererComponent>();
+	m_Player.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	m_Player.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+	m_Player.GetComponent<TransformComponent>().SetPosition({0,0,0});
+//	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
+
+
+
+//	auto grid = m_ActiveScene->CreateEntity("grid");
+//	grid.AddComponent<MeshRendererComponent>();
+//	grid.GetComponent<MeshRendererComponent>().shader = rm.GetShader("grid");
+//	grid.GetComponent<MeshRendererComponent>().model = rm.GetModel("plane");
+//	grid.GetComponent<TransformComponent>().SetRotation({180,0,0});
+//	grid.GetComponent<TransformComponent>().SetPosition({0,0,0});
+//	grid.GetComponent<TransformComponent>().SetScale({100,100,1});
+//	rm.GetModel("plane")->m_Material = rm.GetMaterial("grid");
+
+
 
 
 	m_ActiveScene->OnStart();
@@ -49,6 +73,21 @@ void Game::OnUpdate()
 	ProcessInput();
 
 
+	glm::vec2 input;
+	if (m_Input.GetKeyDown(GLFW_KEY_W))
+		input.y = 1;
+	if (m_Input.GetKeyDown(GLFW_KEY_S))
+		input.y = -1;
+	if (m_Input.GetKeyDown(GLFW_KEY_A))
+		input.x = -1;
+	if (m_Input.GetKeyDown(GLFW_KEY_D))
+		input.x = 1;
+
+	input *= GetDeltaTime();
+	input *= m_MoveSpeed;
+
+	glm::vec3 pos = m_Player.GetComponent<TransformComponent>().GetPosition();
+	m_Player.GetComponent<TransformComponent>().SetPosition(pos + glm::vec3{input.x,input.y,0});
 
 
 	frameBuffer->Bind();
