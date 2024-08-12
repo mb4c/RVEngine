@@ -50,7 +50,7 @@ void Model::LoadModel(const std::string& path)
 			for (int j = 0; j < textureCount; ++j)
 			{
 				aiString path;
-				std::cout << path.C_Str() << std::endl;
+//				std::cout << path.C_Str() << std::endl;
 				if (material->GetTexture(static_cast<aiTextureType>(type), j, &path) == AI_SUCCESS)
 				{
 //					std::cout << "Texture type: " << aiTextureTypeToString((aiTextureType) type) << std::endl;
