@@ -12,6 +12,8 @@ Model::Model(const std::string& path)
 void Model::LoadModel(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
+	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
 												 aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_RemoveRedundantMaterials);
@@ -199,7 +201,8 @@ void Model::LoadModel(const std::string& path)
 //			std::cout << "	Emission missing using fallback" << std::endl;
 		}
 	}
-
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	std::cout << "Loading model " << path << " took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 }
 
 void Model::ProcessNode(aiNode* node, const aiScene* scene)
