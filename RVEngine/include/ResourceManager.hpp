@@ -37,6 +37,7 @@ public:
 		// Default textures
 		m_Textures.emplace("default_normal", std::make_shared<Texture2D>(Texture2D(256, 256, {0.5, 0.5, 1, 1})));
 		m_Textures.emplace("default_albedo", std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1})));
+		m_Textures.emplace("default_emission", std::make_shared<Texture2D>(Texture2D(256, 256, {0, 0, 0, 0})));
 		m_Textures.emplace("default_missing", std::make_shared<Texture2D>(Texture2D("res/missing.png")));
 
 		//TODO: temp
@@ -56,11 +57,15 @@ public:
 //		brickwallMat->useORM = true;
 //		m_Materials.emplace("brickwall", brickwallMat);
 //
-//		auto defaultMat = std::make_shared<Material>();
-//		defaultMat->albedo = GetTexture("default_albedo");
-//		defaultMat->normal= GetTexture("default_normal");
-//		defaultMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
-//		m_Materials.emplace("default_pbr", defaultMat);
+		auto defaultMat = std::make_shared<Material>();
+		defaultMat->albedo = GetTexture("default_albedo");
+		defaultMat->normal= GetTexture("default_normal");
+		defaultMat->occlusion = GetTexture("default_albedo");
+		defaultMat->roughness = GetTexture("default_albedo");
+		defaultMat->metallic = GetTexture("default_albedo");
+		defaultMat->emission = GetTexture("default_emission");
+		m_Materials.emplace("default_pbr", defaultMat);
+		GetModel("cube")->m_Material = GetMaterial("default_pbr");
 //
 //		auto grid = std::make_shared<Material>();
 //		grid->albedo = GetTexture("default_albedo");
