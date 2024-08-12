@@ -25,10 +25,14 @@ public:
 
 	bool useAlbedo = true;
 	bool useNormal = true;
-//	bool useORM;
+	bool useOcclusion = true;
+	bool useRoughness = true;
+	bool useMetallic = true;
+	bool useEmission = true;
 
 	glm::vec4 albedoColor = {1,1,1,1};
 	float roughnessValue = 0;
 	float metallicValue = 0;
+	float emissionStrength = 1;
 
 };

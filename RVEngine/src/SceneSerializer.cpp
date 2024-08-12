@@ -79,7 +79,7 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		//textures
 		out << YAML::Key << "Albedo" << YAML::Value << meshRendererComponent.model->m_Material->albedo->GetPath();
 		out << YAML::Key << "Normal" << YAML::Value << meshRendererComponent.model->m_Material->normal->GetPath();
-		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic->GetPath();
+//		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic->GetPath(); // tODO :FIX
 
 
 		out << YAML::EndMap; // MeshRendererComponent
@@ -233,10 +233,10 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 					mat->normal = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["Normal"].as<std::string>()));
 				else
 					mat->normal = rm.GetTexture("default_normal");
-				if (!meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>().empty())
-					mat->occlusionRoughnessMetallic = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>()));
-				else
-					mat->normal = rm.GetTexture("default_albedo");
+//				if (!meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>().empty())
+//					mat->occlusionRoughnessMetallic = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>())); // TODO : FIX
+//				else
+//					mat->normal = rm.GetTexture("default_albedo");
 
 				mrc.model->m_Material = mat;
  				mrc.shader = rm.GetShader("pbr");

@@ -233,11 +233,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		{
 			ImGui::TextureEdit("Normal", mat->normal);
 		}
-		ImGui::Checkbox("Use ORM texture", &mat->useORM);
-		if (mat->useORM)
-		{
-			ImGui::TextureEdit("OcclusionRoughnessMetallic", mat->occlusionRoughnessMetallic);
-		}
+//		ImGui::Checkbox("Use ORM texture", &mat->useORM); // TODO: FIX
+//		if (mat->useORM)
+//		{
+//			ImGui::TextureEdit("OcclusionRoughnessMetallic", mat->occlusionRoughnessMetallic);
+//		}
 		else
 		{
 			ImGui::DragFloat("Roughness", &mat->roughnessValue, 0.01, 0, 1);

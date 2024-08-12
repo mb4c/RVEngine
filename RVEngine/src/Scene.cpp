@@ -162,6 +162,10 @@ void Scene::RenderScene()
 
 		for (int i = 0; i < mesh.model->GetMeshes()->size(); ++i)
 		{
+			assert(mesh.model->GetMaterial() && "No material assigned to model");
+			assert(mesh.shader && "No shader assigned to model");
+
+
 			// bind albedo
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->albedo->GetTexture());
@@ -172,17 +176,24 @@ void Scene::RenderScene()
 
 			// bind orm map
 			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusionRoughnessMetallic->GetTexture());
-
-
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusion->GetTexture());
 
 			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, irrMap);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->roughness->GetTexture());
 
 			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, prefMap);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->metallic->GetTexture());
 
 			glActiveTexture(GL_TEXTURE5);
+			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->emission->GetTexture());
+
+			glActiveTexture(GL_TEXTURE6);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, irrMap);
+
+			glActiveTexture(GL_TEXTURE7);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, prefMap);
+
+			glActiveTexture(GL_TEXTURE8);
 			glBindTexture(GL_TEXTURE_2D, brdfLUT);
 
 			Stencil::DisableStencil();
@@ -191,7 +202,6 @@ void Scene::RenderScene()
 			std::shared_ptr<Material> mat = mesh.model->GetMaterial();
 			mesh.shader->SetBool("u_UseAlbedo", mat->useAlbedo);
 			mesh.shader->SetBool("u_UseNormal", mat->useNormal);
-			mesh.shader->SetBool("u_UseORM", mat->useORM);
 			mesh.shader->SetVec4("u_AlbedoColor", mat->albedoColor);
 			mesh.shader->SetFloat("u_RoughnessVal", mat->roughnessValue);
 			mesh.shader->SetFloat("u_MetallicVal", mat->metallicValue);

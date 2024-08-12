@@ -46,20 +46,6 @@ public:
 
 
 
-		auto brickwallMat = std::make_shared<Material>();
-		brickwallMat->albedo = GetTexture("brickwall_albedo");
-		brickwallMat->normal= GetTexture("brickwall_normal");
-		brickwallMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
-		brickwallMat->useAlbedo = true;
-		brickwallMat->useNormal = true;
-		brickwallMat->useORM = true;
-		m_Materials.emplace("brickwall", brickwallMat);
-
-		auto defaultMat = std::make_shared<Material>();
-		defaultMat->albedo = GetTexture("default_albedo");
-		defaultMat->normal= GetTexture("default_normal");
-		defaultMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
-		m_Materials.emplace("default_pbr", defaultMat);
 //		auto brickwallMat = std::make_shared<Material>();
 //		brickwallMat->albedo = GetTexture("brickwall_albedo");
 //		brickwallMat->normal= GetTexture("brickwall_normal");
@@ -74,6 +60,12 @@ public:
 //		defaultMat->normal= GetTexture("default_normal");
 //		defaultMat->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
 //		m_Materials.emplace("default_pbr", defaultMat);
+//
+//		auto grid = std::make_shared<Material>();
+//		grid->albedo = GetTexture("default_albedo");
+//		grid->normal= GetTexture("default_normal");
+//		grid->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
+//		m_Materials.emplace("grid", grid);
 
 
 		// icons

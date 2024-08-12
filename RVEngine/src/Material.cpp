@@ -17,14 +17,17 @@ void Material::Serialize(const std::filesystem::path& file)
 	out << YAML::BeginMap;
 	out << YAML::Key << "Albedo" << YAML::Value << (albedo.get() == nullptr ? "" : albedo->GetName());
 	out << YAML::Key << "Normal" << YAML::Value << (normal.get() == nullptr ? "" : normal->GetName());
-	out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << (occlusionRoughnessMetallic.get() == nullptr ? "" : normal->GetName());
+//	out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << (occlusionRoughnessMetallic.get() == nullptr ? "" : normal->GetName()); // TODO: fix
 	out << YAML::EndMap;
 
 	out << YAML::Key << "Properties";
 	out << YAML::BeginMap;
 	out << YAML::Key << "UseAlbedo" << YAML::Value << useAlbedo;
 	out << YAML::Key << "UseNormal" << YAML::Value << useNormal;
-	out << YAML::Key << "UseORM" << YAML::Value << useORM;
+	out << YAML::Key << "UseOcclusion" << YAML::Value << useOcclusion;
+	out << YAML::Key << "UseRoughness" << YAML::Value << useRoughness;
+	out << YAML::Key << "UseMetallic" << YAML::Value << useMetallic;
+	out << YAML::Key << "UseEmission" << YAML::Value << useEmission;
 	out << YAML::Key << "AlbedoColor" << YAML::Value << albedoColor;
 	out << YAML::Key << "MetallicValue" << YAML::Value << metallicValue;
 	out << YAML::Key << "RoughnessValue" << YAML::Value << roughnessValue;
@@ -59,11 +62,11 @@ void Material::Deserialize(const std::filesystem::path& file)
 
 	albedo = rm.GetTexture(albedoStr.empty() ? "default_albedo" : albedoStr);
 	normal = rm.GetTexture(normalStr.empty() ? "default_normal" : normalStr);
-	occlusionRoughnessMetallic = rm.GetTexture(ormStr.empty() ? "default_albedo" : ormStr);
+//	occlusionRoughnessMetallic = rm.GetTexture(ormStr.empty() ? "default_albedo" : ormStr); // TODO: fix
 
 	useAlbedo = data["Properties"]["UseAlbedo"].as<bool>();
 	useNormal = data["Properties"]["UseNormal"].as<bool>();
-	useORM = data["Properties"]["UseORM"].as<bool>();
+//	useORM = data["Properties"]["UseORM"].as<bool>(); // tODO: FIX
 	albedoColor = data["Properties"]["AlbedoColor"].as<glm::vec4>();
 	metallicValue = data["Properties"]["MetallicValue"].as<float>();
 	roughnessValue = data["Properties"]["RoughnessValue"].as<float>();
