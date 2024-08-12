@@ -73,7 +73,7 @@ void Game::OnUpdate()
 	ProcessInput();
 
 
-	glm::vec2 input;
+	glm::vec2 input{0,0};
 	if (m_Input.GetKeyDown(GLFW_KEY_W))
 		input.y = 1;
 	if (m_Input.GetKeyDown(GLFW_KEY_S))
