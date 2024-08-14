@@ -8,7 +8,7 @@ public:
 	TimeUntil();
 	TimeUntil(float time);
 	void operator = (float time);
-	explicit operator bool() const;
+	explicit operator bool();
 
 	float GetPassed();
 	float GetFraction();

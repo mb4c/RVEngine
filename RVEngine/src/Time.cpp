@@ -19,9 +19,9 @@ void TimeUntil::operator=(float time)
 	m_Time = time;
 }
 
-TimeUntil::operator bool() const
+TimeUntil::operator bool()
 {
-	return std::chrono::system_clock::now() >= targetTime;
+	return GetPassed() >= m_Time;
 }
 
 // Returns elapsed time in seconds
