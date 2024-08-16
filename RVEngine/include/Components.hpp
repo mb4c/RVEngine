@@ -108,6 +108,11 @@ struct TransformComponent
 		RV_PROFILE_FUNCTION();
 		return glm::quat(Translation);
 	}
+	glm::vec3 GetRotation()
+	{
+		RV_PROFILE_FUNCTION();
+		return glm::degrees(Rotation);
+	}
 };
 
 struct MeshRendererComponent
