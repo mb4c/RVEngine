@@ -49,6 +49,7 @@ private:
 	void UpdateWindowTitle();
 
 	bool m_ViewportFocused = false;
+	bool m_FirstFrame = true;
 
 	SceneHierarchyPanel m_SceneHierarchyPanel;
 	AssetsPanel m_AssetsPanel;

@@ -1,3 +1,4 @@
+#include <imgui_internal.h>
 #include "RVEditor.hpp"
 #include "Renderer.hpp"
 #include "Macros.hpp"
@@ -557,6 +558,31 @@ void RVEditor::Dockspace()
 	ImGui::EndMenuBar();
 	ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 	ImGui::DockSpace(dockspace_id);
+
+	if (m_FirstFrame)
+	{
+		ImGui::DockBuilderRemoveNode(dockspace_id); // clear any previous layout
+		ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+		auto dockViewport = ImGui::DockBuilderAddNode(dockspace_id);
+		auto dockInspector = ImGui::DockBuilderSplitNode(dockViewport, ImGuiDir_Right, 0.20f, nullptr, &dockspace_id);
+		auto dockAssets = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockViewport);
+//		auto dockSettings = ImGui::DockBuilderAddNode(dockInspector);
+		auto dockHierarchy = ImGui::DockBuilderSplitNode(dockViewport, ImGuiDir_Left, 0.15f, nullptr, &dockViewport);
+
+		ImGui::DockBuilderDockWindow("Viewport", dockViewport);
+		ImGui::DockBuilderDockWindow("Assets", dockAssets);
+		ImGui::DockBuilderDockWindow("Inspector", dockInspector);
+		ImGui::DockBuilderDockWindow("Scene hierarchy", dockHierarchy);
+//		ImGui::DockBuilderDockWindow("Settings", dockSettings);
+
+		ImGui::DockBuilderFinish(dockspace_id);
+		m_FirstFrame = false;
+	}
+
+
+
 	ImGui::End();
 
 }
