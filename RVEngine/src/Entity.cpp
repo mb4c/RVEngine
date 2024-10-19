@@ -4,6 +4,10 @@ Entity::Entity(entt::entity handle, Scene* scene)
 		: m_EntityHandle(handle), m_Scene(scene)
 {
 }
+void Entity::Destroy()
+{
+	m_Scene->m_Registry.destroy(m_EntityHandle);
+}
 
 void Entity::SetParent(Entity entity)
 {

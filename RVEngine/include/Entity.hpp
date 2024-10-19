@@ -10,6 +10,7 @@ public:
 	Entity() = default;
 	Entity(entt::entity handle, Scene* scene);
 	Entity(const Entity& other) = default;
+	void Destroy();
 
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
