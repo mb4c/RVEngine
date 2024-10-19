@@ -23,14 +23,14 @@ void SceneHierarchyPanel::OnRender()
 	ImGui::Begin("Scene hierarchy");
 
 	// Iterate over all entities and draw root entities
-	m_Context->m_Registry.each([this](auto entityID)
-							   {
-								   Entity entity{entityID, m_Context.get()};
-								   if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
-								   {
-									   DrawEntityNode(entity);
-								   }
-							   });
+	for (auto entityID: m_Context->m_Registry.view<entt::entity>())
+	{
+		Entity entity{entityID, m_Context.get()};
+		if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
+		{
+			DrawEntityNode(entity);
+		}
+	}
 
 	if (ImGui::BeginPopupContextWindow())
 	{

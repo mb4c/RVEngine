@@ -137,14 +137,14 @@ void SceneSerializer::Serialize(const std::filesystem::path& path)
 	out << YAML::BeginMap;
 	out << YAML::Key << "Scene" << YAML::Value << path.stem();
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
-	m_Scene->m_Registry.each([&](auto entityID)
-							 {
-								 Entity entity = { entityID, m_Scene.get() };
-								 if (!entity)
-									 return;
+	for (auto entityID: m_Scene->m_Registry.view<entt::entity>())
+	{
+		Entity entity = {entityID, m_Scene.get()};
+		if (!entity)
+			return;
 
-								 SerializeEntity(out, entity);
-							 });
+		SerializeEntity(out, entity);
+	}
 	out << YAML::EndSeq;
 	out << YAML::EndMap;
 

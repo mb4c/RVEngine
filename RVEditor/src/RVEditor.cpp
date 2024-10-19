@@ -257,7 +257,7 @@ void RVEditor::DrawImGui()
 	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
-		float avail = ImGui::GetWindowContentRegionWidth();
+		float avail = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
 
 		const char* items[] = {"Translate", "Rotate", "Scale"};
 

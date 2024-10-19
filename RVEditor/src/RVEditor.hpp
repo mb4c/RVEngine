@@ -29,6 +29,7 @@ private:
 	void DrawImGui();
 	void ProcessInput();
 	void Dockspace();
+	void SetupImGuiTheme();
 
 	bool ClickedInViewport();
 	bool LeftClickedInViewport();

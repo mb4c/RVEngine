@@ -126,14 +126,14 @@ void Scene::OnUpdateRuntime(float ts)
 void Scene::RenderScene()
 {
 	RV_PROFILE_FUNCTION();
-	m_Registry.each([this](auto entityID)
-							   {
-								   Entity entity{entityID, this};
-								   if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
-								   {
-									   Entity::UpdateGlobalTransform(entity);
-								   }
-							   });
+	for (auto entityID: m_Registry.view<entt::entity>())
+	{
+		Entity entity{entityID, this};
+		if (entity.GetComponent<RelationshipComponent>().parent == entt::null)
+		{
+			Entity::UpdateGlobalTransform(entity);
+		}
+	}
 
 	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent ,LightComponent>);
 	unsigned int irrMap;
@@ -489,7 +489,8 @@ glm::vec3 Scene::GetAngularVelocity(Entity entity)
 
 uint32_t Scene::GetEntityCount()
 {
-	return m_Registry.size();
+//	return m_Registry.size();
+	return m_Registry.view<entt::entity>().size_hint();
 }
 
 template<typename... Component>
