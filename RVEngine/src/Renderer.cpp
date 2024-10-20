@@ -161,6 +161,8 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 				return "APPLICATION";
 			case GL_DEBUG_SOURCE_OTHER:
 				return "OTHER";
+			default:
+				return "UNKNOWN";
 		}
 	}();
 
@@ -182,6 +184,8 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 				return "MARKER";
 			case GL_DEBUG_TYPE_OTHER:
 				return "OTHER";
+			default:
+				return "UNKNOWN";
 		}
 	}();
 
@@ -197,6 +201,8 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 				return "MEDIUM";
 			case GL_DEBUG_SEVERITY_HIGH:
 				return "HIGH";
+			default:
+				return "UNKNOWN";
 		}
 	}();
 	std::cout << src_str << ", " << type_str << ", " << severity_str << ", " << id << ": " << message << '\n';
