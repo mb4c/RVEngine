@@ -635,7 +635,6 @@ std::filesystem::path RVEditor::SaveSceneAs()
 		selection.replace_extension(".rvscene");
 	}
 
-	std::cout << "Saved file: " << selection << "\n";
 	if (!selection.stem().empty() && selection != ".rvscene")
 	{
 		std::cout << "Saved file: " << selection << "\n";
