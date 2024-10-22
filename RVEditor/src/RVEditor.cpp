@@ -520,9 +520,11 @@ void RVEditor::Dockspace()
 				auto selection = pfd::open_file("Select a file", ".",
 												{"Project files", "*.rvproj"},
 												pfd::opt::none).result();
-
-				std::cout << "Selected file: " << selection.at(0) << "\n";
-				OpenProject(selection.at(0));
+				if(!selection.empty())
+				{
+					std::cout << "Selected file: " << selection.at(0) << "\n";
+					OpenProject(selection.at(0));
+				}
 			}
 
 			if (ImGui::MenuItem("New scene"))
@@ -534,9 +536,11 @@ void RVEditor::Dockspace()
 				auto selection = pfd::open_file("Select a file", ".",
 												{"Scene files", "*.rvscene"},
 												pfd::opt::none).result();
-
-				std::cout << "Selected file: " << selection.at(0) << "\n";
-				OpenScene(selection.at(0));
+				if(!selection.empty())
+				{
+					std::cout << "Selected file: " << selection.at(0) << "\n";
+					OpenScene(selection.at(0));
+				}
 			}
 			if (ImGui::MenuItem("Save", nullptr, false, !m_SavedScenePath.empty()))
 			{
@@ -544,7 +548,9 @@ void RVEditor::Dockspace()
 			}
 			if (ImGui::MenuItem("Save as..."))
 			{
-				m_SavedScenePath = SaveSceneAs();
+				auto path = SaveSceneAs();
+				if (!path.empty())
+					m_SavedScenePath = path;
 			}
 			if (ImGui::MenuItem("Exit"))
 			{
@@ -626,13 +632,22 @@ std::filesystem::path RVEditor::SaveSceneAs()
 
 	if (selection.extension() != ".rvscene")
 	{
-		selection.append(".rvscene");
+		selection.replace_extension(".rvscene");
 	}
 
 	std::cout << "Saved file: " << selection << "\n";
+	if (!selection.stem().empty() && selection != ".rvscene")
+	{
+		std::cout << "Saved file: " << selection << "\n";
 
-	SceneSerializer serializer(m_ActiveScene);
-	serializer.Serialize(selection);
+		SceneSerializer serializer(m_ActiveScene);
+		serializer.Serialize(selection);
+	}
+	else
+	{
+		return "";
+	}
+
 	return selection;
 }
 
