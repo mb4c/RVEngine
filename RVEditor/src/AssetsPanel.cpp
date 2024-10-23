@@ -33,7 +33,7 @@ void AssetsPanel::OnRender()
 
 
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_HorizontalScrollbar;
-		ImGui::BeginChild("ChildR", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), window_flags);
+		ImGui::BeginChild("ChildR", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
 
 		if (m_CurrentDirectory != std::filesystem::path(m_AssetsDirectory))
 		{
