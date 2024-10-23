@@ -200,13 +200,17 @@ struct SkyboxComponent
 	SkyboxComponent(const SkyboxComponent&) = default;
 };
 
-//TODO: serialization
 struct RelationshipComponent
 {
 	entt::entity first{entt::null};
 	entt::entity prev{entt::null};
 	entt::entity next{entt::null};
 	entt::entity parent{entt::null};
+
+	uint64_t uuidFirst{};
+	uint64_t uuidPrev{};
+	uint64_t uuidNext{};
+	uint64_t uuidParent{};
 };
 
 template<typename... Component>

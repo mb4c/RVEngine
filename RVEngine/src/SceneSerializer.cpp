@@ -10,7 +10,7 @@ SceneSerializer::SceneSerializer(const std::shared_ptr<Scene>& scene)
 
 }
 
-static void SerializeEntity(YAML::Emitter& out, Entity entity)
+static void SerializeEntity(YAML::Emitter& out, Entity entity, Scene* scene)
 {
 	out << YAML::BeginMap;
 	out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
@@ -127,6 +127,45 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap;
 	}
 
+	if (entity.HasComponent<RelationshipComponent>())
+	{
+		out << YAML::Key << "RelationshipComponent";
+		out << YAML::BeginMap;
+
+		auto& rc = entity.GetComponent<RelationshipComponent>();
+
+		if (auto first = Entity(rc.first, scene))
+		{
+			out << YAML::Key << "first" << YAML::Value << Entity(rc.first, scene).GetUUID();
+		}
+		else
+			out << YAML::Key << "first" << YAML::Value << (uint64_t) entt::null;
+
+		if (auto next = Entity(rc.next, scene))
+		{
+			out << YAML::Key << "next" << YAML::Value << Entity(rc.next, scene).GetUUID();
+		}
+		else
+			out << YAML::Key << "next" << YAML::Value << (uint64_t) entt::null;
+
+		if (auto prev = Entity(rc.prev, scene))
+		{
+			out << YAML::Key << "prev" << YAML::Value << Entity(rc.prev, scene).GetUUID();
+		}
+		else
+			out << YAML::Key << "prev" << YAML::Value << (uint64_t) entt::null;
+
+		if (auto parent = Entity(rc.parent, scene))
+		{
+			out << YAML::Key << "parent" << YAML::Value << entity.GetParent().GetUUID();
+		}
+		else
+			out << YAML::Key << "parent" << YAML::Value << (uint64_t) entt::null;
+
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 
 }
@@ -143,7 +182,7 @@ void SceneSerializer::Serialize(const std::filesystem::path& path)
 		if (!entity)
 			return;
 
-		SerializeEntity(out, entity);
+		SerializeEntity(out, entity, m_Scene.get());
 	}
 	out << YAML::EndSeq;
 	out << YAML::EndMap;
@@ -272,7 +311,21 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				scc.Restitution = sphereCollider["Restitution"].as<float>();
 				scc.Friction = sphereCollider["Friction"].as<float>();
 			}
+
+			auto relationshipComponent = entity["RelationshipComponent"];
+			if (relationshipComponent)
+			{
+				auto& rc = deserializedEntity.GetComponent<RelationshipComponent>();
+
+				 rc.uuidFirst = relationshipComponent["first"].as<uint64_t>();
+				 rc.uuidPrev = relationshipComponent["prev"].as<uint64_t>();
+				 rc.uuidNext = relationshipComponent["next"].as<uint64_t>();
+				 rc.uuidParent = relationshipComponent["parent"].as<uint64_t>();
+			}
+
 		}
+
+		RelationshipDeserialization();
 	}
 	return true;
 }
@@ -290,4 +343,39 @@ void SceneSerializer::DeserializeRuntime(const std::filesystem::path& path)
 void SceneSerializer::SetContext(const std::shared_ptr<Scene>& scene)
 {
 	m_Scene = scene;
+}
+
+void SceneSerializer::RelationshipDeserialization()
+{
+	for (auto entityID: m_Scene->m_Registry.view<entt::entity>())
+	{
+		Entity entity = {entityID, m_Scene.get()};
+		if (!entity)
+			return;
+
+		std::cout << "EntityMap size: "<< m_Scene->m_EntityMap.size() << std::endl;
+		for(auto const& entityPair: m_Scene->m_EntityMap)
+		{
+			std::cout << "UUID: " << entityPair.first << " entity: " << (uint32_t)entityPair.second << std::endl;
+		}
+
+		auto& rc = entity.GetComponent<RelationshipComponent>();
+		uint64_t nullEntity = 18446744073709551615;
+
+		if (rc.uuidFirst != nullEntity)
+			rc.first = m_Scene->m_EntityMap.at(rc.uuidFirst);
+
+		if (rc.uuidPrev != nullEntity)
+			rc.prev = m_Scene->m_EntityMap.at(rc.uuidPrev);
+
+		if (rc.uuidNext != nullEntity)
+			rc.next = m_Scene->m_EntityMap.at(rc.uuidNext);
+
+		if (rc.uuidParent != nullEntity)
+			rc.parent = m_Scene->m_EntityMap.at(rc.uuidParent);
+
+//		rc.prev = m_Scene->m_EntityMap.at(rc.uuidPrev);
+//		rc.next = m_Scene->m_EntityMap.at(rc.uuidNext);
+//		rc.parent = m_Scene->m_EntityMap.at(rc.uuidParent);
+	}
 }
