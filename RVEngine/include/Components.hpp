@@ -188,9 +188,9 @@ struct SphereColliderComponent
 	SphereColliderComponent(const SphereColliderComponent&) = default;
 };
 
-//TODO: serialization
 struct SkyboxComponent
 {
+	std::string envMap;
 	unsigned int envCubemap;
 	unsigned int irradianceMap;
 	unsigned int prefilterMap;

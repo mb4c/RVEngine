@@ -56,6 +56,7 @@ void RVEditor::OnInit()
 	skybox.GetComponent<SkyboxComponent>().irradianceMap = envMap.irradianceMap;
 	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
 	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
+	skybox.GetComponent<SkyboxComponent>().envMap = "res/buikslotermeerplein_4k.hdr";
 
 	auto shader = rm.GetShader("pbr");
 

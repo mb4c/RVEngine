@@ -3,6 +3,7 @@
 #include <fstream>
 #include <Components.hpp>
 #include <YAMLUtils.hpp>
+#include "EnvironmentMap.hpp"
 
 SceneSerializer::SceneSerializer(const std::shared_ptr<Scene>& scene)
 	: m_Scene(scene)
@@ -160,6 +161,17 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity, Scene* scene)
 		out << YAML::EndMap;
 	}
 
+	if (entity.HasComponent<SkyboxComponent>())
+	{
+		out << YAML::Key << "SkyboxComponent";
+		out << YAML::BeginMap;
+
+		auto& sc = entity.GetComponent<SkyboxComponent>();
+		out << YAML::Key << "envMap" << YAML::Value << sc.envMap;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 
 }
@@ -299,6 +311,20 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 				 rc.uuidPrev = relationshipComponent["prev"].as<uint64_t>();
 				 rc.uuidNext = relationshipComponent["next"].as<uint64_t>();
 				 rc.uuidParent = relationshipComponent["parent"].as<uint64_t>();
+			}
+
+			auto skyboxComponent = entity["SkyboxComponent"];
+			if (skyboxComponent)
+			{
+				auto& sc = deserializedEntity.AddComponent<SkyboxComponent>();
+
+				sc.envMap = skyboxComponent["envMap"].as<std::string>();
+				EnvironmentMap envMap(sc.envMap);
+				envMap.Capture();
+				sc.envCubemap = envMap.envCubemap;
+				sc.irradianceMap = envMap.irradianceMap;
+				sc.prefilterMap = envMap.prefilterMap;
+				sc.brdfLUTTexture = envMap.brdfLUTTexture;
 			}
 
 		}
