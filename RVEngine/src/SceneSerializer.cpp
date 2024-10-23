@@ -71,16 +71,10 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity, Scene* scene)
 		out << YAML::BeginMap; // MeshRendererComponent
 
 		auto& meshRendererComponent = entity.GetComponent<MeshRendererComponent>();
+		ResourceManager& rm = ResourceManager::instance();
 
 		out << YAML::Key << "ModelPath" << YAML::Value << meshRendererComponent.model->GetPath();
-		out << YAML::Key << "FragmentShaderPath" << YAML::Value << meshRendererComponent.shader->m_FragmentPath;
-		out << YAML::Key << "VertexShaderPath" << YAML::Value << meshRendererComponent.shader->m_VertexPath;
-
-		//textures
-		out << YAML::Key << "Albedo" << YAML::Value << meshRendererComponent.model->m_Material->albedo->GetPath();
-		out << YAML::Key << "Normal" << YAML::Value << meshRendererComponent.model->m_Material->normal->GetPath();
-//		out << YAML::Key << "OcclusionRoughnessMetallic" << YAML::Value << meshRendererComponent.model->m_Material->occlusionRoughnessMetallic->GetPath(); // tODO :FIX
-
+		out << YAML::Key << "Shader" << YAML::Value << rm.GetShaderName(meshRendererComponent.shader->ID);
 
 		out << YAML::EndMap; // MeshRendererComponent
 	}
@@ -262,23 +256,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 			{
 				auto& mrc = deserializedEntity.AddComponent<MeshRendererComponent>();
 				mrc.model = std::make_shared<Model>(meshRendererComponent["ModelPath"].as<std::string>());
-				std::shared_ptr<Material> mat = std::make_shared<Material>();
-
-				if (!meshRendererComponent["Albedo"].as<std::string>().empty())
-					mat->albedo = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["Albedo"].as<std::string>()));
-				else
-					mat->albedo = rm.GetTexture("default_albedo");
-				if (!meshRendererComponent["Normal"].as<std::string>().empty())
-					mat->normal = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["Normal"].as<std::string>()));
-				else
-					mat->normal = rm.GetTexture("default_normal");
-//				if (!meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>().empty())
-//					mat->occlusionRoughnessMetallic = std::make_shared<Texture2D>(Texture2D(meshRendererComponent["OcclusionRoughnessMetallic"].as<std::string>())); // TODO : FIX
-//				else
-//					mat->normal = rm.GetTexture("default_albedo");
-
-				mrc.model->m_Material = mat;
- 				mrc.shader = rm.GetShader("pbr");
+				mrc.shader = rm.GetShader(meshRendererComponent["Shader"].as<std::string>());
 			}
 
 			auto lightComponent = entity["LightComponent"];
@@ -373,9 +351,5 @@ void SceneSerializer::RelationshipDeserialization()
 
 		if (rc.uuidParent != nullEntity)
 			rc.parent = m_Scene->m_EntityMap.at(rc.uuidParent);
-
-//		rc.prev = m_Scene->m_EntityMap.at(rc.uuidPrev);
-//		rc.next = m_Scene->m_EntityMap.at(rc.uuidNext);
-//		rc.parent = m_Scene->m_EntityMap.at(rc.uuidParent);
 	}
 }

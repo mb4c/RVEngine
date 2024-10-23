@@ -14,6 +14,7 @@ public:
 
 	void SerializeRuntime(const std::filesystem::path& path);
 	void DeserializeRuntime(const std::filesystem::path& path);
+	void RelationshipDeserialization();
 
 	void SetContext(const std::shared_ptr<Scene>& scene);
 private:
