@@ -357,10 +357,10 @@ void SceneSerializer::RelationshipDeserialization()
 		if (!entity)
 			return;
 
-		std::cout << "EntityMap size: "<< m_Scene->m_EntityMap.size() << std::endl;
+//		std::cout << "EntityMap size: "<< m_Scene->m_EntityMap.size() << std::endl;
 		for(auto const& entityPair: m_Scene->m_EntityMap)
 		{
-			std::cout << "UUID: " << entityPair.first << " entity: " << (uint32_t)entityPair.second << std::endl;
+//			std::cout << "UUID: " << entityPair.first << " entity: " << (uint32_t)entityPair.second << std::endl;
 		}
 
 		auto& rc = entity.GetComponent<RelationshipComponent>();
