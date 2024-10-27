@@ -17,6 +17,9 @@ public:
 		m_Models.emplace("helmet", std::make_shared<Model>("res/DamagedHelmet.glb"));
 		m_Models.emplace("boombox", std::make_shared<Model>("res/BoomBox.glb"));
 		m_Models.emplace("maxwell", std::make_shared<Model>("res/maxwell.glb"));
+//		m_Models.emplace("player_ship", std::make_shared<Model>("res/playership.glb"));
+//		m_Models.emplace("bullet", std::make_shared<Model>("res/bullet.glb"));
+		m_Models.emplace("marker", std::make_shared<Model>("res/marker.glb"));
 
 		m_Shaders.emplace("pbr", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl"));
 		m_Shaders.emplace("flat", std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag"));
@@ -95,12 +98,31 @@ public:
 
 	std::shared_ptr<Model> GetModel(const std::string& name)
 	{
-		return m_Models.at(name);
+		auto it = m_Models.find(name);
+		if (it != m_Models.end())
+		{
+			return it->second;
+		}
+		return nullptr;
 	}
 
 	std::shared_ptr<Shader> GetShader(const std::string& name)
 	{
 		return m_Shaders.at(name);
+	}
+
+	std::string GetShaderName(uint32_t id)
+	{
+		auto it = std::find_if(std::begin(m_Shaders), std::end(m_Shaders),
+							   [&id](auto&& p)
+							   {
+								   return p.second->ID == id;
+							   });
+
+		if (it == std::end(m_Shaders))
+			return "TODO: Add assert here";
+
+		return it->first;
 	}
 
 	std::shared_ptr<Texture2D> GetTexture(const std::string& name)

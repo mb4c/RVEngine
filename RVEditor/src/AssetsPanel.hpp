@@ -11,11 +11,13 @@ public:
 	void OnRender();
 	std::filesystem::path GetCurrentDirectory();
 	void SetAssetDirectory(std::filesystem::path dir);
+	void SetContext(const std::shared_ptr<Scene>& scene);
 private:
 	 std::filesystem::path m_AssetsDirectory = "res";
 	 std::filesystem::path m_CurrentDirectory;
 	 float m_ThumbnailSize = 96;
 
 
+	 std::shared_ptr<Scene> m_Scene;
 	 Material m_SelectedMaterial;
 };

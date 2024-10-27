@@ -49,6 +49,7 @@ void RVEditor::OnInit()
 
 
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	m_AssetsPanel.SetContext(m_ActiveScene);
 
 
 	auto skybox = m_ActiveScene->CreateEntity("skybox");
@@ -62,8 +63,8 @@ void RVEditor::OnInit()
 
 //	auto cube = m_ActiveScene->CreateEntity("cube");
 //	cube.AddComponent<MeshRendererComponent>();
-//	cube.GetComponent<MeshRendererComponent>().shader = shader;
-//	cube.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+//	cube.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+//	cube.GetComponent<MeshRendererComponent>().model = rm.GetModel("player_ship");
 //	cube.GetComponent<TransformComponent>().SetPosition({0, 0, 0});
 //	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
 //
@@ -81,28 +82,29 @@ void RVEditor::OnInit()
 //	std::cout << "Dupa: "  << cube.GetChild(0).GetComponent<TagComponent>().Tag << std::endl;
 
 
-	auto helmet = m_ActiveScene->CreateEntity("helmet");
-	helmet.AddComponent<MeshRendererComponent>();
-	helmet.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	helmet.GetComponent<MeshRendererComponent>().model = rm.GetModel("helmet");
-	helmet.GetComponent<TransformComponent>().SetPosition({0, 0, -5});
-	helmet.GetComponent<TransformComponent>().SetRotation({90, 0, 0});
-
-	auto boombox = m_ActiveScene->CreateEntity("boombox");
-	boombox.AddComponent<MeshRendererComponent>();
-	boombox.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	boombox.GetComponent<MeshRendererComponent>().model = rm.GetModel("boombox");
-	boombox.GetComponent<TransformComponent>().SetPosition({-2, 0, -5});
-	boombox.GetComponent<TransformComponent>().SetRotation({0, 180, 0});
-	boombox.GetComponent<TransformComponent>().SetScale({25, 25, 25});
-
-	auto sas = m_ActiveScene->CreateEntity("maxwell");
-	sas.AddComponent<MeshRendererComponent>();
-	sas.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	sas.GetComponent<MeshRendererComponent>().model = rm.GetModel("maxwell");
-	sas.GetComponent<TransformComponent>().SetPosition({2, 0, -5});
-	sas.GetComponent<TransformComponent>().SetRotation({-90, -90, 0});
-	sas.GetComponent<TransformComponent>().SetScale({0.05, 0.05, 0.05});
+//	auto helmet = m_ActiveScene->CreateEntity("helmet");
+//	helmet.AddComponent<MeshRendererComponent>();
+//	helmet.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+//	helmet.GetComponent<MeshRendererComponent>().model = rm.GetModel("helmet");
+//	helmet.GetComponent<TransformComponent>().SetPosition({0, 0, -5});
+//	helmet.GetComponent<TransformComponent>().SetRotation({90, 0, 0});
+//
+//	auto boombox = m_ActiveScene->CreateEntity("boombox");
+//	boombox.AddComponent<MeshRendererComponent>();
+//	boombox.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+//	boombox.GetComponent<MeshRendererComponent>().model = rm.GetModel("boombox");
+//	boombox.GetComponent<TransformComponent>().SetPosition({-2, 0, -5});
+//	boombox.GetComponent<TransformComponent>().SetRotation({0, 180, 0});
+//	boombox.GetComponent<TransformComponent>().SetScale({25, 25, 25});
+//
+//	auto sas = m_ActiveScene->CreateEntity("maxwell");
+//	sas.AddComponent<MeshRendererComponent>();
+//	sas.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+//	sas.GetComponent<MeshRendererComponent>().model = rm.GetModel("maxwell");
+//	sas.GetComponent<TransformComponent>().SetPosition({2, 0, -5});
+//	sas.GetComponent<TransformComponent>().SetRotation({-90, -90, 0});
+//	sas.GetComponent<TransformComponent>().SetScale({0.05, 0.05, 0.05});
+//	sas.SetParent(cube);
 
 	m_ActiveScene->OnStart();
 
@@ -622,6 +624,7 @@ void RVEditor::NewScene()
 	m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_ActiveScene.get()));
 	m_ActiveScene = std::make_shared<Scene>();
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	m_AssetsPanel.SetContext(m_ActiveScene);
 //	m_Serializer.SetContext(m_ActiveScene);
 }
 
@@ -667,6 +670,7 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 	{
 		m_EditorScene = newScene;
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		m_AssetsPanel.SetContext(m_ActiveScene);
 		m_ActiveScene = m_EditorScene;
 		m_SavedScenePath = path;
 

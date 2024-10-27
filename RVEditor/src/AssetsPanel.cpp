@@ -70,6 +70,20 @@ void AssetsPanel::OnRender()
 						m_SelectedMaterial.Deserialize(absolute(matPath));
 					}
 
+					if (relativePath.extension() == ".glb")
+					{
+						auto entity = m_Scene->CreateEntity(relativePath.stem());
+						auto model = rm.GetModel(relativePath.stem());
+						if (!model)
+						{
+							std::filesystem::path newPath = m_AssetsDirectory / relativePath;
+							std::cout << newPath << std::endl;
+							rm.AddModel(relativePath.stem().string(), std::make_shared<Model>(newPath));
+						}
+						entity.AddComponent<MeshRendererComponent>().model = model;
+						entity.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+					}
+
 				}
 				ImGui::PopStyleColor();
 				ImGui::TextWrapped("%s", relativePath.filename().c_str());
@@ -96,4 +110,9 @@ void AssetsPanel::SetAssetDirectory(std::filesystem::path dir)
 {
 	m_AssetsDirectory = dir;
 	m_CurrentDirectory = m_AssetsDirectory;
+}
+
+void AssetsPanel::SetContext(const std::shared_ptr<Scene>& scene)
+{
+	m_Scene = scene;
 }
