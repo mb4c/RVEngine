@@ -3,6 +3,11 @@ project(RVEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    add_compile_definitions(JPH_PROFILE_ENABLED)
+    add_compile_definitions(JPH_DEBUG_RENDERER)
+endif ()
+
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
