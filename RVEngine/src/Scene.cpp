@@ -160,6 +160,8 @@ void Scene::RenderScene()
 	{
 		auto [transform, mesh] = group.get<TransformComponent, MeshRendererComponent>(entity);
 
+		assert(mesh.model && "No model assigned to the model, what the fuck?!");
+
 		for (int i = 0; i < mesh.model->GetMeshes()->size(); ++i)
 		{
 			assert(mesh.model->GetMaterial() && "No material assigned to model");
