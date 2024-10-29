@@ -79,6 +79,7 @@ void AssetsPanel::OnRender()
 							std::filesystem::path newPath = m_AssetsDirectory / relativePath;
 							std::cout << newPath << std::endl;
 							rm.AddModel(relativePath.stem().string(), std::make_shared<Model>(newPath));
+							model = rm.GetModel(relativePath.stem());
 						}
 						entity.AddComponent<MeshRendererComponent>().model = model;
 						entity.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
