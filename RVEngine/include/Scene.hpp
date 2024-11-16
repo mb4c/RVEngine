@@ -5,6 +5,8 @@
 #include "UUID.hpp"
 #include "Components.hpp"
 #include "PhysicsManager.hpp"
+#include <memory>
+#include <FrameBuffer.hpp>
 
 class Entity;
 
@@ -39,6 +41,7 @@ public:
 	void OnUpdateEditor(float ts, EditorCamera& editorCamera);
 	void OnUpdateRuntime(float ts);
 	void RenderScene();
+	void RenderPicking();
 
 	void OnRuntimeStart();
 	void OnRuntimeStop();
@@ -59,6 +62,8 @@ public:
 	glm::vec3 GetVelocity(Entity entity);
 	glm::vec3 GetAngularVelocity(Entity entity);
 
+	FrameBuffer* m_RenderingFB;
+	FrameBuffer* m_PickingFB;
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;

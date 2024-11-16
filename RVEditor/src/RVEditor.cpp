@@ -46,6 +46,9 @@ void RVEditor::OnInit()
 	m_EditorScene = std::make_shared<Scene>();
 	m_ActiveScene = m_EditorScene;
 
+	m_ActiveScene->m_RenderingFB = frameBuffer.get();
+	m_ActiveScene->m_PickingFB = frameBufferPicking.get();
+
 	EnvironmentMap envMap("res/buikslotermeerplein_4k.hdr");
 	envMap.Capture();
 
@@ -128,7 +131,7 @@ void RVEditor::OnUpdate()
 			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_AssetsPanel.m_CurrentDirectory);
 	}
 
-	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
+	m_HoveredEntity = frameBufferPicking->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});
 
 	if (LeftClickedInViewport() && !ImGuizmo::IsUsing() && m_SceneState == SceneState::Edit && !IsAnyPopupOpen())
 	{
@@ -191,6 +194,14 @@ void RVEditor::OnUpdate()
 	}
 
 	frameBuffer->Unbind();
+
+	frameBufferPicking->Bind();
+//	Renderer::SetClearColor({0, 0, 0, 1});
+	Renderer::Clear();
+
+	m_ActiveScene->RenderPicking();
+	frameBufferPicking->Unbind();
+
 	Renderer::EndScene();
 }
 

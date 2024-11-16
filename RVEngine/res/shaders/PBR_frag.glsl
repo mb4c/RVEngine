@@ -1,7 +1,6 @@
 #version 460 core
 
 layout(location = 0) out vec4 FragColor;
-layout(location = 1) out uvec3 EntityColor;
 
 in vec2 TexCoords;
 in vec3 WorldPos;
@@ -259,8 +258,4 @@ void main()
             FragColor = vec4(V, 1.0);
             break;
     }
-
-
-
-    EntityColor = uvec3(u_ObjectIndex, 0, gl_PrimitiveID);
 }

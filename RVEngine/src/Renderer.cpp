@@ -94,8 +94,6 @@ void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_p
 	shader->SetMat3("u_NormalMatrix", glm::transpose(glm::inverse(glm::mat3(transform))));
 	shader->SetUInt("u_ObjectIndex", entity + 1);
 
-	const GLenum buffers[]{ GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers( 2, buffers );
 
 	vertexArray->Bind();
 	DrawIndexed(vertexArray, 0);

@@ -125,7 +125,7 @@ void Scene::OnUpdateRuntime(float ts)
 
 void Scene::RenderScene()
 {
-	RV_PROFILE_FUNCTION();
+	RV_PROFILE_SCOPE("Rendering");
 	for (auto entityID: m_Registry.view<entt::entity>())
 	{
 		Entity entity{entityID, this};
@@ -135,13 +135,13 @@ void Scene::RenderScene()
 		}
 	}
 
-	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent ,LightComponent>);
+	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent, LightComponent>);
 	unsigned int irrMap;
 	unsigned int prefMap;
 	unsigned int brdfLUT;
 
 	auto skyView = m_Registry.view<TransformComponent, SkyboxComponent>();
-	for (auto entity : skyView)
+	for (auto entity: skyView)
 	{
 		auto [transform, sky] = skyView.get<TransformComponent, SkyboxComponent>(entity);
 		irrMap = sky.irradianceMap;
@@ -150,13 +150,13 @@ void Scene::RenderScene()
 	}
 
 	std::vector<std::tuple<TransformComponent, LightComponent>> lights;
-	for (auto entity : lightGroup)
+	for (auto entity: lightGroup)
 	{
 		lights.emplace_back(lightGroup.get<TransformComponent>(entity), lightGroup.get<LightComponent>(entity));
 	}
 
 	auto group = m_Registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
-	for (auto entity : group)
+	for (auto entity: group)
 	{
 		auto [transform, mesh] = group.get<TransformComponent, MeshRendererComponent>(entity);
 
@@ -210,7 +210,7 @@ void Scene::RenderScene()
 
 			for (int k = 0; k < 32; ++k)
 			{
-				glm::vec3 zero {0,0,0};
+				glm::vec3 zero{0, 0, 0};
 				mesh.shader->SetVec3("lightPositions[" + std::to_string(k) + "]", zero);
 				mesh.shader->SetVec3("lightColors[" + std::to_string(k) + "]", zero);
 			}
@@ -228,7 +228,7 @@ void Scene::RenderScene()
 			auto outlineShader = rm.GetShader("flat");
 			outlineShader->Bind();
 			outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
-			if((uint32_t)entity == m_SelectedEntity)
+			if ((uint32_t) entity == m_SelectedEntity)
 			{
 				Stencil::EnableStencil();
 				auto outlineTransform = transform.GetTransform();
@@ -242,7 +242,7 @@ void Scene::RenderScene()
 	}
 
 	auto spriteView = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-	for (auto entity : spriteView)
+	for (auto entity: spriteView)
 	{
 		auto [transform, sprite] = spriteView.get<TransformComponent, SpriteRendererComponent>(entity);
 
@@ -266,7 +266,7 @@ void Scene::RenderScene()
 
 		outlineShader->Bind();
 		outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
-		if((uint32_t)entity == m_SelectedEntity)
+		if ((uint32_t) entity == m_SelectedEntity)
 		{
 			Stencil::EnableStencil();
 			auto outlineTransform = transform.GetTransform();
@@ -278,7 +278,7 @@ void Scene::RenderScene()
 	}
 
 	auto skyboxView = m_Registry.view<TransformComponent, SkyboxComponent>();
-	for (auto entity : skyboxView)
+	for (auto entity: skyboxView)
 	{
 		auto [transform, skybox] = skyboxView.get<TransformComponent, SkyboxComponent>(entity);
 		// render skybox (render as last to prevent overdraw)
@@ -493,6 +493,34 @@ uint32_t Scene::GetEntityCount()
 {
 //	return m_Registry.size();
 	return m_Registry.view<entt::entity>().size_hint();
+}
+
+void Scene::RenderPicking()
+{
+	RV_PROFILE_SCOPE("Picking");
+	auto group = m_Registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
+	for (auto entity: group)
+	{
+
+		auto [transform, mesh] = group.get<TransformComponent, MeshRendererComponent>(entity);
+
+		assert(mesh.model && "No model assigned to the model, what the fuck?!");
+		ResourceManager& rm = ResourceManager::instance();
+
+		for (int i = 0; i < mesh.model->GetMeshes()->size(); ++i)
+		{
+			assert(mesh.model->GetMaterial() && "No material assigned to model ");
+			assert(mesh.shader && "No shader assigned to model");
+
+			auto picking = rm.GetShader("picking");
+			picking->Bind();
+
+			Renderer::Submit(picking, mesh.model->GetMeshes()->at(i).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
+
+		}
+
+	}
+
 }
 
 template<typename... Component>
