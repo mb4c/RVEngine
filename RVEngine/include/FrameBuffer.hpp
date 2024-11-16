@@ -16,10 +16,20 @@ struct PixelInfo {
 	}
 };
 
+struct FrameBufferProperties
+{
+	uint32_t width;
+	uint32_t height;
+	uint32_t internalFormat = GL_RGB;
+	uint32_t format = GL_RGB;
+	uint32_t type = GL_UNSIGNED_BYTE;
+	uint32_t filtering = GL_LINEAR;
+};
+
 class FrameBuffer
 {
 public:
-	FrameBuffer(uint32_t width, uint32_t height);
+	FrameBuffer(FrameBufferProperties props);
 	~FrameBuffer();
 	void Bind();
 	void Unbind();

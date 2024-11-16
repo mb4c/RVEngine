@@ -40,7 +40,9 @@ void RVEditor::OnInit()
 	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 	mainShader = rm.GetShader("pbr");
 
-	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
+	frameBuffer = std::make_shared<FrameBuffer>(fbProps);
+	frameBufferPicking = std::make_shared<FrameBuffer>(fbProps2);
+
 	m_EditorScene = std::make_shared<Scene>();
 	m_ActiveScene = m_EditorScene;
 
@@ -327,7 +329,12 @@ void RVEditor::DrawImGui()
 	{
 		Renderer::SetViewport(0, 0, m_ViewportSize.x, m_ViewportSize.y);
 		m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
-		frameBuffer = std::make_shared<FrameBuffer>(m_ViewportSize.x, m_ViewportSize.y);
+		fbProps.width = m_ViewportSize.x;
+		fbProps.height = m_ViewportSize.y;
+		fbProps2.width = m_ViewportSize.x;
+		fbProps2.height = m_ViewportSize.y;
+		frameBuffer = std::make_shared<FrameBuffer>(fbProps);
+		frameBufferPicking = std::make_shared<FrameBuffer>(fbProps2);
 
 	}
 	// Because I use the texture from OpenGL, I need to invert the V from the UV.
