@@ -46,8 +46,8 @@ void RVEditor::OnInit()
 	m_EditorScene = std::make_shared<Scene>();
 	m_ActiveScene = m_EditorScene;
 
-	m_ActiveScene->m_RenderingFB = frameBuffer.get();
-	m_ActiveScene->m_PickingFB = frameBufferPicking.get();
+	m_ActiveScene->m_RenderingFB = frameBuffer;
+	m_ActiveScene->m_PickingFB = frameBufferPicking;
 
 	EnvironmentMap envMap("res/buikslotermeerplein_4k.hdr");
 	envMap.Capture();

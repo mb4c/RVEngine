@@ -62,8 +62,8 @@ public:
 	glm::vec3 GetVelocity(Entity entity);
 	glm::vec3 GetAngularVelocity(Entity entity);
 
-	FrameBuffer* m_RenderingFB;
-	FrameBuffer* m_PickingFB;
+	std::shared_ptr<FrameBuffer> m_RenderingFB;
+	std::shared_ptr<FrameBuffer> m_PickingFB;
 private:
 	entt::registry m_Registry;
 	uint32_t m_SelectedEntity;
