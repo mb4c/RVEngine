@@ -39,6 +39,8 @@ public:
 
 	static GLuint GetPrimitivesGenerated();
 	static GLuint GetTimeElapsed();
+	static glm::mat4 GetProjection();
+	static glm::mat4 GetView();
 
 private:
 	struct SceneData

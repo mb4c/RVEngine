@@ -231,3 +231,13 @@ GLuint Renderer::GetTimeElapsed()
 		return 0;
 	}
 }
+
+glm::mat4 Renderer::GetView()
+{
+	return s_SceneData->ViewMatrix;
+}
+
+glm::mat4 Renderer::GetProjection()
+{
+	return s_SceneData->ProjectionMatrix;
+}
