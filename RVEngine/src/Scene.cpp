@@ -523,6 +523,70 @@ void Scene::RenderPicking()
 
 }
 
+//FIXME: this is so fucking wrong...
+glm::vec3 Scene::ScreenToWorld(glm::vec2 screenPos, glm::vec3 origin, glm::vec3 direction)
+{
+	// Get viewport dimensions
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	// Get the view and projection matrices
+	auto view = Renderer::GetView();
+	auto proj = Renderer::GetProjection();
+
+	// Convert screen coordinates to normalized device coordinates
+	glm::vec4 nearPoint;
+	nearPoint.x = (2.0f * screenPos.x) / viewport[2] - 1.0f;
+	nearPoint.y = 1.0f - (2.0f * screenPos.y) / viewport[3];
+	nearPoint.z = -1.0f; // Near plane
+	nearPoint.w = 1.0f;
+
+	glm::vec4 farPoint;
+	farPoint.x = nearPoint.x;
+	farPoint.y = nearPoint.y;
+	farPoint.z = 1.0f;  // Far plane
+	farPoint.w = 1.0f;
+
+	// Create inverse view-projection matrix
+	glm::mat4 invViewProj = glm::inverse(proj * view);
+
+	// Transform from NDC to world space
+	glm::vec4 nearWorld = invViewProj * nearPoint;
+	glm::vec4 farWorld = invViewProj * farPoint;
+
+	// Perspective division
+	nearWorld /= nearWorld.w;
+	farWorld /= farWorld.w;
+
+	// Calculate ray direction
+	glm::vec3 rayDirection = glm::normalize(glm::vec3(farWorld) - glm::vec3(nearWorld));
+
+	// If no specific ray origin/direction are provided, use the calculated ones
+	if (glm::length(origin) < 0.0001f && glm::length(direction) < 0.0001f)
+	{
+		origin = glm::vec3(nearWorld);
+		direction = rayDirection;
+	}
+
+	glm::vec3 planeNormal = glm::normalize(direction);
+	glm::vec3 planePoint = origin + glm::vec3{0, 0, 40};
+
+	float denominator = glm::dot(planeNormal, rayDirection);
+
+	// Check if ray is parallel to the plane (or nearly so)
+	if (fabs(denominator) < 0.0001f)
+	{
+		return origin;
+	}
+
+	float t = glm::dot(planePoint - glm::vec3(nearWorld), planeNormal) / denominator;
+
+	// Calculate the intersection point
+	glm::vec3 intersectionPoint = glm::vec3(nearWorld) + rayDirection * t;
+
+	return intersectionPoint;
+}
+
 template<typename... Component>
 void Scene::CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src,
 						  const std::unordered_map<UUID, entt::entity>& enttMap)

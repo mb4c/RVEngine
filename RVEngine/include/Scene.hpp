@@ -62,6 +62,8 @@ public:
 	glm::vec3 GetVelocity(Entity entity);
 	glm::vec3 GetAngularVelocity(Entity entity);
 
+	glm::vec3 ScreenToWorld(glm::vec2 screenPos, glm::vec3 origin, glm::vec3 direction);
+
 	std::shared_ptr<FrameBuffer> m_RenderingFB;
 	std::shared_ptr<FrameBuffer> m_PickingFB;
 private:
