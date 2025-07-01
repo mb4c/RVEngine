@@ -52,7 +52,7 @@ void AssetsPanel::OnRender()
 			if (it.is_directory())
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
-				if (ImGui::ImageButton(it.path().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_folder")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
+				if (ImGui::ImageButton(it.path().u8string().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_folder")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
 				{
 					m_CurrentDirectory /= it.path().filename();
 				}
@@ -61,7 +61,7 @@ void AssetsPanel::OnRender()
 			} else
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
-				if (ImGui::ImageButton(relativePath.filename().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_file")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
+				if (ImGui::ImageButton(relativePath.filename().u8string().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_file")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
 				{
 					if (relativePath.extension() == ".rvmat")
 					{
@@ -72,14 +72,14 @@ void AssetsPanel::OnRender()
 
 					if (relativePath.extension() == ".glb")
 					{
-						auto entity = m_Scene->CreateEntity(relativePath.stem());
-						auto model = rm.GetModel(relativePath.stem());
+						auto entity = m_Scene->CreateEntity(relativePath.stem().u8string());
+						auto model = rm.GetModel(relativePath.stem().u8string());
 						if (!model)
 						{
 							std::filesystem::path newPath = m_AssetsDirectory / relativePath;
 							std::cout << newPath << std::endl;
-							rm.AddModel(relativePath.stem().string(), std::make_shared<Model>(newPath));
-							model = rm.GetModel(relativePath.stem());
+							rm.AddModel(relativePath.stem().string(), std::make_shared<Model>(newPath.u8string()));
+							model = rm.GetModel(relativePath.stem().u8string());
 						}
 						entity.AddComponent<MeshRendererComponent>().model = model;
 						entity.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");

@@ -6,9 +6,9 @@
 #include <glm/vec2.hpp>
 
 struct PixelInfo {
-	uint EntityID = 0;
-	uint DrawID = 0;
-	uint PrimID = 0;
+	uint32_t EntityID = 0;
+	uint32_t DrawID = 0;
+	uint32_t PrimID = 0;
 
 	void Print()
 	{

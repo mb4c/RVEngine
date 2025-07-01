@@ -180,7 +180,7 @@ void SceneSerializer::Serialize(const std::filesystem::path& path)
 {
 	YAML::Emitter out;
 	out << YAML::BeginMap;
-	out << YAML::Key << "Scene" << YAML::Value << path.stem();
+	out << YAML::Key << "Scene" << YAML::Value << path.stem().u8string();
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 	for (auto entityID: m_Scene->m_Registry.view<entt::entity>())
 	{

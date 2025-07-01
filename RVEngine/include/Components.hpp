@@ -225,24 +225,30 @@ using AllComponents =
 template<typename Component>
 std::string GetComponentName()
 {
+#if defined(__clang__) || defined(__GNUC__)
 	std::string prettyFunction = __PRETTY_FUNCTION__;
-	size_t start = prettyFunction.find("Component = ") + 12;
+	std::string key = "Component = ";
+	size_t start = prettyFunction.find(key) + key.size();
 	size_t end = prettyFunction.find(']', start);
-//	std::cout << prettyFunction << std::endl;
-//	std::cout << prettyFunction.substr(start, end - start) << std::endl;
-
 	return prettyFunction.substr(start, end - start);
-
+#elif defined(_MSC_VER)
+	std::string funcSig = __FUNCSIG__;
+	std::string key = "GetComponentName<";
+	size_t start = funcSig.find(key) + key.size();
+	size_t end = funcSig.find(">", start);
+	return funcSig.substr(start, end - start);
+#else
+	return "Unsupported compiler";
+#endif
 }
+
+
 
 template<typename Component>
 void PrintComponentName()
 {
-	std::string prettyFunction = __PRETTY_FUNCTION__;
-	size_t start = prettyFunction.find("Component = ") + 12;
-	size_t end = prettyFunction.find(']', start);
-	std::cout << prettyFunction << std::endl;
-	std::cout << prettyFunction.substr(start, end - start) << std::endl;
+	auto componentName = GetComponentName<Component>();
+	std::cout << componentName << std::endl;
 }
 
 template<typename... Components>

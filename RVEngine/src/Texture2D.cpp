@@ -52,7 +52,7 @@ Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool norm
 {
 	RV_PROFILE_FUNCTION();
 
-	unsigned char pixelData[width * height * 4];
+	std::vector<unsigned char> pixelData(width * height * 4);
 
 	for (int i = 0; i < width * height; ++i)
 	{
@@ -62,7 +62,7 @@ Texture2D::Texture2D(uint32_t width, uint32_t height, glm::vec4 color, bool norm
 		pixelData[i * 4 + 3] = static_cast<unsigned char>(color.a * 255);
 	}
 
-	auto tex = Texture2D(width, height, 4, pixelData);
+	auto tex = Texture2D(width, height, 4, pixelData.data());
 	m_ID = tex.GetTexture();
 }
 

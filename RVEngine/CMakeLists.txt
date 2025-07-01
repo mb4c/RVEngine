@@ -23,9 +23,12 @@ find_package(OpenImageIO REQUIRED)
 #TODO: Add option to compile without tracy
 
 file(GLOB_RECURSE engine_src src/*.cpp include/*.hpp)
-add_library(RVEngine SHARED ${engine_src})
+add_library(RVEngine STATIC ${engine_src})
 
 target_include_directories(RVEngine PUBLIC include)
 target_link_libraries(RVEngine PRIVATE glfw glad::glad imgui::imgui glm::glm fmt::fmt assimp::assimp Tracy::TracyClient EnTT::EnTT imguizmo::imguizmo yaml-cpp unofficial::joltphysics::Jolt OpenImageIO::OpenImageIO)
 
-
+# if we dont do this microshits garbage linker will have aneurysm and fail
+set_target_properties(RVEngine PROPERTIES
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+)

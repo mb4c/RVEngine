@@ -123,7 +123,7 @@ void RVEditor::OnUpdate()
 		if(m_ProjectSettings.ProjectPath.empty())
 			std::cout << "No project opened!" << std::endl;
 		else
-			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_AssetsPanel.GetCurrentDirectory());
+			m_AssetImporterModal.Open(&m_AppData, &m_ProjectSettings, m_AssetsPanel.m_CurrentDirectory);
 	}
 
 	m_HoveredEntity = frameBuffer->GetEntityID({m_MouseVieportPos.x, m_MouseVieportPos.y});

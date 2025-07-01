@@ -8,14 +8,14 @@ TimeUntil::TimeUntil()
 TimeUntil::TimeUntil(float time)
 {
 	startTime = std::chrono::system_clock::now();
-	targetTime = std::chrono::system_clock::now(); + std::chrono::milliseconds(static_cast<int>(time * 1000));
+	targetTime = std::chrono::system_clock::now() + std::chrono::milliseconds(static_cast<int>(time * 1000));
 	m_Time = time;
 }
 
 void TimeUntil::operator=(float time)
 {
 	startTime = std::chrono::system_clock::now();
-	targetTime = std::chrono::system_clock::now(); + std::chrono::milliseconds(static_cast<int>(time * 1000));
+	targetTime = std::chrono::system_clock::now() + std::chrono::milliseconds(static_cast<int>(time * 1000));
 	m_Time = time;
 }
 

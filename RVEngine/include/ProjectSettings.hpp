@@ -16,7 +16,7 @@ public:
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key << "Project" << YAML::Value << ProjectName;
-		out << YAML::Key << "ResourcesDirectory" << YAML::Value << ResourcesDirectory;
+		out << YAML::Key << "ResourcesDirectory" << YAML::Value << ResourcesDirectory.u8string();
 
 		out << YAML::EndMap;
 

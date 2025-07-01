@@ -26,7 +26,7 @@ public:
 			if(ImGui::Button("select..."))
 			{
 				std::filesystem::path selection = pfd::select_folder("Select a file", ".", pfd::opt::none).result();
-				m_Path = selection;
+				m_Path = selection.u8string();
 			}
 
 			ImGui::BeginDisabled(m_Path.empty() || m_ProjectName.empty());
