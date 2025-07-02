@@ -87,29 +87,29 @@ void RVEditor::OnInit()
 //	std::cout << "Dupa: "  << cube.GetChild(0).GetComponent<TagComponent>().Tag << std::endl;
 
 
-//	auto helmet = m_ActiveScene->CreateEntity("helmet");
-//	helmet.AddComponent<MeshRendererComponent>();
-//	helmet.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-//	helmet.GetComponent<MeshRendererComponent>().model = rm.GetModel("helmet");
-//	helmet.GetComponent<TransformComponent>().SetPosition({0, 0, -5});
-//	helmet.GetComponent<TransformComponent>().SetRotation({90, 0, 0});
-//
-//	auto boombox = m_ActiveScene->CreateEntity("boombox");
-//	boombox.AddComponent<MeshRendererComponent>();
-//	boombox.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-//	boombox.GetComponent<MeshRendererComponent>().model = rm.GetModel("boombox");
-//	boombox.GetComponent<TransformComponent>().SetPosition({-2, 0, -5});
-//	boombox.GetComponent<TransformComponent>().SetRotation({0, 180, 0});
-//	boombox.GetComponent<TransformComponent>().SetScale({25, 25, 25});
-//
-//	auto sas = m_ActiveScene->CreateEntity("maxwell");
-//	sas.AddComponent<MeshRendererComponent>();
-//	sas.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-//	sas.GetComponent<MeshRendererComponent>().model = rm.GetModel("maxwell");
-//	sas.GetComponent<TransformComponent>().SetPosition({2, 0, -5});
-//	sas.GetComponent<TransformComponent>().SetRotation({-90, -90, 0});
-//	sas.GetComponent<TransformComponent>().SetScale({0.05, 0.05, 0.05});
-//	sas.SetParent(cube);
+	// 	auto helmet = m_ActiveScene->CreateEntity("helmet");
+	// 	helmet.AddComponent<MeshRendererComponent>();
+	// 	helmet.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	// 	helmet.GetComponent<MeshRendererComponent>().model = rm.GetModel("helmet");
+	// 	helmet.GetComponent<TransformComponent>().SetPosition({0, 0, -5});
+	// 	helmet.GetComponent<TransformComponent>().SetRotation({90, 0, 0});
+	// //
+	// 	auto boombox = m_ActiveScene->CreateEntity("boombox");
+	// 	boombox.AddComponent<MeshRendererComponent>();
+	// 	boombox.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	// 	boombox.GetComponent<MeshRendererComponent>().model = rm.GetModel("boombox");
+	// 	boombox.GetComponent<TransformComponent>().SetPosition({-2, 0, -5});
+	// 	boombox.GetComponent<TransformComponent>().SetRotation({0, 180, 0});
+	// 	boombox.GetComponent<TransformComponent>().SetScale({25, 25, 25});
+	//
+	// 	auto sas = m_ActiveScene->CreateEntity("maxwell");
+	// 	sas.AddComponent<MeshRendererComponent>();
+	// 	sas.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	// 	sas.GetComponent<MeshRendererComponent>().model = rm.GetModel("maxwell");
+	// 	sas.GetComponent<TransformComponent>().SetPosition({2, 0, -5});
+	// 	sas.GetComponent<TransformComponent>().SetRotation({-90, -90, 0});
+	// 	sas.GetComponent<TransformComponent>().SetScale({0.05, 0.05, 0.05});
+	// 	sas.SetParent(helmet);
 
 	m_ActiveScene->OnStart();
 
@@ -676,6 +676,7 @@ std::filesystem::path RVEditor::SaveScene()
 {
 	SceneSerializer serializer(m_ActiveScene);
 	serializer.Serialize(m_SavedScenePath);
+	std::cout << "Saved: " << m_SavedScenePath << std::endl;
 	return m_SavedScenePath;
 }
 

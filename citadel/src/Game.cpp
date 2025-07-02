@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include "EnvironmentMap.hpp"
 #include "Renderer.hpp"
+#include "Bullet.hpp"
 #include <glm/gtx/compatibility.hpp>
 Game::Game(const string& title, int width, int height) : Application(title, width, height)
 {
@@ -13,11 +14,15 @@ void Game::OnInit()
 //	flatShader = std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag");
 //	mainShader = rm.GetShader("pbr");
 	Renderer::SetClearColor({0, 0, 0, 1});
-
-	frameBuffer = std::make_shared<FrameBuffer>(GetWindowSize().x,GetWindowSize().y);
+	m_FramebufferProps.width = GetWindowSize().x;
+	m_FramebufferProps.height = GetWindowSize().y;
+	frameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
 	m_LastViewportSize = glm::vec2{GetWindowSize().x, GetWindowSize().y};
 
 	m_ActiveScene = std::make_shared<Scene>();
+
+	LoadAssets();
+
 	EnvironmentMap envMap("res/overcast_soil_puresky_4k.hdr");
 	envMap.Capture();
 
@@ -33,15 +38,30 @@ void Game::OnInit()
 
 	m_Camera = m_ActiveScene->CreateEntity("Camera");
 	m_Camera.AddComponent<CameraComponent>();
-	m_Camera.GetComponent<TransformComponent>().SetPosition({0,0,16});
+	m_Camera.GetComponent<TransformComponent>().SetPosition({0,0,40});
 
 	m_Player = m_ActiveScene->CreateEntity("Player");
 	m_Player.AddComponent<MeshRendererComponent>();
 	m_Player.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	m_Player.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+	m_Player.GetComponent<MeshRendererComponent>().model = rm.GetModel("player_ship");
 	m_Player.GetComponent<TransformComponent>().SetPosition({0,0,0});
-//	rm.GetModel("cube")->m_Material = rm.GetMaterial("brickwall");
+	m_Player.GetComponent<TransformComponent>().SetRotation({0,0,0});
 
+	m_BulletPrefab = m_ActiveScene->CreateEntity("Bullet");
+	m_BulletPrefab.AddComponent<MeshRendererComponent>();
+	m_BulletPrefab.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	m_BulletPrefab.GetComponent<MeshRendererComponent>().model = rm.GetModel("bullet");
+	m_BulletPrefab.GetComponent<TransformComponent>().SetPosition({-2137,-2137,0});
+	m_BulletPrefab.GetComponent<TransformComponent>().SetRotation({0,0,0});
+
+	auto enemy = m_ActiveScene->CreateEntity("taxman");
+	enemy.AddComponent<MeshRendererComponent>();
+	enemy.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	enemy.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+	enemy.GetComponent<TransformComponent>().SetPosition({0,0,0});
+	enemy.GetComponent<TransformComponent>().SetRotation({0,0,0});
+	enemy.AddComponent<EnemyComponent>();
+	enemy.AddComponent<BoxColliderComponent>().Dynamic = false;
 
 
 //	auto grid = m_ActiveScene->CreateEntity("grid");
@@ -61,7 +81,7 @@ void Game::OnInit()
 
 	m_ActiveScene->SetViewportSize(GetWindowSize().x, GetWindowSize().y);
 
-
+	targetPos = m_Player.GetComponent<TransformComponent>().GetPosition();
 
 
 	m_ActiveScene->OnRuntimeStart();
@@ -75,21 +95,59 @@ void Game::OnUpdate()
 	OnResize();
 
 	glm::vec2 input{0,0};
-	if (m_Input.GetKeyDown(GLFW_KEY_W))
-		input.y = 1;
-	if (m_Input.GetKeyDown(GLFW_KEY_S))
-		input.y = -1;
-	if (m_Input.GetKeyDown(GLFW_KEY_A))
-		input.x = -1;
-	if (m_Input.GetKeyDown(GLFW_KEY_D))
-		input.x = 1;
+//	if (m_Input.GetKeyDown(GLFW_KEY_W))
+//		input.y = 1;
+//	if (m_Input.GetKeyDown(GLFW_KEY_S))
+//		input.y = -1;
+//	if (m_Input.GetKeyDown(GLFW_KEY_A))
+//		input.x = -1;
+//	if (m_Input.GetKeyDown(GLFW_KEY_D))
+//		input.x = 1;
+
+	glm::vec3 playerPos = m_Player.GetComponent<TransformComponent>().GetPosition();
+
+	glm::vec2 directionToCursor = -m_CursorWorldPos - playerPos;
+
+	// move if cursor is far enough
+	if (glm::length(directionToCursor) > 0.1f)
+	{
+		// Normalize to get direction only
+		input = glm::normalize(directionToCursor);
+	}
+
+	if (playerShoot)
+	{
+		playerShoot = 0.25;
+		auto bullet = Bullet( m_BulletPrefab.Instantiate(), m_Player.GetComponent<TransformComponent>().GetPosition(), {0,m_BulletSpeed,0}, 10,2,true);
+		m_Bullets.push_back(bullet);
+	}
+
+	for (int i = 0; i < m_Bullets.size(); ++i)
+	{
+		m_Bullets.at(i).OnUpdate(GetDeltaTime());
+		if (m_Bullets.at(i).ShouldDie())
+		{
+			m_Bullets.at(i).Destroy();
+			m_Bullets.erase(m_Bullets.begin() + i);
+		}
+	}
+
+	if (input != glm::vec2(0,0))
+		input = glm::normalize(input);
 
 	input *= GetDeltaTime();
 	input *= m_MoveSpeed;
 
-	glm::vec3 pos = m_Player.GetComponent<TransformComponent>().GetPosition();
-	m_Player.GetComponent<TransformComponent>().SetPosition(pos + glm::vec3{input.x,input.y,0});
+//	targetPos.x = -m_CursorWorldPos.x;
+//	targetPos.y = -m_CursorWorldPos.y;
 
+
+	targetPos += glm::vec3{input.x,input.y,0};
+	m_Player.GetComponent<TransformComponent>().SetPosition(glm::lerp(m_Player.GetComponent<TransformComponent>().GetPosition(), targetPos, 0.25f));
+
+	auto targetRot = glm::lerp(m_Player.GetComponent<TransformComponent>().GetRotation(), {0,input.x * 100,0}, 0.1f);
+	m_Player.GetComponent<TransformComponent>().SetRotation(targetRot);
+//	m_Camera.GetComponent<TransformComponent>().Translate({0, m_CameraMoveSpeed * GetDeltaTime(), 0});
 
 	frameBuffer->Bind();
 
@@ -128,6 +186,15 @@ void Game::OnImGuiRender()
 	ImGui::Text("Frame time %.2f ms", frameTime * 1000);
 	float gpuTime = static_cast<float>(Renderer::GetTimeElapsed()) / 1000000.0f;
 	ImGui::Text("GPU time %.2f ms", gpuTime);
+
+
+	glm::vec3 worldPos = m_ActiveScene->ScreenToWorld(m_Input.GetMousePos(), m_Camera.GetComponent<TransformComponent>().GetPosition(), glm::vec3(0,0,-1));
+	m_CursorWorldPos = worldPos + m_Camera.GetComponent<TransformComponent>().GetPosition();
+	ImGui::Text("Ray X: %f", worldPos.x);
+	ImGui::Text("Ray Y: %f", worldPos.y);
+	ImGui::Text("Ray Z: %f", worldPos.z);
+
+
 	ImGui::End();
 
 
@@ -178,9 +245,19 @@ void Game::OnResize()
 	uint32_t height = GetWindowSize().y;
 	if (m_LastViewportSize != glm::vec2{width, height})
 	{
+		m_FramebufferProps.width = width;
+		m_FramebufferProps.height = height;
 
-		frameBuffer = std::make_shared<FrameBuffer>(width, height);
+		frameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
 		m_ActiveScene->SetViewportSize(width,height);
 		m_LastViewportSize = glm::vec2{width, height};
 	}
+}
+
+void Game::LoadAssets()
+{
+	ResourceManager& rm = ResourceManager::instance();
+
+	rm.AddModel("player_ship", std::make_shared<Model>("res/playership.glb"));
+	rm.AddModel("bullet", std::make_shared<Model>("res/bullet.glb"));
 }

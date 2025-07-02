@@ -213,6 +213,24 @@ struct RelationshipComponent
 	uint64_t uuidParent{};
 };
 
+
+enum class BulletPattern
+{
+	Line = 0,
+	one,
+	None
+};
+
+struct EnemyComponent
+{
+	int Health = 100;
+	int Damage = 10;
+	float Speed = 10;
+	int Armor = 10;
+	float AttackCooldown = 0.5f;
+	BulletPattern BulletPattern = BulletPattern::Line;
+};
+
 template<typename... Component>
 struct ComponentGroup
 {
