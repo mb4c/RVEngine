@@ -3,18 +3,18 @@ project(citadel)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(glfw3 CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
-find_package(glm CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
-find_package(Tracy CONFIG REQUIRED)
-find_package(EnTT CONFIG REQUIRED)
+#find_package(glfw3 CONFIG REQUIRED)
+#find_package(glad CONFIG REQUIRED)
+#find_package(imgui CONFIG REQUIRED)
+#find_package(glm CONFIG REQUIRED)
+#find_package(fmt CONFIG REQUIRED)
+#find_package(Tracy CONFIG REQUIRED)
+#find_package(EnTT CONFIG REQUIRED)
 
 file(GLOB_RECURSE game_src src/*.cpp src/*.hpp)
 add_executable(${PROJECT_NAME} ${game_src})
 
-target_link_libraries(${PROJECT_NAME} RVEngine glfw glad::glad imgui::imgui glm::glm fmt::fmt Tracy::TracyClient EnTT::EnTT)
+target_link_libraries(${PROJECT_NAME} RVEngine)
 #target_link_libraries(${PROJECT_NAME} RVEngine glfw glad::glad imgui::imgui glm::glm fmt::fmt EnTT::EnTT)
 
 get_target_property(ENGINE_SOURCE_DIR RVEngine SOURCE_DIR)

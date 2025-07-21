@@ -60,7 +60,7 @@ namespace ImGui
 	{
 		if (ImGui::CollapsingHeader(label, ImGuiTreeNodeFlags_None))
 		{
-			if (ImGui::ImageButton((void*) (intptr_t) src->GetTexture(), ImVec2(48, 48)))
+			if (ImGui::ImageButton("##imagebuttonc", (ImTextureRef)src->GetTexture(), ImVec2(48, 48)))
 			{
 				ImGui::OpenPopup("texture_picker_popup");
 			}
@@ -83,7 +83,7 @@ namespace ImGui
 
 	inline void TextureEdit(const char* label, std::shared_ptr<Texture2D>& src)
 	{
-		if (ImGui::ImageButton((void*) (intptr_t) src->GetTexture(), ImVec2(48, 48)))
+		if (ImGui::ImageButton("##imagebutton", src->GetTexture(), ImVec2(48, 48)))
 		{
 			ImGui::OpenPopup("texture_picker_popup");
 		}

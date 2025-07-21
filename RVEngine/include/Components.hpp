@@ -9,6 +9,7 @@
 #include "SceneCamera.hpp"
 
 #include "BodyUserData.hpp"
+#include "PhysicsTypes.hpp"
 
 struct TagComponent
 {
@@ -163,12 +164,14 @@ struct BoxColliderComponent
 {
 
 	glm::vec3 Size = {1, 1, 1};
-	bool Dynamic = true;
+	MotionType MotionType = MotionType::Dynamic;
+	CollisionLayer CollisionLayer = CollisionLayer::Dynamic;
 	float Mass = 10;
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
-	uint32_t IndexSequence;
+	uint32_t IndexSequence = 0xffffffff;
 	BodyUserData userData;
+	bool IsDestroyed = false;
 
 	BoxColliderComponent() = default;
 	BoxColliderComponent(const BoxColliderComponent&) = default;
@@ -229,6 +232,17 @@ struct EnemyComponent
 	int Armor = 10;
 	float AttackCooldown = 0.5f;
 	BulletPattern BulletPattern = BulletPattern::Line;
+};
+
+struct BulletComponent
+{
+	glm::vec3 Velocity = {0,0,0};
+	glm::vec3 Position = {0,0,0};
+
+	float Damage = 10;
+	float LifeTime = 2.0f;
+	float RemainingLifeTime = 2.0f;
+	bool Friendly = true;
 };
 
 template<typename... Component>

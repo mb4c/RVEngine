@@ -1,5 +1,7 @@
 #include "PhysicsManager.hpp"
 
+#include <cassert>
+
 PhysicsManager::PhysicsManager()
 {
 	StartSimulation();
@@ -27,7 +29,7 @@ void PhysicsManager::StartSimulation()
 	// B.t.w. 10 MB is way too much for this example but it is a typical value you can use.
 	// If you don't want to pre-allocate you can also use TempAllocatorMalloc to fall back to
 	// malloc / free.
-	temp_allocator = new TempAllocatorImpl(10 * 1024 * 1024);
+	temp_allocator = new TempAllocatorImpl(64 * 1024 * 1024);
 
 	// We need a job system that will execute physics jobs on multiple threads. Typically
 	// you would implement the JobSystem interface yourself and let Jolt Physics run on top
@@ -120,7 +122,7 @@ void PhysicsManager::ShutdownSimulation()
 	Factory::sInstance = nullptr;
 }
 
-Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution, float friction)
+Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, MotionType motionType, CollisionLayer layer, float mass, float restitution, float friction)
 {
 	BoxShapeSettings bodyShapeSettings(size);
 
@@ -129,11 +131,13 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_
 
 	ShapeRefC bodyShape = bodyShapeResult.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
 	// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
-	BodyCreationSettings bodySettings(bodyShape, position, rotation, dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
+	BodyCreationSettings bodySettings(bodyShape, position, rotation, static_cast<EMotionType>(motionType), (ObjectLayer)layer);
 	bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
 	bodySettings.mMassPropertiesOverride.mMass = mass;
 	bodySettings.mRestitution = restitution;
 	bodySettings.mFriction = friction;
+	bodySettings.mObjectLayer = (ObjectLayer)layer;
+
 	// Create the actual rigid body
 	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
 	bud->entityID = entity;
@@ -257,4 +261,27 @@ float PhysicsManager::GetMass(BodyID body_id)
 		}
 	}
 	return -1; // Return -1 if failed to get mass
+}
+
+void PhysicsManager::RemoveBody(uint32_t indexSequence)
+{
+	JPH::BodyID bodyID(indexSequence);
+
+	if (m_BodyInterface->IsAdded(bodyID))
+	{
+		{
+			m_BodyInterface->RemoveBody(bodyID);
+			m_BodyInterface->DestroyBody(bodyID);
+			std::cout << "Removed BodyID: " << indexSequence << std::endl;
+			std::cout << "Active bodies: " << m_PhysicsSystem.GetNumBodies() << std::endl;
+
+			// bodyInterface.RemoveBody(bodyID);
+			// bodyInterface.DestroyBody(bodyID);
+		}
+		// auto it = std::find(m_Bodies.begin(), m_Bodies.end(), bodyID);
+		// if (it != m_Bodies.end())
+		// {
+		// 	m_Bodies.erase(it);
+		// }
+	}
 }

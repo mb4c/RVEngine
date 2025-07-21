@@ -7,7 +7,7 @@
 #include <stb_image.h>
 #include <Renderer.hpp>
 #include <ImGuizmo.h>
-
+// #include <print>
 
 Application::Application(const std::string &title, int width, int height)
 {
@@ -50,12 +50,12 @@ void Application::Run()
 
 		glViewport(0, 0, width, height);
 
-		fmt::print("Resized: {} x {}\n", data->app->m_Width, data->app->m_Height);
+		// std::println("Resized: {} x {}\n", data->app->m_Width, data->app->m_Height);
 	});
 
 	glfwMakeContextCurrent(m_Window);
 
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGL(glfwGetProcAddress))
 	{
 		std::cout << "Failed to init GLAD" << std::endl;
 		return;

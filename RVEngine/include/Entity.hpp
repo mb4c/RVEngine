@@ -9,6 +9,7 @@ class Entity
 public:
 	Entity() = default;
 	Entity(entt::entity handle, Scene* scene);
+	Entity(uint32_t handle, Scene* scene);
 	Entity(const Entity& other) = default;
 	void Destroy();
 
@@ -66,7 +67,7 @@ public:
 
 	entt::entity GetHandle() { return m_EntityHandle; };
 	UUID GetUUID() { return GetComponent<IDComponent>().ID; }
-	bool IsValid() { return m_EntityHandle != entt::null; }
+	bool IsValid() {     return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle); }
 
 	void SetParent(Entity entity);
 	Entity GetParent();

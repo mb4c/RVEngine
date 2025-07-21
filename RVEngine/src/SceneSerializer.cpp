@@ -99,7 +99,7 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity, Scene* scene)
 
 		auto& bcc = entity.GetComponent<BoxColliderComponent>();
 		out << YAML::Key << "Size" << YAML::Value << bcc.Size;
-		out << YAML::Key << "Dynamic" << YAML::Value << bcc.Dynamic;
+		out << YAML::Key << "MotionType" << YAML::Value << (uint8_t)bcc.MotionType;
 		out << YAML::Key << "Mass" << YAML::Value << bcc.Mass;
 		out << YAML::Key << "Restitution" << YAML::Value << bcc.Restitution;
 		out << YAML::Key << "Friction" << YAML::Value << bcc.Friction;
@@ -285,7 +285,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 			{
 				auto& bcc = deserializedEntity.AddComponent<BoxColliderComponent>();
 				bcc.Size = boxCollider["Size"].as<glm::vec3>();
-				bcc.Dynamic = boxCollider["Dynamic"].as<bool>();
+				bcc.MotionType = (MotionType)boxCollider["Dynamic"].as<uint8_t>();
 				bcc.Mass = boxCollider["Mass"].as<float>();
 				bcc.Restitution = boxCollider["Restitution"].as<float>();
 				bcc.Friction = boxCollider["Friction"].as<float>();

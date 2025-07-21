@@ -11,7 +11,6 @@
 #include <Math.hpp>
 #include "ProjectSettings.hpp"
 #include "Time.hpp"
-#include "Bullet.hpp"
 #include <Widgets.hpp>
 
 class Game : public Application
@@ -34,6 +33,7 @@ private:
 	glm::vec2 m_LastViewportSize{};
 	glm::vec3 m_CursorWorldPos{};
 
+	Entity SpawnBullet();
 
 	void LoadAssets();
 
@@ -44,7 +44,8 @@ private:
 	TimeUntil playerShoot = 0.25;
 	glm::vec3 targetPos{};
 
-	Entity m_BulletPrefab;
-	std::vector<Bullet> m_Bullets;
+	// Entity m_BulletPrefab;
 	float m_BulletSpeed = 24;
+
+	std::vector<Entity> m_Enemies;
 };

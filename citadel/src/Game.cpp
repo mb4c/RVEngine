@@ -1,8 +1,8 @@
 #include "Game.hpp"
 #include "EnvironmentMap.hpp"
 #include "Renderer.hpp"
-#include "Bullet.hpp"
 #include <glm/gtx/compatibility.hpp>
+
 Game::Game(const string& title, int width, int height) : Application(title, width, height)
 {
 
@@ -47,12 +47,7 @@ void Game::OnInit()
 	m_Player.GetComponent<TransformComponent>().SetPosition({0,0,0});
 	m_Player.GetComponent<TransformComponent>().SetRotation({0,0,0});
 
-	m_BulletPrefab = m_ActiveScene->CreateEntity("Bullet");
-	m_BulletPrefab.AddComponent<MeshRendererComponent>();
-	m_BulletPrefab.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	m_BulletPrefab.GetComponent<MeshRendererComponent>().model = rm.GetModel("bullet");
-	m_BulletPrefab.GetComponent<TransformComponent>().SetPosition({-2137,-2137,0});
-	m_BulletPrefab.GetComponent<TransformComponent>().SetRotation({0,0,0});
+
 
 	auto enemy = m_ActiveScene->CreateEntity("taxman");
 	enemy.AddComponent<MeshRendererComponent>();
@@ -61,7 +56,9 @@ void Game::OnInit()
 	enemy.GetComponent<TransformComponent>().SetPosition({0,0,0});
 	enemy.GetComponent<TransformComponent>().SetRotation({0,0,0});
 	enemy.AddComponent<EnemyComponent>();
-	enemy.AddComponent<BoxColliderComponent>().Dynamic = false;
+	enemy.AddComponent<BoxColliderComponent>().MotionType = MotionType::Kinematic;
+	enemy.GetComponent<BoxColliderComponent>().CollisionLayer = CollisionLayer::Enemy;
+
 
 
 //	auto grid = m_ActiveScene->CreateEntity("grid");
@@ -97,7 +94,7 @@ void Game::OnUpdate()
 	glm::vec2 input{0,0};
 //	if (m_Input.GetKeyDown(GLFW_KEY_W))
 //		input.y = 1;
-//	if (m_Input.GetKeyDown(GLFW_KEY_S))
+//	if (m_Input.GetKeyDown(GLFW_KEY_S))z
 //		input.y = -1;
 //	if (m_Input.GetKeyDown(GLFW_KEY_A))
 //		input.x = -1;
@@ -117,19 +114,10 @@ void Game::OnUpdate()
 
 	if (playerShoot)
 	{
-		playerShoot = 0.25;
-		auto bullet = Bullet( m_BulletPrefab.Instantiate(), m_Player.GetComponent<TransformComponent>().GetPosition(), {0,m_BulletSpeed,0}, 10,2,true);
-		m_Bullets.push_back(bullet);
-	}
+		playerShoot = 0.15;
+		SpawnBullet();
+		// m_ActiveScene->SetGravityFactor(bullet, 0.0f);
 
-	for (int i = 0; i < m_Bullets.size(); ++i)
-	{
-		m_Bullets.at(i).OnUpdate(GetDeltaTime());
-		if (m_Bullets.at(i).ShouldDie())
-		{
-			m_Bullets.at(i).Destroy();
-			m_Bullets.erase(m_Bullets.begin() + i);
-		}
 	}
 
 	if (input != glm::vec2(0,0))
@@ -149,6 +137,9 @@ void Game::OnUpdate()
 	m_Player.GetComponent<TransformComponent>().SetRotation(targetRot);
 //	m_Camera.GetComponent<TransformComponent>().Translate({0, m_CameraMoveSpeed * GetDeltaTime(), 0});
 
+
+
+
 	frameBuffer->Bind();
 
 	Renderer::SetClearColor({0, 0, 0, 1});
@@ -156,7 +147,63 @@ void Game::OnUpdate()
 
 
 	m_ActiveScene->OnUpdateRuntime(GetDeltaTime());
+	{
+		RV_PROFILE_SCOPE("Update Bullets");
+		auto bullets = m_ActiveScene->GetEntitiesWithComponent<BulletComponent>();
 
+		for (auto bullet : bullets)
+		{
+			auto& bulletComp = bullet.GetComponent<BulletComponent>();
+			// auto nextPos = bullet.GetComponent<TransformComponent>().GetPosition() + bulletComp.Velocity * GetDeltaTime();
+			// m_ActiveScene->SetPhysicsPosition(bullet, nextPos);
+			m_ActiveScene->SetVelocity(bullet, bulletComp.Velocity);
+			// std::cout << "SetVelocity: " << bulletComp.Velocity.y << std::endl;
+			bulletComp.RemainingLifeTime -= GetDeltaTime();
+
+			if (bulletComp.RemainingLifeTime <= 0)
+			{
+				bullet.Destroy();
+			}
+		}
+	}
+
+	{
+		RV_PROFILE_SCOPE("Update Enemies");
+		auto enemies = m_ActiveScene->GetEntitiesWithComponent<EnemyComponent>();
+		std::vector<Entity> remainingEnemies;
+
+		for (int i = enemies.size() - 1; i >= 0; --i)
+		{
+			Entity enemy = enemies[i];
+
+			if (enemy.IsColliding())
+			{
+				auto& collider = enemy.GetComponent<BoxColliderComponent>();
+				Entity otherEntity = Entity(collider.userData.otherID, m_ActiveScene.get());
+
+				if (otherEntity.IsValid())
+					if (otherEntity.GetComponent<TagComponent>().Tag == "Bullet")
+					{
+						auto& enemyComp = enemy.GetComponent<EnemyComponent>();
+						auto& bulletComp = otherEntity.GetComponent<BulletComponent>();
+
+						enemyComp.Health -= bulletComp.Damage;
+						otherEntity.Destroy();
+
+
+						if (enemyComp.Health <= 0)
+						{
+							enemy.Destroy();
+							continue;
+						}
+					}
+			}
+
+			remainingEnemies.push_back(enemy);
+		}
+
+		m_Enemies = std::move(remainingEnemies);
+	}
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer->GetFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -193,9 +240,39 @@ void Game::OnImGuiRender()
 	ImGui::Text("Ray X: %f", worldPos.x);
 	ImGui::Text("Ray Y: %f", worldPos.y);
 	ImGui::Text("Ray Z: %f", worldPos.z);
-
-
 	ImGui::End();
+
+	ImGui::Begin("Enemies");
+	ImGui::Separator();
+	ImGui::Text("Enemies %u", m_Enemies.size());
+	for (int i = 0; i < m_Enemies.size(); ++i)
+	{
+		std::string str = m_Enemies.at(i).GetComponent<TagComponent>().Tag;
+		str += ": ";
+		str += std::to_string(m_Enemies.at(i).GetComponent<EnemyComponent>().Health);
+		ImGui::Text(str.c_str());
+	}
+	ImGui::End();
+
+
+	auto bullets = m_ActiveScene->GetEntitiesWithComponent<BulletComponent>();
+	ImGui::Begin("Bullets");
+	ImGui::Separator();
+	ImGui::Text("Bullets %u", bullets.size());
+	for (int i = 0; i < bullets.size(); ++i)
+	{
+		std::string str = bullets.at(i).GetComponent<TagComponent>().Tag;
+		str += ": ";
+		str += std::to_string(bullets.at(i).GetComponent<TransformComponent>().GetPosition().y);
+		str += " | lifetime: ";
+		str += std::to_string(bullets.at(i).GetComponent<BulletComponent>().RemainingLifeTime);
+		str += " | body: ";
+		str += std::to_string(bullets.at(i).GetComponent<BoxColliderComponent>().IndexSequence);
+		ImGui::Text(str.c_str());
+	}
+	ImGui::End();
+
+
 
 
 }
@@ -252,6 +329,29 @@ void Game::OnResize()
 		m_ActiveScene->SetViewportSize(width,height);
 		m_LastViewportSize = glm::vec2{width, height};
 	}
+}
+
+Entity Game::SpawnBullet()
+{
+	ResourceManager& rm = ResourceManager::instance();
+	auto bullet = m_ActiveScene->CreateEntity("Bullet");
+
+	bullet.AddComponent<BoxColliderComponent>().MotionType = MotionType::Dynamic;
+	bullet.GetComponent<BoxColliderComponent>().CollisionLayer = CollisionLayer::Bullet;
+
+	bullet.AddComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+	bullet.GetComponent<MeshRendererComponent>().model = rm.GetModel("bullet");
+
+	bullet.GetComponent<TransformComponent>().SetRotation({0,0,0});
+	bullet.GetComponent<TransformComponent>().SetPosition(m_Player.GetComponent<TransformComponent>().GetPosition());
+
+	bullet.AddComponent<BulletComponent>().Velocity = {0,m_BulletSpeed,0};
+	bullet.GetComponent<BulletComponent>().Damage = 10;
+	bullet.GetComponent<BulletComponent>().LifeTime = 2;
+	bullet.GetComponent<BulletComponent>().RemainingLifeTime = 2;
+	bullet.GetComponent<BulletComponent>().Friendly = true;
+	m_ActiveScene->SetGravityFactor(bullet, 0.0f);
+	return bullet;
 }
 
 void Game::LoadAssets()

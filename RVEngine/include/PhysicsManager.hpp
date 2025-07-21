@@ -20,6 +20,8 @@
 #include <iostream>
 #include <cstdarg>
 #include <thread>
+
+#include "PhysicsTypes.hpp"
 #define JPH_ENABLE_ASSERTS
 // Disable common warnings triggered by Jolt, you can use JPH_SUPPRESS_WARNING_PUSH / JPH_SUPPRESS_WARNING_POP to store and restore the warning state
 JPH_SUPPRESS_WARNINGS
@@ -65,11 +67,17 @@ static bool AssertFailedImpl(const char* inExpression, const char* inMessage, co
 // Typically you at least want to have 1 layer for moving bodies and 1 layer for static bodies, but you can have more
 // layers if you want. E.g. you could have a layer for high detail collision (which is not used by the physics simulation
 // but only if you do collision testing).
+
+// TODO: remove this shit and use the layers from the PhysicsTypes.hpp
 namespace Layers
 {
 	static constexpr ObjectLayer NON_MOVING = 0;
 	static constexpr ObjectLayer MOVING = 1;
-	static constexpr ObjectLayer NUM_LAYERS = 2;
+	static constexpr ObjectLayer PLAYER = 2;
+	static constexpr ObjectLayer ENEMY = 3;
+	static constexpr ObjectLayer BULLET = 4;
+	static constexpr ObjectLayer BULLET_ENEMY = 5;
+	static constexpr ObjectLayer NUM_LAYERS = 6;
 };
 
 /// Class that determines if two object layers can collide
@@ -84,6 +92,14 @@ public:
 				return inObject2 == Layers::MOVING; // Non moving only collides with moving
 			case Layers::MOVING:
 				return true; // Moving collides with everything
+			case Layers::PLAYER:
+				return inObject2 == Layers::BULLET_ENEMY || inObject2 == Layers::ENEMY;
+			case Layers::ENEMY:
+				return inObject2 == Layers::BULLET;
+			case Layers::BULLET:
+				return inObject2 == Layers::ENEMY;
+			case Layers::BULLET_ENEMY:
+				return inObject2 == Layers::PLAYER;
 			default:
 				JPH_ASSERT(false);
 				return false;
@@ -113,6 +129,11 @@ public:
 		// Create a mapping table from object to broad phase layer
 		mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
 		mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::MOVING]         = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::PLAYER]         = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::ENEMY]          = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::BULLET]         = BroadPhaseLayers::MOVING;
+		mObjectToBroadPhase[Layers::BULLET_ENEMY]   = BroadPhaseLayers::MOVING;
 	}
 
 	virtual uint GetNumBroadPhaseLayers() const override
@@ -153,6 +174,10 @@ public:
 			case Layers::NON_MOVING:
 				return inLayer2 == BroadPhaseLayers::MOVING;
 			case Layers::MOVING:
+			case Layers::PLAYER:
+			case Layers::ENEMY:
+			case Layers::BULLET:
+			case Layers::BULLET_ENEMY:
 				return true;
 			default:
 				JPH_ASSERT(false);
@@ -231,7 +256,7 @@ public:
 	void StartSimulation();
 	void ShutdownSimulation();
 	void OnUpdate(float dt);
-	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
+	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, MotionType motionType, CollisionLayer layer, float mass, float restitution = 0.5, float friction = 0.2);
 //	Body* CreateBox(uint64_t entity, TransformComponent tc, BoxColliderComponent bcc);
 
 	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
@@ -240,6 +265,8 @@ public:
 	void SetMass(BodyID body, float mass);
 	float GetMass(BodyID body);
 	PhysicsSystem& GetPhysicsSystem(){return m_PhysicsSystem;};
+
+	void RemoveBody(uint32_t indexSequence);
 private:
 	PhysicsSystem m_PhysicsSystem;
 	BodyInterface* m_BodyInterface = nullptr;

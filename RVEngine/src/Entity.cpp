@@ -4,9 +4,15 @@ Entity::Entity(entt::entity handle, Scene* scene)
 		: m_EntityHandle(handle), m_Scene(scene)
 {
 }
+
+Entity::Entity(uint32_t handle, Scene* scene)
+		: m_EntityHandle(static_cast<entt::entity>(handle)), m_Scene(scene)
+{
+}
+
 void Entity::Destroy()
 {
-	m_Scene->m_Registry.destroy(m_EntityHandle);
+	m_Scene->m_EntityDeletionQueue.push_back(*this);
 }
 
 void Entity::SetParent(Entity entity)
@@ -164,7 +170,7 @@ Entity Entity::Instantiate()
 		auto& bc = entity.GetComponent<BoxColliderComponent>();
 		BodyUserData bud;
 		bc.userData = bud;
-		bc.IndexSequence = 0;
+		bc.IndexSequence = BodyID::cInvalidBodyID;
 
 	}
 	return entity;

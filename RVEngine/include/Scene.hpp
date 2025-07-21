@@ -32,8 +32,24 @@ public:
 
 	static std::shared_ptr<Scene> Copy(std::shared_ptr<Scene> other);
 
+	template<typename... Component>
+	std::vector<Entity> GetEntitiesWithComponent()
+	{
+		std::vector<Entity> entities;
+
+		auto view = m_Registry.view<Component...>();
+
+		for (entt::entity entity: view)
+		{
+			entities.emplace_back(entity,this);
+		}
+
+		return entities;
+	}
+
 	Entity CreateEntity(const std::string& name = std::string());
 	void RemoveEntity(Entity entity);
+	void DestroyEntities();
 	Entity DuplicateEntity(Entity entity);
 	uint32_t GetEntityCount();
 
@@ -64,6 +80,8 @@ public:
 
 	glm::vec3 ScreenToWorld(glm::vec2 screenPos, glm::vec3 origin, glm::vec3 direction);
 
+
+
 	std::shared_ptr<FrameBuffer> m_RenderingFB;
 	std::shared_ptr<FrameBuffer> m_PickingFB;
 private:
@@ -74,6 +92,8 @@ private:
 	PhysicsManager* m_PhysicsManager = nullptr;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
 	std::string m_SceneName = "Untitled";
+
+	std::vector<Entity> m_EntityDeletionQueue;
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;

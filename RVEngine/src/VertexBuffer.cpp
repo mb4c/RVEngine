@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <VertexBuffer.hpp>
 #include <Macros.hpp>
 

@@ -41,15 +41,16 @@ void Scene::OnUpdateRuntime(float ts)
 		for (auto entity : view)
 		{
 			auto [transform, boxCollider] = view.get<TransformComponent, BoxColliderComponent>(entity);
-			if (boxCollider.IndexSequence == 0)
+			if (boxCollider.IndexSequence == static_cast<uint32_t>(BodyID::cInvalidBodyID) && !boxCollider.IsDestroyed)
 			{
 				auto pos = transform.GetPosition();
 				auto size = boxCollider.Size * transform.Scale;
 				entt::entity entityId = entity;
 				auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-				auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.Dynamic, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+				auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.MotionType,boxCollider.CollisionLayer, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
 //			auto body = m_PhysicsManager->CreateBox((uint64_t)entityId, transform, boxCollider);
 				boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
+				std::cout << "Created BodyID: " << boxCollider.IndexSequence << std::endl;
 			}
 		}
 	}
@@ -121,6 +122,7 @@ void Scene::OnUpdateRuntime(float ts)
 		Renderer::EndScene();
 	}
 
+	DestroyEntities();
 }
 
 void Scene::RenderScene()
@@ -303,12 +305,30 @@ void Scene::RemoveEntity(Entity entity)
 {
 	if (m_Registry.valid(entity.GetHandle()))
 	{
+		if (entity.HasComponent<BoxColliderComponent>())
+		{
+			auto& collider = entity.GetComponent<BoxColliderComponent>();
+
+			m_PhysicsManager->RemoveBody(collider.IndexSequence);
+			collider.IndexSequence = BodyID::cInvalidBodyID;
+			collider.IsDestroyed = true;
+		}
 		m_Registry.destroy(entity.GetHandle());
 		m_SelectedEntity = entt::null;
 	} else
 	{
 		std::cout << "Entity does not exist" << std::endl;
 	}
+}
+
+void Scene::DestroyEntities()
+{
+	for (auto entity : m_EntityDeletionQueue)
+	{
+		RemoveEntity(entity);
+	}
+	m_Registry.compact();
+	m_EntityDeletionQueue.clear();
 }
 
 Entity Scene::DuplicateEntity(Entity entity)
@@ -405,8 +425,15 @@ void Scene::SetPhysicsPosition(Entity entity, glm::vec3 pos)
 		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
 	if (entity.HasComponent<SphereColliderComponent>())
 		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+	if (!bodyID.IsInvalid())
+	{
 
 	m_PhysicsManager->GetBodyInterface()->SetPosition(bodyID, RVec3Arg(pos.x, pos.y, pos.z), EActivation::Activate);
+	}
+	else
+	{
+		std::cerr << "[SetPhysicsPosition] Entity has no valid collider BodyID! BodyID: "<< bodyID.GetIndexAndSequenceNumber() << " Entity: " << (uint32_t)entity.GetHandle() << std::endl;
+	}
 }
 
 glm::vec3 Scene::GetPhysicsPosition(Entity entity)
@@ -440,7 +467,14 @@ void Scene::SetVelocity(Entity entity, glm::vec3 velocity)
 	if (entity.HasComponent<SphereColliderComponent>())
 		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
 
-	m_PhysicsManager->GetBodyInterface()->SetLinearVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
+	if (!bodyID.IsInvalid())
+	{
+		m_PhysicsManager->GetBodyInterface()->SetLinearVelocity(bodyID, RVec3Arg(velocity.x, velocity.y, velocity.z));
+	}
+	else
+	{
+		std::cerr << "[SetVelocity] Entity has no valid collider BodyID!\n";
+	}
 }
 
 void Scene::AddVelocity(Entity entity, glm::vec3 velocity)
@@ -492,7 +526,7 @@ glm::vec3 Scene::GetAngularVelocity(Entity entity)
 uint32_t Scene::GetEntityCount()
 {
 //	return m_Registry.size();
-	return m_Registry.view<entt::entity>().size_hint();
+	return m_Registry.view<IDComponent>().size();
 }
 
 void Scene::RenderPicking()
