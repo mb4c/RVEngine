@@ -1,5 +1,5 @@
 #include <glm/gtc/type_ptr.hpp>
-#include <Shader.hpp>
+#include <../include/Renderer/Shader.hpp>
 #include <Macros.hpp>
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)

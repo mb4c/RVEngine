@@ -1,12 +1,12 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <ResourceManager.hpp>
-#include "EditorCamera.hpp"
+#include "Renderer/EditorCamera.hpp"
 #include "UUID.hpp"
 #include "Components.hpp"
 #include "PhysicsManager.hpp"
 #include <memory>
-#include <FrameBuffer.hpp>
+#include <Renderer/FrameBuffer.hpp>
 
 class Entity;
 

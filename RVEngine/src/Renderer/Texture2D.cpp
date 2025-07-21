@@ -2,7 +2,7 @@
 #include <OpenImageIO/imageio.h>
 #include <OpenImageIO/imagebuf.h>
 #include <iostream>
-#include <Texture2D.hpp>
+#include <../include/Renderer/Texture2D.hpp>
 #include <Macros.hpp>
 #include <YAMLUtils.hpp>
 #include <fstream>

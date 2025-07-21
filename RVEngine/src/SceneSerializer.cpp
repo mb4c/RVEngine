@@ -3,7 +3,7 @@
 #include <fstream>
 #include <Components.hpp>
 #include <YAMLUtils.hpp>
-#include "EnvironmentMap.hpp"
+#include "../include/Renderer/EnvironmentMap.hpp"
 
 SceneSerializer::SceneSerializer(const std::shared_ptr<Scene>& scene)
 	: m_Scene(scene)

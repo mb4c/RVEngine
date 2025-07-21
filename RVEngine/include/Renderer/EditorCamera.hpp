@@ -1,5 +1,5 @@
 #pragma once
-#include <SceneCamera.hpp>
+#include <Renderer/SceneCamera.hpp>
 
 class EditorCamera : public SceneCamera
 {

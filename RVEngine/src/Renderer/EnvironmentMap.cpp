@@ -1,4 +1,4 @@
-#include "EnvironmentMap.hpp"
+#include "../../include/Renderer/EnvironmentMap.hpp"
 
 EnvironmentMap::EnvironmentMap(const std::string& hdriPath)
 {

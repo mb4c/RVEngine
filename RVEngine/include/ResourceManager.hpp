@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Singleton.hpp>
-#include <Shader.hpp>
+#include <Renderer/Shader.hpp>
 #include <unordered_map>
-#include <Model.hpp>
-#include <Texture2D.hpp>
+#include <Renderer/Model.hpp>
+#include <Renderer/Texture2D.hpp>
 
 class ResourceManager : public Singleton<ResourceManager>
 {

@@ -2,7 +2,7 @@
 #include <string>
 #include <glm/vec4.hpp>
 #include <filesystem>
-#include "UUID.hpp"
+#include "../UUID.hpp"
 
 class Texture2D
 {

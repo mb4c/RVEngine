@@ -5,7 +5,7 @@
 #include "Components.hpp"
 #include "SceneSerializer.hpp"
 #include "portable-file-dialogs.h"
-#include "EnvironmentMap.hpp"
+#include "../../RVEngine/include/Renderer/EnvironmentMap.hpp"
 #include "roboto.cpp"
 #include "fa-solid-900.cpp"
 #include "IconsFontAwesome6.h"

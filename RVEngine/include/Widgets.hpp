@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <Texture2D.hpp>
+#include <Renderer/Texture2D.hpp>
 #include "../../RVEditor/src/IconsFontAwesome6.h"
 
 namespace ImGui

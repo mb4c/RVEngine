@@ -1,11 +1,11 @@
 #pragma once
 #include "Application.hpp"
-#include "Model.hpp"
+#include "../../RVEngine/include/Renderer/Model.hpp"
 #include "Scene.hpp"
-#include <FrameBuffer.hpp>
+#include <../../RVEngine/include/Renderer/FrameBuffer.hpp>
 #include <Entity.hpp>
-#include "SceneCamera.hpp"
-#include "EditorCamera.hpp"
+#include "../../RVEngine/include/Renderer/SceneCamera.hpp"
+#include "../../RVEngine/include/Renderer/EditorCamera.hpp"
 #include "SceneSerializer.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>

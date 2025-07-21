@@ -3,11 +3,11 @@
 #include "Application.hpp"
 #include "Model.hpp"
 #include "Scene.hpp"
-#include <FrameBuffer.hpp>
+#include <../../RVEngine/include/Renderer/FrameBuffer.hpp>
 #include <Entity.hpp>
 #include "SceneHierarchyPanel.hpp"
 #include "SceneCamera.hpp"
-#include "EditorCamera.hpp"
+#include "../../RVEngine/include/Renderer/EditorCamera.hpp"
 #include "SceneSerializer.hpp"
 #include <ImGuizmo.h>
 #include <Math.hpp>

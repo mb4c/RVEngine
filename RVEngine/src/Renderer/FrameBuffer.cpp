@@ -1,6 +1,6 @@
 #include <glad/gl.h>
 #include <iostream>
-#include <FrameBuffer.hpp>
+#include <../include/Renderer/FrameBuffer.hpp>
 
 FrameBuffer::FrameBuffer(FrameBufferProperties props)
 {

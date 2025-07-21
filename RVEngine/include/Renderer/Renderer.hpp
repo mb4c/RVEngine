@@ -2,11 +2,11 @@
 
 #include <glm/vec4.hpp>
 #include <memory>
-#include <Shader.hpp>
-#include <VertexArray.hpp>
+#include <Renderer/Shader.hpp>
+#include <Renderer/VertexArray.hpp>
 #include <Macros.hpp>
-#include <RenderStats.hpp>
-#include <Camera.hpp>
+#include <Renderer/RenderStats.hpp>
+#include <Renderer/Camera.hpp>
 #include "EditorCamera.hpp"
 
 class Renderer

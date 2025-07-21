@@ -1,4 +1,4 @@
-#include <Material.hpp>
+#include <../include/Renderer/Material.hpp>
 #include <YAMLUtils.hpp>
 #include "ResourceManager.hpp"
 

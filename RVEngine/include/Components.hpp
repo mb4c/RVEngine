@@ -2,11 +2,11 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <imgui.h>
-#include <Model.hpp>
+#include <Renderer/Model.hpp>
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-#include "SceneCamera.hpp"
+#include "Renderer/SceneCamera.hpp"
 
 #include "BodyUserData.hpp"
 #include "PhysicsTypes.hpp"

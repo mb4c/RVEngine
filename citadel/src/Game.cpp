@@ -1,6 +1,6 @@
 #include "Game.hpp"
-#include "EnvironmentMap.hpp"
-#include "Renderer.hpp"
+#include "../../RVEngine/include/Renderer/EnvironmentMap.hpp"
+#include "../../RVEngine/include/Renderer/Renderer.hpp"
 #include <glm/gtx/compatibility.hpp>
 
 Game::Game(const string& title, int width, int height) : Application(title, width, height)

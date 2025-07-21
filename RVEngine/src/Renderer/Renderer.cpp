@@ -1,5 +1,5 @@
-#include <Renderer.hpp>
-#include "EditorCamera.hpp"
+#include <../include/Renderer/Renderer.hpp>
+#include "../../include/Renderer/EditorCamera.hpp"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 

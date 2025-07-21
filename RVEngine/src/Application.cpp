@@ -2,10 +2,10 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 #include <Application.hpp>
-#include <Shader.hpp>
+#include <../include/Renderer/Shader.hpp>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#include <Renderer.hpp>
+#include <../include/Renderer/Renderer.hpp>
 #include <ImGuizmo.h>
 // #include <print>
 

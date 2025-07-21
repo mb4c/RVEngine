@@ -5,7 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include "AssetImporter.hpp"
-#include "Material.hpp"
+#include "../../RVEngine/include/Renderer/Material.hpp"
 #include <YAMLUtils.hpp>
 
 void AssetImporter::Open(AppData* appdata, ProjectSettings* projectSettings, std::filesystem::path currentDirectory)

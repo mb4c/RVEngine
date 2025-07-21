@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include "Texture2D.hpp"
+#include "Renderer/Texture2D.hpp"
 #include "Shader.hpp"
-#include "UUID.hpp"
+#include "../UUID.hpp"
 #include <filesystem>
 
 class Material
