@@ -54,6 +54,8 @@ target_include_directories(imgui PUBLIC
 add_library(imgui::imgui ALIAS imgui)
 
 add_subdirectory(vendor/glm)
+set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_X11 ON CACHE BOOL "" FORCE)
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/tracy)
