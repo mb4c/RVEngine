@@ -164,8 +164,8 @@ struct BoxColliderComponent
 {
 
 	glm::vec3 Size = {1, 1, 1};
-	MotionType MotionType = MotionType::Dynamic;
-	CollisionLayer CollisionLayer = CollisionLayer::Dynamic;
+	RV::EMotionType MotionType = RV::EMotionType::Dynamic;
+	RV::ECollisionLayer CollisionLayer = RV::ECollisionLayer::Dynamic;
 	float Mass = 10;
 	float Restitution = 0.5f;
 	float Friction = 0.2f;

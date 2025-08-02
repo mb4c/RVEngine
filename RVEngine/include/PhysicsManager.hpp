@@ -256,7 +256,7 @@ public:
 	void StartSimulation();
 	void ShutdownSimulation();
 	void OnUpdate(float dt);
-	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, MotionType motionType, CollisionLayer layer, float mass, float restitution = 0.5, float friction = 0.2);
+	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_t entity, BodyUserData* bud, RV::EMotionType motionType, RV::ECollisionLayer layer, float mass, float restitution = 0.5, float friction = 0.2);
 //	Body* CreateBox(uint64_t entity, TransformComponent tc, BoxColliderComponent bcc);
 
 	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);

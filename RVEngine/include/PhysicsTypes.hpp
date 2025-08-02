@@ -1,8 +1,10 @@
 #pragma once
 #include <cstdint>
 
+namespace RV
+{
 
-enum class CollisionLayer : uint16_t
+enum class ECollisionLayer : uint16_t
 {
 	Static = 0,
 	Dynamic = 1,
@@ -12,9 +14,10 @@ enum class CollisionLayer : uint16_t
 	BulletEnemy = 5,
 };
 
-enum class MotionType : uint8_t
+enum class EMotionType : uint8_t
 {
 	Static,
 	Kinematic,
 	Dynamic,
 };
+}

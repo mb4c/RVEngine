@@ -285,7 +285,7 @@ bool SceneSerializer::Deserialize(const std::filesystem::path& path)
 			{
 				auto& bcc = deserializedEntity.AddComponent<BoxColliderComponent>();
 				bcc.Size = boxCollider["Size"].as<glm::vec3>();
-				bcc.MotionType = (MotionType)boxCollider["Dynamic"].as<uint8_t>();
+				bcc.MotionType = (RV::EMotionType)boxCollider["Dynamic"].as<uint8_t>();
 				bcc.Mass = boxCollider["Mass"].as<float>();
 				bcc.Restitution = boxCollider["Restitution"].as<float>();
 				bcc.Friction = boxCollider["Friction"].as<float>();

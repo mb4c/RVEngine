@@ -56,8 +56,8 @@ void Game::OnInit()
 	enemy.GetComponent<TransformComponent>().SetPosition({0,0,0});
 	enemy.GetComponent<TransformComponent>().SetRotation({0,0,0});
 	enemy.AddComponent<EnemyComponent>();
-	enemy.AddComponent<BoxColliderComponent>().MotionType = MotionType::Kinematic;
-	enemy.GetComponent<BoxColliderComponent>().CollisionLayer = CollisionLayer::Enemy;
+	enemy.AddComponent<BoxColliderComponent>().MotionType = RV::EMotionType::Kinematic;
+	enemy.GetComponent<BoxColliderComponent>().CollisionLayer = RV::ECollisionLayer::Enemy;
 
 
 
@@ -336,8 +336,8 @@ Entity Game::SpawnBullet()
 	ResourceManager& rm = ResourceManager::instance();
 	auto bullet = m_ActiveScene->CreateEntity("Bullet");
 
-	bullet.AddComponent<BoxColliderComponent>().MotionType = MotionType::Dynamic;
-	bullet.GetComponent<BoxColliderComponent>().CollisionLayer = CollisionLayer::Bullet;
+	bullet.AddComponent<BoxColliderComponent>().MotionType = RV::EMotionType::Dynamic;
+	bullet.GetComponent<BoxColliderComponent>().CollisionLayer = RV::ECollisionLayer::Bullet;
 
 	bullet.AddComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
 	bullet.GetComponent<MeshRendererComponent>().model = rm.GetModel("bullet");

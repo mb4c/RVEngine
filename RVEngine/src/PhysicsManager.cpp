@@ -122,7 +122,7 @@ void PhysicsManager::ShutdownSimulation()
 	Factory::sInstance = nullptr;
 }
 
-Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint64_t entity, BodyUserData* bud, MotionType motionType, CollisionLayer layer, float mass, float restitution, float friction)
+Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_t entity, BodyUserData* bud, RV::EMotionType motionType, RV::ECollisionLayer layer, float mass, float restitution, float friction)
 {
 	BoxShapeSettings bodyShapeSettings(size);
 
