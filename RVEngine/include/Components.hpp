@@ -217,7 +217,7 @@ struct RelationshipComponent
 };
 
 
-enum class BulletPattern
+enum class EBulletPattern
 {
 	Line = 0,
 	one,
@@ -231,7 +231,7 @@ struct EnemyComponent
 	float Speed = 10;
 	int Armor = 10;
 	float AttackCooldown = 0.5f;
-	BulletPattern BulletPattern = BulletPattern::Line;
+	EBulletPattern BulletPattern = EBulletPattern::Line;
 };
 
 struct BulletComponent
