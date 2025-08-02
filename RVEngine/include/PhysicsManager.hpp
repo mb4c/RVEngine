@@ -259,8 +259,8 @@ public:
 	Body* CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_t entity, BodyUserData* bud, RV::EMotionType motionType, RV::ECollisionLayer layer, float mass, float restitution = 0.5, float friction = 0.2);
 //	Body* CreateBox(uint64_t entity, TransformComponent tc, BoxColliderComponent bcc);
 
-	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
-	std::vector<BodyID> GetBodies() {return m_Bodies;};
+	Body* CreateSphere(Vec3 position, float radius, Quat rotation, uint32_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution = 0.5, float friction = 0.2);
+	std::unordered_map<BodyID, uint32_t> GetBodies() {return m_BodyEntityMap;};
 	BodyInterface* GetBodyInterface(){return m_BodyInterface;};
 	void SetMass(BodyID body, float mass);
 	float GetMass(BodyID body);
@@ -279,7 +279,7 @@ private:
 	MyContactListener contact_listener;
 	const JPH::BodyLockInterface* lock_interface;
 
-	std::vector<BodyID> m_Bodies = {};
+	std::unordered_map<BodyID, uint32_t> m_BodyEntityMap = {};
 	uint32_t m_SimulationStep = 0;
 
 };

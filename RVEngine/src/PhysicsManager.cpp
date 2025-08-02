@@ -103,15 +103,15 @@ void PhysicsManager::StartSimulation()
 void PhysicsManager::ShutdownSimulation()
 {
 	// Remove bodies from physic system
-	for (auto& body : m_Bodies)
+	for (auto& body : m_BodyEntityMap)
 	{
-		m_BodyInterface->RemoveBody(body);
+		m_BodyInterface->RemoveBody(body.first);
 	}
 
 	// Destroy bodies
-	for (auto& body : m_Bodies)
+	for (auto& body : m_BodyEntityMap)
 	{
-		m_BodyInterface->DestroyBody(body);
+		m_BodyInterface->DestroyBody(body.first);
 	}
 
 	// Unregisters all types with the factory and cleans up the default material
@@ -146,7 +146,7 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_
 
 	// Add it to the world
 	m_BodyInterface->AddBody(body->GetID(), EActivation::Activate);
-	m_Bodies.push_back(body->GetID());
+	m_BodyEntityMap.emplace(body->GetID(), entity);
 	return body;
 }
 //
@@ -181,7 +181,7 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_
 //	return body;
 //}
 
-Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, uint64_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution, float friction)
+Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, uint32_t entity, BodyUserData* bud, bool dynamic, float mass, float restitution, float friction)
 {
 	BodyCreationSettings bodySettings(new SphereShape(radius), position, rotation, dynamic ? EMotionType::Dynamic : EMotionType::Static, Layers::MOVING);
 	bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
@@ -195,16 +195,16 @@ Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, u
 	body->SetUserData(reinterpret_cast<uintptr_t>(ptr));
 	// Add it to the world
 	m_BodyInterface->AddBody(body->GetID(), EActivation::Activate);
-	m_Bodies.push_back(body->GetID());
+	m_BodyEntityMap.emplace(body->GetID(),entity);
 	return body;
 }
 
 void PhysicsManager::OnUpdate(float dt)
 {
 //	std::cout << m_Bodies.size() << std::endl;
-	for (auto& body : m_Bodies)
+	for (auto& body : m_BodyEntityMap)
 	{
-		if(m_BodyInterface->IsActive(body))
+		if(m_BodyInterface->IsActive(body.first))
 		{
 			// Next step
 			++m_SimulationStep;

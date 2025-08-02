@@ -65,13 +65,12 @@ void Scene::OnUpdateRuntime(float ts)
 			lock_interface = &m_PhysicsManager->GetPhysicsSystem().GetBodyLockInterface();
 			// Scoped lock
 			{
-				JPH::BodyLockRead lock(*lock_interface, body);
+				JPH::BodyLockRead lock(*lock_interface, body.first);
 				if (lock.Succeeded()) // body_id may no longer be valid
 				{
 					const JPH::Body &bodyobj = lock.GetBody();
-					BodyUserData* bud = reinterpret_cast<BodyUserData*>(bodyobj.GetUserData());
 
-					auto entity = Entity(static_cast<entt::entity>(bud->entityID), this);
+					auto entity = Entity(static_cast<entt::entity>(body.second), this);
 					if (entity.HasComponent<BoxColliderComponent>() || entity.HasComponent<SphereColliderComponent>())
 					{
 						auto& transform = entity.GetComponent<TransformComponent>();
