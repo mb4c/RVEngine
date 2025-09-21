@@ -75,7 +75,7 @@ find_package(OpenImageIO)
 include(imguizmo)
 
 add_subdirectory(RVEngine)
-#add_subdirectory(RVEditor)
+add_subdirectory(RVEditor)
 
 
 add_subdirectory(citadel)

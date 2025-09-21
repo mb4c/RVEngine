@@ -97,7 +97,7 @@ void SceneHierarchyPanel::OnRender()
 			if (ImGui::MenuItem("Remove entity"))
 			{
 				m_Context->RemoveEntity(GetSelectedEntity());
-				m_SelectionContext = Entity(entt::null, m_Context.get());
+				m_SelectionContext = Entity((u32)entt::null, m_Context.get());
 			}
 		}
 		if (GetSelectedEntity())
@@ -291,7 +291,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		auto& bcc = entity.GetComponent<BoxColliderComponent>();
 		ImGui::DragFloat3("Scale##2", glm::value_ptr(bcc.Size), 0.01f);
-		ImGui::Checkbox("Dynamic", &bcc.Dynamic);
+		// ImGui::Checkbox("Dynamic", &bcc.Dynamic);
 		ImGui::DragFloat("Mass", &bcc.Mass);
 
 		ImGui::TreePop();

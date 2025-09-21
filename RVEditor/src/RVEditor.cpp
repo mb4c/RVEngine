@@ -1,6 +1,6 @@
 #include <imgui_internal.h>
 #include "RVEditor.hpp"
-#include "Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Macros.hpp"
 #include "Components.hpp"
 #include "SceneSerializer.hpp"
@@ -639,7 +639,7 @@ bool RVEditor::RightClickedInViewport()
 
 void RVEditor::NewScene()
 {
-	m_SceneHierarchyPanel.SetSelectedEntity(Entity(entt::null, m_ActiveScene.get()));
+	m_SceneHierarchyPanel.SetSelectedEntity(Entity((u32)entt::null, m_ActiveScene.get()));
 	m_ActiveScene = std::make_shared<Scene>();
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	m_AssetsPanel.SetContext(m_ActiveScene);
@@ -778,9 +778,7 @@ void RVEditor::SetupImGuiTheme()
 	style.GrabMinSize = 10.0f;
 	style.GrabRounding = 3.0f;
 	style.TabRounding = 0.0f;
-//	style.TabRounding = 4.0f;
 	style.TabBorderSize = 1.0f;
-	style.TabMinWidthForCloseButton = 0.0f;
 	style.ColorButtonPosition = ImGuiDir_Right;
 	style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
 	style.SelectableTextAlign = ImVec2(0.0f, 0.0f);

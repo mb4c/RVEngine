@@ -15,10 +15,10 @@ public:
 	 std::filesystem::path m_CurrentDirectory;
 
 private:
-	 std::filesystem::path m_AssetsDirectory = "res";
-	 float m_ThumbnailSize = 96;
+	std::filesystem::path m_AssetsDirectory = "res";
+	float m_ThumbnailSize = 96;
 
 
-	 std::shared_ptr<Scene> m_Scene;
+	std::shared_ptr<Scene> m_Scene;
 	 Material m_SelectedMaterial;
 };

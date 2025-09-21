@@ -3,9 +3,8 @@
 #include "Widgets.hpp"
 
 AssetsPanel::AssetsPanel()
-	: m_CurrentDirectory(m_AssetsDirectory)
 {
-
+	m_CurrentDirectory = m_AssetsDirectory;
 }
 
 void AssetsPanel::OnRender()
@@ -52,7 +51,7 @@ void AssetsPanel::OnRender()
 			if (it.is_directory())
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
-				if (ImGui::ImageButton(it.path().u8string().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_folder")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
+				if (ImGui::ImageButton(it.path().u8string().c_str(), rm.GetTexture("icon_folder")->GetTexture(), {m_ThumbnailSize, m_ThumbnailSize}))
 				{
 					m_CurrentDirectory /= it.path().filename();
 				}
@@ -61,7 +60,7 @@ void AssetsPanel::OnRender()
 			} else
 			{
 				ImGui::PushStyleColor(ImGuiCol_Button, {0,0,0,0});
-				if (ImGui::ImageButton(relativePath.filename().u8string().c_str(), reinterpret_cast<ImTextureID>(rm.GetTexture("icon_file")->GetTexture()), {m_ThumbnailSize, m_ThumbnailSize}))
+				if (ImGui::ImageButton(relativePath.filename().u8string().c_str(), rm.GetTexture("icon_file")->GetTexture(), {m_ThumbnailSize, m_ThumbnailSize}))
 				{
 					if (relativePath.extension() == ".rvmat")
 					{
