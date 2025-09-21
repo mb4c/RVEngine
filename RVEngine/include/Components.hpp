@@ -211,10 +211,10 @@ struct RelationshipComponent
 	entt::entity next{entt::null};
 	entt::entity parent{entt::null};
 
-	uint64_t uuidFirst{};
-	uint64_t uuidPrev{};
-	uint64_t uuidNext{};
-	uint64_t uuidParent{};
+	u64 uuidFirst{};
+	u64 uuidPrev{};
+	u64 uuidNext{};
+	u64 uuidParent{};
 };
 
 
@@ -234,18 +234,18 @@ enum class EEnemyMovementType
 
 struct EnemyComponent
 {
-	int Health = 100;
-	int Damage = 10;
+	i32 Health = 100;
+	i32 Damage = 10;
 	f32 Speed = 5;
-	int Armor = 10;
+	i32 Armor = 10;
 	f32 AttackCooldown = 0.5f;
 	EBulletPattern BulletPattern = EBulletPattern::Line;
 	EEnemyMovementType EnemyMovementType = EEnemyMovementType::Horizontally;
 	f32 MovementTimer = 0.0;
 	bool MoveRight = true;
-	int MoneyDropMin = 2;
-	int MoneyDropMax = 5;
-	int MoneyDropAmount = 0; // needs to be specified when spawning enemy
+	i32 MoneyDropMin = 2;
+	i32 MoneyDropMax = 5;
+	i32 MoneyDropAmount = 0; // needs to be specified when spawning enemy
 };
 
 struct PlayerComponent
@@ -269,7 +269,7 @@ struct BulletComponent
 	glm::vec3 Velocity = {0,0,0};
 	glm::vec3 Position = {0,0,0};
 
-	int Damage = 10;
+	i32 Damage = 10;
 	f32 LifeTime = 2.0f;
 	f32 RemainingLifeTime = 2.0f;
 	bool Friendly = true;
