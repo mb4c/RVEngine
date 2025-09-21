@@ -144,11 +144,11 @@ struct SpriteRendererComponent
 struct LightComponent
 {
 	glm::vec3 color = {1, 1, 1};
-	float intensity = {1.0};
+	f32 intensity = {1.0};
 
 	LightComponent() = default;
 	LightComponent(const LightComponent&) = default;
-	LightComponent(const glm::vec3 & newcolor, const float _intensity)
+	LightComponent(const glm::vec3 & newcolor, const f32 _intensity)
 			: color(newcolor), intensity(_intensity) {}
 };
 
@@ -168,10 +168,10 @@ struct BoxColliderComponent
 	glm::vec3 Size = {1, 1, 1};
 	RV::EMotionType MotionType = RV::EMotionType::Dynamic;
 	RV::ECollisionLayer CollisionLayer = RV::ECollisionLayer::Dynamic;
-	float Mass = 10;
-	float Restitution = 0.5f;
-	float Friction = 0.2f;
-	uint32_t IndexSequence = 0xffffffff;
+	f32 Mass = 10;
+	f32 Restitution = 0.5f;
+	f32 Friction = 0.2f;
+	u32 IndexSequence = 0xffffffff;
 	bool IsDestroyed = false;
 
 	BoxColliderComponent() = default;
@@ -180,12 +180,12 @@ struct BoxColliderComponent
 
 struct SphereColliderComponent
 {
-	float Radius = 0.5;
+	f32 Radius = 0.5;
 	bool Dynamic = true;
-	float Mass = 10;
-	float Restitution = 0.5f;
-	float Friction = 0.2f;
-	uint32_t IndexSequence;
+	f32 Mass = 10;
+	f32 Restitution = 0.5f;
+	f32 Friction = 0.2f;
+	u32 IndexSequence;
 	BodyUserData userData;
 
 	SphereColliderComponent() = default;
@@ -195,10 +195,10 @@ struct SphereColliderComponent
 struct SkyboxComponent
 {
 	std::string envMap;
-	unsigned int envCubemap;
-	unsigned int irradianceMap;
-	unsigned int prefilterMap;
-	unsigned int brdfLUTTexture;
+	u32 envCubemap;
+	u32 irradianceMap;
+	u32 prefilterMap;
+	u32 brdfLUTTexture;
 
 	SkyboxComponent() = default;
 	SkyboxComponent(const SkyboxComponent&) = default;
@@ -236,12 +236,12 @@ struct EnemyComponent
 {
 	int Health = 100;
 	int Damage = 10;
-	float Speed = 5;
+	f32 Speed = 5;
 	int Armor = 10;
-	float AttackCooldown = 0.5f;
+	f32 AttackCooldown = 0.5f;
 	EBulletPattern BulletPattern = EBulletPattern::Line;
 	EEnemyMovementType EnemyMovementType = EEnemyMovementType::Horizontally;
-	float MovementTimer = 0.0;
+	f32 MovementTimer = 0.0;
 	bool MoveRight = true;
 	int MoneyDropMin = 2;
 	int MoneyDropMax = 5;
@@ -270,8 +270,8 @@ struct BulletComponent
 	glm::vec3 Position = {0,0,0};
 
 	int Damage = 10;
-	float LifeTime = 2.0f;
-	float RemainingLifeTime = 2.0f;
+	f32 LifeTime = 2.0f;
+	f32 RemainingLifeTime = 2.0f;
 	bool Friendly = true;
 	bool Initialized = false;
 };
