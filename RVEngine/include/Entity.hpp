@@ -79,7 +79,7 @@ public:
 	static void UpdateGlobalTransform(Entity entity);
 
 	bool IsColliding();
-	Entity OnContactAdded();
+	std::vector<Entity> GetCollidingEntities();
 
 	Entity Instantiate();
 

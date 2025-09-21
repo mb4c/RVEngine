@@ -128,38 +128,22 @@ void Entity::UpdateGlobalTransform(Entity entity)
 
 bool Entity::IsColliding()
 {
-	bool isColliding = false;
-	if(HasComponent<SphereColliderComponent>())
-	{
-		auto& sc = GetComponent<SphereColliderComponent>();
-		isColliding = sc.userData.isColliding;
-		sc.userData.isColliding = false;
-	}
-	if(HasComponent<BoxColliderComponent>())
-	{
-		auto& bc = GetComponent<BoxColliderComponent>();
-		isColliding = bc.userData.isColliding;
-		bc.userData.isColliding = false;
-	}
+	auto collisions = m_Scene->m_PhysicsManager->GetCollisions((u32)m_EntityHandle);
 
-	return isColliding;
+	return !collisions.empty();
 }
 
-Entity Entity::OnContactAdded()
+std::vector<Entity> Entity::GetCollidingEntities()
 {
-	Entity other;
-	if (IsColliding() && HasComponent<SphereColliderComponent>())
+	std::vector<Entity> collidingEntities;
+	auto collisions = m_Scene->m_PhysicsManager->GetCollisions((u32)m_EntityHandle);
+
+	for (auto handle : collisions)
 	{
-		other = Entity(static_cast<entt::entity>(GetComponent<SphereColliderComponent>().userData.otherID), m_Scene);
-		return other;
-	}
-	else if (IsColliding() && HasComponent<BoxColliderComponent>())
-	{
-		other = Entity(static_cast<entt::entity>(GetComponent<BoxColliderComponent>().userData.otherID), m_Scene);
-		return other;
+		collidingEntities.emplace_back(handle, m_Scene);
 	}
 
-	return Entity();
+	return collidingEntities;
 }
 
 Entity Entity::Instantiate()
@@ -168,8 +152,6 @@ Entity Entity::Instantiate()
 	if (entity.HasComponent<BoxColliderComponent>())
 	{
 		auto& bc = entity.GetComponent<BoxColliderComponent>();
-		BodyUserData bud;
-		bc.userData = bud;
 		bc.IndexSequence = BodyID::cInvalidBodyID;
 
 	}

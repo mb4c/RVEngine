@@ -47,7 +47,7 @@ void Scene::OnUpdateRuntime(float ts)
 				auto size = boxCollider.Size * transform.Scale;
 				entt::entity entityId = entity;
 				auto rot = JPH::Quat::sEulerAngles(Vec3(transform.GetRotationRad().x,transform.GetRotationRad().y,transform.GetRotationRad().z));
-				auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint64_t)entityId, &boxCollider.userData, boxCollider.MotionType,boxCollider.CollisionLayer, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
+				auto body = m_PhysicsManager->CreateBox(Vec3(pos.x, pos.y, pos.z), Vec3(size.x, size.y, size.z), rot, (uint32_t)entityId, nullptr, boxCollider.MotionType,boxCollider.CollisionLayer, boxCollider.Mass, boxCollider.Restitution, boxCollider.Friction);
 //			auto body = m_PhysicsManager->CreateBox((uint64_t)entityId, transform, boxCollider);
 				boxCollider.IndexSequence = body->GetID().GetIndexAndSequenceNumber();
 				std::cout << "Created BodyID: " << boxCollider.IndexSequence << std::endl;
@@ -454,6 +454,11 @@ void Scene::SetGravityFactor(Entity entity, float gravityFactor)
 		bodyID = BodyID(entity.GetComponent<BoxColliderComponent>().IndexSequence);
 	if (entity.HasComponent<SphereColliderComponent>())
 		bodyID = BodyID(entity.GetComponent<SphereColliderComponent>().IndexSequence);
+
+	if (bodyID.IsInvalid())
+	{
+		std::cerr << "[SetGravityFactor] Entity has no valid collider BodyID! ID: " << bodyID.GetIndexAndSequenceNumber() << std::endl;
+	}
 
 	m_PhysicsManager->GetBodyInterface()->SetGravityFactor(bodyID, gravityFactor);
 }

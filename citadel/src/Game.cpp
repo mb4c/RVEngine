@@ -154,10 +154,14 @@ void Game::OnUpdate()
 		for (auto bullet : bullets)
 		{
 			auto& bulletComp = bullet.GetComponent<BulletComponent>();
-			// auto nextPos = bullet.GetComponent<TransformComponent>().GetPosition() + bulletComp.Velocity * GetDeltaTime();
-			// m_ActiveScene->SetPhysicsPosition(bullet, nextPos);
-			m_ActiveScene->SetVelocity(bullet, bulletComp.Velocity);
-			// std::cout << "SetVelocity: " << bulletComp.Velocity.y << std::endl;
+
+			if (!bulletComp.Initialized)
+			{
+				m_ActiveScene->SetGravityFactor(bullet, 0.0f);
+				m_ActiveScene->SetVelocity(bullet, bulletComp.Velocity);
+
+				bulletComp.Initialized = true;
+			}
 			bulletComp.RemainingLifeTime -= GetDeltaTime();
 
 			if (bulletComp.RemainingLifeTime <= 0)
@@ -176,25 +180,24 @@ void Game::OnUpdate()
 		{
 			Entity enemy = enemies[i];
 
-			if (enemy.IsColliding())
-			{
-				auto& collider = enemy.GetComponent<BoxColliderComponent>();
-				Entity otherEntity = Entity(collider.userData.otherID, m_ActiveScene.get());
-
-				if (otherEntity.IsValid())
-					if (otherEntity.GetComponent<TagComponent>().Tag == "Bullet")
+				auto others = enemy.GetCollidingEntities();
+				for (auto other : others)
+				{
+					if (other.IsValid())
 					{
-						auto& enemyComp = enemy.GetComponent<EnemyComponent>();
-						auto& bulletComp = otherEntity.GetComponent<BulletComponent>();
-
-						enemyComp.Health -= bulletComp.Damage;
-						otherEntity.Destroy();
-
-
-						if (enemyComp.Health <= 0)
+						if (other.GetComponent<TagComponent>().Tag == "Bullet")
 						{
-							enemy.Destroy();
-							continue;
+							auto& enemyComp = enemy.GetComponent<EnemyComponent>();
+							auto& bulletComp = other.GetComponent<BulletComponent>();
+
+							enemyComp.Health -= bulletComp.Damage;
+							other.Destroy();
+
+							if (enemyComp.Health <= 0)
+							{
+								enemy.Destroy();
+								continue;
+							}
 						}
 					}
 			}
@@ -350,7 +353,6 @@ Entity Game::SpawnBullet()
 	bullet.GetComponent<BulletComponent>().LifeTime = 2;
 	bullet.GetComponent<BulletComponent>().RemainingLifeTime = 2;
 	bullet.GetComponent<BulletComponent>().Friendly = true;
-	m_ActiveScene->SetGravityFactor(bullet, 0.0f);
 	return bullet;
 }
 

@@ -14,12 +14,12 @@ public:
 //		m_Models.emplace("plane", std::make_shared<Model>("res/plane.fbx"));
 //		m_Models.emplace("sphere05", std::make_shared<Model>("res/sphere05.fbx"));
 		m_Models.emplace("cube", std::make_shared<Model>("res/cube.fbx"));
-		m_Models.emplace("helmet", std::make_shared<Model>("res/DamagedHelmet.glb"));
-		m_Models.emplace("boombox", std::make_shared<Model>("res/BoomBox.glb"));
-		m_Models.emplace("maxwell", std::make_shared<Model>("res/maxwell.glb"));
+		// m_Models.emplace("helmet", std::make_shared<Model>("res/DamagedHelmet.glb"));
+		// m_Models.emplace("boombox", std::make_shared<Model>("res/BoomBox.glb"));
+		// m_Models.emplace("maxwell", std::make_shared<Model>("res/maxwell.glb"));
 //		m_Models.emplace("player_ship", std::make_shared<Model>("res/playership.glb"));
 //		m_Models.emplace("bullet", std::make_shared<Model>("res/bullet.glb"));
-		m_Models.emplace("marker", std::make_shared<Model>("res/marker.glb"));
+		// m_Models.emplace("marker", std::make_shared<Model>("res/marker.glb"));
 
 		m_Shaders.emplace("pbr", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl"));
 		m_Shaders.emplace("picking", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/Picking_frag.glsl"));

@@ -78,6 +78,10 @@ void PhysicsManager::StartSimulation()
 	// Note that this is called from a job so whatever you do here needs to be thread safe.
 	// Registering one is entirely optional.
 //	MyContactListener contact_listener;
+
+	contact_listener.m_BodyIDToEntityID = &m_BodyEntityMap;
+	contact_listener.m_CollisionMap = &m_CollisionMap;
+
 	m_PhysicsSystem.SetContactListener(&contact_listener);
 	m_BodyInterface = &m_PhysicsSystem.GetBodyInterface();
 //	m_PhysicsSystem.SetGravity(Vec3(0,-9.8f,0));
@@ -140,7 +144,7 @@ Body* PhysicsManager::CreateBox(Vec3 position, Vec3 size, Quat rotation, uint32_
 
 	// Create the actual rigid body
 	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
-	bud->entityID = entity;
+	// bud->entityID = entity;
 	void* ptr = bud;
 	body->SetUserData(reinterpret_cast<uintptr_t>(ptr));
 
@@ -190,7 +194,7 @@ Body* PhysicsManager::CreateSphere(Vec3 position, float radius, Quat rotation, u
 	bodySettings.mFriction = friction;
 
 	Body* body = m_BodyInterface->CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
-	bud->entityID = entity;
+	// bud->entityID = entity;
 	void* ptr = bud;
 	body->SetUserData(reinterpret_cast<uintptr_t>(ptr));
 	// Add it to the world
@@ -284,4 +288,15 @@ void PhysicsManager::RemoveBody(uint32_t indexSequence)
 		// 	m_Bodies.erase(it);
 		// }
 	}
+}
+
+const HashSet<u32>& PhysicsManager::GetCollisions(u32 entity) const
+{
+	static const HashSet<u32> emptySet; // Returned if no collisions found
+
+	auto it = m_CollisionMap.find(entity);
+	if (it != m_CollisionMap.end())
+		return it->second;
+	else
+		return emptySet;
 }

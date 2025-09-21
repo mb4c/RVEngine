@@ -10,6 +10,7 @@
 
 #include "BodyUserData.hpp"
 #include "PhysicsTypes.hpp"
+#include "Types.hpp"
 
 struct TagComponent
 {
@@ -24,6 +25,7 @@ struct TagComponent
 struct IDComponent
 {
 	UUID ID;
+	u32 EntityID = entt::null;
 
 	IDComponent() = default;
 	IDComponent(const IDComponent&) = default;
@@ -170,7 +172,6 @@ struct BoxColliderComponent
 	float Restitution = 0.5f;
 	float Friction = 0.2f;
 	uint32_t IndexSequence = 0xffffffff;
-	BodyUserData userData;
 	bool IsDestroyed = false;
 
 	BoxColliderComponent() = default;
@@ -239,10 +240,11 @@ struct BulletComponent
 	glm::vec3 Velocity = {0,0,0};
 	glm::vec3 Position = {0,0,0};
 
-	float Damage = 10;
+	int Damage = 10;
 	float LifeTime = 2.0f;
 	float RemainingLifeTime = 2.0f;
 	bool Friendly = true;
+	bool Initialized = false;
 };
 
 template<typename... Component>
