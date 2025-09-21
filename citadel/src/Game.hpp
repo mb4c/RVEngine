@@ -37,13 +37,14 @@ private:
 
 	void LoadAssets();
 
+	void SpawnEnemyWave(int enemies, float yPos = 5, bool centered = true);
+	void CheckPlayerUpgrades();
 	Entity m_Player;
 	Entity m_Camera;
-	float m_MoveSpeed = 24;
+	float m_MoveSpeed = 0;
 	float m_CameraMoveSpeed = 2;
 	TimeUntil playerShoot = 0.25;
 	glm::vec3 targetPos{};
-
 	// Entity m_BulletPrefab;
 	float m_BulletSpeed = 24;
 

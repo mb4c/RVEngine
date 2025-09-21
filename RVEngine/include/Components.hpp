@@ -225,14 +225,43 @@ enum class EBulletPattern
 	None
 };
 
+enum class EEnemyMovementType
+{
+	Horizontally = 0,
+	Sinusoidal,
+	None
+};
+
 struct EnemyComponent
 {
 	int Health = 100;
 	int Damage = 10;
-	float Speed = 10;
+	float Speed = 5;
 	int Armor = 10;
 	float AttackCooldown = 0.5f;
 	EBulletPattern BulletPattern = EBulletPattern::Line;
+	EEnemyMovementType EnemyMovementType = EEnemyMovementType::Horizontally;
+	float MovementTimer = 0.0;
+	bool MoveRight = true;
+	int MoneyDropMin = 2;
+	int MoneyDropMax = 5;
+	int MoneyDropAmount = 0; // needs to be specified when spawning enemy
+};
+
+struct PlayerComponent
+{
+	i32 Health = 100;
+	i32 Money = 0;
+	u32 EnginesLevel = 0;
+	u32 MainGunLevel = 0;
+	u32 ArmorLevel = 0;
+
+	f32 MovementSpeedLevel0 = 24;
+	f32 MovementSpeedLevel1 = 28;
+	f32 MovementSpeedLevel2 = 32;
+	f32 MovementSpeedLevel3 = 38;
+	f32 MovementSpeedLevel4 = 42;
+	f32 MovementSpeedLevel5 = 48;
 };
 
 struct BulletComponent

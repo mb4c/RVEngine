@@ -3,6 +3,8 @@
 #include "../../RVEngine/include/Renderer/Renderer.hpp"
 #include <glm/gtx/compatibility.hpp>
 
+#include "Random.hpp"
+
 Game::Game(const string& title, int width, int height) : Application(title, width, height)
 {
 
@@ -46,18 +48,9 @@ void Game::OnInit()
 	m_Player.GetComponent<MeshRendererComponent>().model = rm.GetModel("player_ship");
 	m_Player.GetComponent<TransformComponent>().SetPosition({0,0,0});
 	m_Player.GetComponent<TransformComponent>().SetRotation({0,0,0});
+	m_Player.AddComponent<PlayerComponent>();
 
-
-
-	auto enemy = m_ActiveScene->CreateEntity("taxman");
-	enemy.AddComponent<MeshRendererComponent>();
-	enemy.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
-	enemy.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
-	enemy.GetComponent<TransformComponent>().SetPosition({0,0,0});
-	enemy.GetComponent<TransformComponent>().SetRotation({0,0,0});
-	enemy.AddComponent<EnemyComponent>();
-	enemy.AddComponent<BoxColliderComponent>().MotionType = RV::EMotionType::Kinematic;
-	enemy.GetComponent<BoxColliderComponent>().CollisionLayer = RV::ECollisionLayer::Enemy;
+	SpawnEnemyWave(9, 8, false);
 
 
 
@@ -90,7 +83,7 @@ void Game::OnUpdate()
 //	Renderer::BeginScene();
 	ProcessInput();
 	OnResize();
-
+	CheckPlayerUpgrades();
 	glm::vec2 input{0,0};
 //	if (m_Input.GetKeyDown(GLFW_KEY_W))
 //		input.y = 1;
@@ -175,7 +168,7 @@ void Game::OnUpdate()
 		RV_PROFILE_SCOPE("Update Enemies");
 		auto enemies = m_ActiveScene->GetEntitiesWithComponent<EnemyComponent>();
 		std::vector<Entity> remainingEnemies;
-
+		auto& pc = m_Player.GetComponent<PlayerComponent>();
 		for (int i = enemies.size() - 1; i >= 0; --i)
 		{
 			Entity enemy = enemies[i];
@@ -195,12 +188,30 @@ void Game::OnUpdate()
 
 							if (enemyComp.Health <= 0)
 							{
+								pc.Money += enemyComp.MoneyDropAmount;
 								enemy.Destroy();
 								continue;
 							}
 						}
 					}
 			}
+			auto& timer = enemy.GetComponent<EnemyComponent>().MovementTimer;
+			auto& moveRight = enemy.GetComponent<EnemyComponent>().MoveRight;
+			auto& moveSpeed = enemy.GetComponent<EnemyComponent>().Speed;
+
+			auto enemyPos = m_ActiveScene->GetPhysicsPosition(enemy);
+			if (timer >= 3.0f)
+			{
+				timer = 0;
+				moveRight = !moveRight;
+			}
+				timer += GetDeltaTime();
+			if (moveRight)
+				enemyPos += glm::vec3{-moveSpeed * GetDeltaTime(),0,0};
+			else
+				enemyPos += glm::vec3{moveSpeed * GetDeltaTime(),0,0};
+
+			m_ActiveScene->SetPhysicsPosition(enemy, enemyPos);
 
 			remainingEnemies.push_back(enemy);
 		}
@@ -225,8 +236,17 @@ void Game::OnShutdown()
 void Game::OnImGuiRender()
 {
 	RV_PROFILE_FUNCTION();
-
+	auto& pc = m_Player.GetComponent<PlayerComponent>();
 	ImGui::Begin("Debug");
+	ImGui::Text("Money: %i", pc.Money);
+	ImGui::Text("Engines: %i", pc.EnginesLevel);
+	if (ImGui::Button("Upgrade engines"))
+	{
+		if (pc.EnginesLevel < 5)
+		{
+			pc.EnginesLevel++;
+		}
+	}
 
 	uint32_t entities = m_ActiveScene->GetEntityCount();
 	ImGui::Text("Entities %u", entities);
@@ -362,4 +382,65 @@ void Game::LoadAssets()
 
 	rm.AddModel("player_ship", std::make_shared<Model>("res/playership.glb"));
 	rm.AddModel("bullet", std::make_shared<Model>("res/bullet.glb"));
+}
+
+void Game::SpawnEnemyWave(int enemies, float yPos, bool centered)
+{
+	ResourceManager& rm = ResourceManager::instance();
+
+	int enemyNum = enemies;
+	for (int i = 0; i < enemyNum; ++i)
+	{
+		auto enemy = m_ActiveScene->CreateEntity("taxman_" + std::to_string(i));
+		enemy.AddComponent<MeshRendererComponent>();
+		enemy.GetComponent<MeshRendererComponent>().shader = rm.GetShader("pbr");
+		enemy.GetComponent<MeshRendererComponent>().model = rm.GetModel("cube");
+		if (centered)
+		{
+			float totalWidth = (enemyNum - 1) * 3;
+			float startX = -totalWidth / 2.0f;
+			enemy.GetComponent<TransformComponent>().SetPosition({startX + i * 3,yPos , 0});
+		}
+		else
+		{
+			enemy.GetComponent<TransformComponent>().SetPosition({0 + i * 3, yPos, 0});
+		}
+
+
+		enemy.GetComponent<TransformComponent>().SetRotation({0,0,0});
+		auto& ec = enemy.AddComponent<EnemyComponent>();
+		ec.MoneyDropAmount = Random::Range(ec.MoneyDropMin, ec.MoneyDropMax);
+		enemy.AddComponent<BoxColliderComponent>().MotionType = RV::EMotionType::Kinematic;
+		enemy.GetComponent<BoxColliderComponent>().CollisionLayer = RV::ECollisionLayer::Enemy;
+	}
+
+}
+
+void Game::CheckPlayerUpgrades()
+{
+	auto& pc = m_Player.GetComponent<PlayerComponent>();
+	switch (pc.EnginesLevel)
+	{
+		case 0:
+			m_MoveSpeed = pc.MovementSpeedLevel0;
+			break;
+		case 1:
+			m_MoveSpeed = pc.MovementSpeedLevel1;
+			break;
+		case 2:
+			m_MoveSpeed = pc.MovementSpeedLevel2;
+			break;
+		case 3:
+			m_MoveSpeed = pc.MovementSpeedLevel3;
+			break;
+		case 4:
+			m_MoveSpeed = pc.MovementSpeedLevel4;
+			break;
+		case 5:
+			m_MoveSpeed = pc.MovementSpeedLevel5;
+			break;
+		default:
+			m_MoveSpeed = pc.MovementSpeedLevel0;
+			break;
+	}
 }
