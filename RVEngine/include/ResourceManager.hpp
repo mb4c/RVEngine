@@ -70,7 +70,7 @@ public:
 		defaultMat->metallic = GetTexture("default_albedo");
 		defaultMat->emission = GetTexture("default_emission");
 		m_Materials.emplace("default_pbr", defaultMat);
-		GetModel("cube")->m_Material = GetMaterial("default_pbr");
+		GetModel("cube")->SetMaterial(GetMaterial("default_pbr"));
 //
 		auto grid = std::make_shared<Material>();
 		grid->albedo = GetTexture("default_albedo");

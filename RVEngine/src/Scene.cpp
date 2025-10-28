@@ -164,81 +164,82 @@ void Scene::RenderScene()
 		assert(mesh.model && "No model assigned to the model, what the fuck?!");
 
 		for (int i = 0; i < mesh.model->GetMeshes()->size(); ++i)
-		{
-			assert(mesh.model->GetMaterial() && "No material assigned to model");
-			assert(mesh.shader && "No shader assigned to model");
+{
+	auto& currentMesh = mesh.model->GetMeshes()->at(i);
+	std::shared_ptr<Material> mat = currentMesh.GetMaterial();
 
+	assert(mat && "No material assigned to mesh");
+	assert(mesh.shader && "No shader assigned to model");
 
-			// bind albedo
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->albedo->GetTexture());
+	// bind albedo
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mat->albedo->GetTexture());
 
-			// bind normal map
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->normal->GetTexture());
+	// bind normal map
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, mat->normal->GetTexture());
 
-			// bind orm map
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->occlusion->GetTexture());
+	// bind orm map
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, mat->occlusion->GetTexture());
 
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->roughness->GetTexture());
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, mat->roughness->GetTexture());
 
-			glActiveTexture(GL_TEXTURE4);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->metallic->GetTexture());
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, mat->metallic->GetTexture());
 
-			glActiveTexture(GL_TEXTURE5);
-			glBindTexture(GL_TEXTURE_2D, mesh.model->GetMaterial()->emission->GetTexture());
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, mat->emission->GetTexture());
 
-			glActiveTexture(GL_TEXTURE6);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, irrMap);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irrMap);
 
-			glActiveTexture(GL_TEXTURE7);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, prefMap);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, prefMap);
 
-			glActiveTexture(GL_TEXTURE8);
-			glBindTexture(GL_TEXTURE_2D, brdfLUT);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, brdfLUT);
 
-			Stencil::DisableStencil();
+	Stencil::DisableStencil();
 
-			mesh.shader->Bind();
-			std::shared_ptr<Material> mat = mesh.model->GetMaterial();
-			mesh.shader->SetBool("u_UseAlbedo", mat->useAlbedo);
-			mesh.shader->SetBool("u_UseNormal", mat->useNormal);
-			mesh.shader->SetVec4("u_AlbedoColor", mat->albedoColor);
-			mesh.shader->SetFloat("u_RoughnessVal", mat->roughnessValue);
-			mesh.shader->SetFloat("u_MetallicVal", mat->metallicValue);
+	mesh.shader->Bind();
+	mesh.shader->SetBool("u_UseAlbedo", mat->useAlbedo);
+	mesh.shader->SetBool("u_UseNormal", mat->useNormal);
+	mesh.shader->SetVec4("u_AlbedoColor", mat->albedoColor);
+	mesh.shader->SetFloat("u_RoughnessVal", mat->roughnessValue);
+	mesh.shader->SetFloat("u_MetallicVal", mat->metallicValue);
 
-			for (int k = 0; k < 32; ++k)
-			{
-				glm::vec3 zero{0, 0, 0};
-				mesh.shader->SetVec3("lightPositions[" + std::to_string(k) + "]", zero);
-				mesh.shader->SetVec3("lightColors[" + std::to_string(k) + "]", zero);
-			}
+	for (int k = 0; k < 32; ++k)
+	{
+		glm::vec3 zero{0, 0, 0};
+		mesh.shader->SetVec3("lightPositions[" + std::to_string(k) + "]", zero);
+		mesh.shader->SetVec3("lightColors[" + std::to_string(k) + "]", zero);
+	}
 
-			for (int j = 0; j < lights.size(); ++j)
-			{
-				mesh.shader->SetVec3("lightPositions[" + std::to_string(j) + "]", std::get<0>(lights.at(j)).GetPosition());
-				mesh.shader->SetVec3("lightColors[" + std::to_string(j) + "]", std::get<1>(lights.at(j)).color * std::get<1>(lights.at(j)).intensity);
-			}
+	for (int j = 0; j < lights.size(); ++j)
+	{
+		mesh.shader->SetVec3("lightPositions[" + std::to_string(j) + "]", std::get<0>(lights.at(j)).GetPosition());
+		mesh.shader->SetVec3("lightColors[" + std::to_string(j) + "]", std::get<1>(lights.at(j)).color * std::get<1>(lights.at(j)).intensity);
+	}
 
+	Renderer::Submit(mesh.shader, currentMesh.m_VertexArray, transform.GetTransform(), (unsigned int)entity);
+	ResourceManager& rm = ResourceManager::instance();
 
-			Renderer::Submit(mesh.shader, mesh.model->GetMeshes()->at(i).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
-			ResourceManager& rm = ResourceManager::instance();
+	auto outlineShader = rm.GetShader("flat");
+	outlineShader->Bind();
+	outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
+	if ((uint32_t) entity == m_SelectedEntity)
+	{
+		Stencil::EnableStencil();
+		auto outlineTransform = transform.GetTransform();
+		outlineTransform = glm::scale(outlineTransform, {1.1, 1.1, 1.1});
 
-			auto outlineShader = rm.GetShader("flat");
-			outlineShader->Bind();
-			outlineShader->SetVec4("u_Color", glm::vec4(1, 0.35, 0, 1));
-			if ((uint32_t) entity == m_SelectedEntity)
-			{
-				Stencil::EnableStencil();
-				auto outlineTransform = transform.GetTransform();
-				outlineTransform = glm::scale(outlineTransform, {1.1, 1.1, 1.1});
+		Renderer::Submit(outlineShader, currentMesh.m_VertexArray, outlineTransform, (unsigned int)entity);
+		Stencil::DefaultStencil();
+	}
+}
 
-				Renderer::Submit(outlineShader, mesh.model->GetMeshes()->at(i).m_VertexArray, outlineTransform, (unsigned int)entity);
-				Stencil::DefaultStencil();
-			}
-		}
 
 	}
 

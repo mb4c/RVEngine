@@ -47,7 +47,7 @@ void SceneHierarchyPanel::OnRender()
 				auto shader = rm.GetShader("pbr");
 				auto flatShader = rm.GetShader("flat");
 
-				model->m_Material = rm.GetMaterial("default_pbr");
+				model->SetMaterial(rm.GetMaterial("default_pbr"));
 				auto plane = m_Context->CreateEntity("Plane");
 				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
 				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
@@ -60,7 +60,7 @@ void SceneHierarchyPanel::OnRender()
 				auto shader = rm.GetShader("pbr");
 				auto flatShader = rm.GetShader("flat");
 
-				model->m_Material = rm.GetMaterial("default_pbr");
+				model->SetMaterial(rm.GetMaterial("default_pbr"));
 				auto plane = m_Context->CreateEntity("Cube");
 				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
 				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
@@ -74,7 +74,7 @@ void SceneHierarchyPanel::OnRender()
 				auto shader = rm.GetShader("pbr");
 				auto flatShader = rm.GetShader("flat");
 
-				model->m_Material = rm.GetMaterial("default_pbr");
+				model->SetMaterial(rm.GetMaterial("default_pbr"));
 				auto plane = m_Context->CreateEntity("Sphere");
 				plane.AddComponent<MeshRendererComponent>(model, shader, flatShader);
 				plane.GetComponent<TransformComponent>().SetScale({1, 1, 1});
@@ -218,7 +218,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	if (ImGui::ComponentTreeNode<MeshRendererComponent>(entity))
 	{
 		auto& mrc = entity.GetComponent<MeshRendererComponent>();
-		std::shared_ptr<Material> mat = mrc.model->GetMaterial();
+		std::shared_ptr<Material> mat = mrc.model->GetMeshes()->at(0).GetMaterial();
 		ImGui::Text("UUID: %lu", (uint64_t)mat->uuid);
 		ImGui::Text("Material: %s", mat->materialName.c_str());
 		ImGui::Checkbox("Use albedo texture", &mat->useAlbedo);

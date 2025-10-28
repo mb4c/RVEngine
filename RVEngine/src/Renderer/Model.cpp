@@ -9,31 +9,32 @@ Model::Model(const std::string& path)
 	m_Path = path;
 }
 
+void Model::SetMaterial(const std::shared_ptr<Material>& material)
+{
+	for (auto& mesh : *m_Meshes)
+	{
+		mesh.SetMaterial(material);
+	}
+}
+
 void Model::LoadModel(const std::string& path)
 {
 	RV_PROFILE_FUNCTION();
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-												 aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_RemoveRedundantMaterials);
 	m_Path = path;
+	Assimp::Importer import;
+
+	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
 		return;
 	}
+
 	m_Directory = path.substr(0, path.find_last_of('/'));
 
-	ProcessNode(scene->mRootNode, scene);
-
-	if (!scene->HasMaterials())
-	{
-		std::cout << "No materials found." << std::endl;
-		return;
-	}
-//	std::cout << "Model "<< path <<" has: "<< scene->mNumMaterials << " materials" << std::endl;
+	std::vector<std::shared_ptr<Material>> materials;
 
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
@@ -41,9 +42,8 @@ void Model::LoadModel(const std::string& path)
 		aiString materialName;
 		material->Get(AI_MATKEY_NAME, materialName);
 
-		m_Material = std::make_shared<Material>();
-		m_Material->materialName = materialName.C_Str();
-//		std::cout <<"Material name: " << materialName.C_Str() << std::endl;
+		auto loadedMaterial = std::make_shared<Material>();
+		loadedMaterial->materialName = materialName.C_Str();
 
 		unsigned int textureCount = material->GetTextureCount(static_cast<aiTextureType>(aiTextureType_BASE_COLOR));
 
@@ -52,155 +52,112 @@ void Model::LoadModel(const std::string& path)
 			for (int j = 0; j < textureCount; ++j)
 			{
 				aiString path;
-//				std::cout << path.C_Str() << std::endl;
 				if (material->GetTexture(static_cast<aiTextureType>(type), j, &path) == AI_SUCCESS)
 				{
-//					std::cout << "Texture type: " << aiTextureTypeToString((aiTextureType) type) << std::endl;
-
 					if (path.length > 0 && path.data[0] == '*')
 					{
-						// Embedded texture found
 						const aiTexture* texture = scene->GetEmbeddedTexture(path.C_Str());
 
 						if (texture)
 						{
-							// Process the texture data
-//							std::cout << "Embedded texture found: " << path.C_Str() << std::endl;
-//							std::cout << "Texture width: " << texture->mWidth << std::endl;
-//							std::cout << "Texture height: " << texture->mHeight << std::endl;
-
 							if (texture->mHeight == 0)
 							{
-								// Compressed texture, texture->mWidth is the size of the texture in bytes
-//								std::cout << "Compressed texture data size: " << texture->mWidth << " bytes"
-//										  << std::endl;
-//								std::cout << "Compressed format: " << (texture->CheckFormat("jpg") ? "jpg" : "png")
-//										  << std::endl;
-
-
-								OIIO::Filesystem::IOMemReader memreader(texture->pcData,
-																		texture->mWidth);  // I/O proxy object
-
+								OIIO::Filesystem::IOMemReader memreader(texture->pcData, texture->mWidth);
 								auto in = OIIO::ImageInput::open((texture->CheckFormat("jpg") ? "in.jpg" : "in.png"), nullptr, &memreader);
 								auto pixels = std::unique_ptr<unsigned char[]>(
 										new unsigned char[in->spec().width * in->spec().height * in->spec().nchannels]);
 								in->read_image(0, 0, 0, in->spec().nchannels, OIIO::TypeDesc::UINT8, &pixels[0]);
 								const OIIO::ImageSpec& spec = in->spec();
 
-								//NOTE: this commented out code writes the texture to disk for debugging purpose, do not remove
-//								std::unique_ptr<OIIO::ImageOutput> out = OIIO::ImageOutput::create(std::string(materialName.C_Str()).append(aiTextureTypeToString((aiTextureType) type)).append(".png"));
-//								if (!out)
-//									return;  // error
-//								out->open(std::string(materialName.C_Str()).append(aiTextureTypeToString((aiTextureType) type)).append(".png"), spec);
-//								out->write_image(OIIO::TypeDesc::UINT8, &pixels[0]);
-//								out->close();
-
-
 								switch (type)
 								{
 									case aiTextureType_BASE_COLOR:
 									{
-										m_Material->albedo = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->albedo = std::make_shared<Texture2D>(spec.width, spec.height,
 																						 spec.nchannels, pixels.get());
-//										std::cout << "Added albedo" << std::endl;
 										break;
 									}
-
 									case aiTextureType_NORMALS:
 									{
-										m_Material->normal = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->normal = std::make_shared<Texture2D>(spec.width, spec.height,
 																						 spec.nchannels, pixels.get());
-//										std::cout << "Added normal" << std::endl;
 										break;
 									}
-
 									case aiTextureType_METALNESS:
 									{
-										m_Material->metallic = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->metallic = std::make_shared<Texture2D>(spec.width, spec.height,
 																						   spec.nchannels,
 																						   pixels.get());
-//										std::cout << "Added metallnes" << std::endl;
 										break;
 									}
-
 									case aiTextureType_DIFFUSE_ROUGHNESS:
 									{
-										m_Material->roughness = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->roughness = std::make_shared<Texture2D>(spec.width, spec.height,
 																							spec.nchannels,
 																							pixels.get());
-//										std::cout << "Added roughness" << std::endl;
 										break;
 									}
-
 									case aiTextureType_AMBIENT_OCCLUSION:
 									{
-										m_Material->occlusion = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->occlusion = std::make_shared<Texture2D>(spec.width, spec.height,
 																							spec.nchannels,
 																							pixels.get());
-//										std::cout << "Added ao" << std::endl;
 										break;
 									}
 									case aiTextureType_EMISSIVE:
 									{
-										m_Material->emission = std::make_shared<Texture2D>(spec.width, spec.height,
+										loadedMaterial->emission = std::make_shared<Texture2D>(spec.width, spec.height,
 																							spec.nchannels,
 																							pixels.get());
-//										std::cout << "Added ao" << std::endl;
 										break;
 									}
-
 								}
-
-//								std::cout << "Decoded JPEG image: " << spec.width << "x" << spec.height << ", "
-//										  << spec.nchannels << " channels" << std::endl;
 								in->close();
-
-							} else
-							{
-								// Uncompressed texture
-
-//								std::cout << "Uncompressed texture with dimensions: " << texture->mWidth << " x "
-//										  << texture->mHeight << std::endl;
 							}
-						} else
-						{
-//							std::cerr << "Failed to retrieve embedded texture:  " << path.C_Str() << std::endl;
 						}
 					}
 				}
 			}
 		}
-		if (m_Material->albedo == nullptr)
+
+		if (loadedMaterial->albedo == nullptr)
 		{
-			m_Material->albedo = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 0, 1, 1}));
-//			std::cout << "	Albedo missing using fallback " << std::endl;
+			loadedMaterial->albedo = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 0, 1, 1}));
 		}
-		if (m_Material->normal == nullptr)
+		if (loadedMaterial->normal == nullptr)
 		{
-			m_Material->normal = std::make_shared<Texture2D>(Texture2D(256, 256, {0.5, 0.5, 1, 1}));
-//			std::cout << "	Normal missing using fallback" << std::endl;
+			loadedMaterial->normal = std::make_shared<Texture2D>(Texture2D(256, 256, {0.5, 0.5, 1, 1}));
 		}
-		if (m_Material->roughness == nullptr)
+		if (loadedMaterial->roughness == nullptr)
 		{
-			m_Material->roughness = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1}));
-//			std::cout << "	Roughness missing using fallback" << std::endl;
+			loadedMaterial->roughness = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1}));
 		}
-		if (m_Material->metallic == nullptr)
+		if (loadedMaterial->metallic == nullptr)
 		{
-			m_Material->metallic = std::make_shared<Texture2D>(Texture2D(256, 256, {0, 0, 0, 0}));
-//			std::cout << "	Metalness missing using fallback" << std::endl;
+			loadedMaterial->metallic = std::make_shared<Texture2D>(Texture2D(256, 256, {0, 0, 0, 0}));
 		}
-		if (m_Material->occlusion == nullptr)
+		if (loadedMaterial->occlusion == nullptr)
 		{
-			m_Material->occlusion = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1}));
-//			std::cout << "	Ambient occlusion missing using fallback" << std::endl;
+			loadedMaterial->occlusion = std::make_shared<Texture2D>(Texture2D(256, 256, {1, 1, 1, 1}));
 		}
-		if (m_Material->emission == nullptr)
+		if (loadedMaterial->emission == nullptr)
 		{
-			m_Material->emission = std::make_shared<Texture2D>(Texture2D(256, 256, {0, 0, 0, 0}));
-//			std::cout << "	Emission missing using fallback" << std::endl;
+			loadedMaterial->emission = std::make_shared<Texture2D>(Texture2D(256, 256, {0, 0, 0, 0}));
+		}
+
+		materials.push_back(loadedMaterial);
+	}
+
+	ProcessNode(scene->mRootNode, scene);
+
+	for (auto& mesh : *m_Meshes)
+	{
+		if (mesh.GetMaterialIndex() < materials.size())
+		{
+			mesh.SetMaterial(materials[mesh.GetMaterialIndex()]);
 		}
 	}
+
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	std::cout << "Loading model " << path << " took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms" << std::endl;
 }
@@ -274,6 +231,8 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			indices.push_back(face.mIndices[j]);
 	}
 
-	return {vertices, indices, textures};
+	Mesh resultMesh(vertices, indices, textures);
+	resultMesh.SetMaterialIndex(mesh->mMaterialIndex);
 
+	return resultMesh;
 }
