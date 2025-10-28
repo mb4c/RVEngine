@@ -18,7 +18,7 @@ void Game::OnInit()
 	Renderer::SetClearColor({0, 0, 0, 1});
 	m_FramebufferProps.width = GetWindowSize().x;
 	m_FramebufferProps.height = GetWindowSize().y;
-	frameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
+	m_FrameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
 	m_LastViewportSize = glm::vec2{GetWindowSize().x, GetWindowSize().y};
 
 	m_ActiveScene = std::make_shared<Scene>();
@@ -133,7 +133,7 @@ void Game::OnUpdate()
 
 
 
-	frameBuffer->Bind();
+	m_FrameBuffer->Bind();
 
 	Renderer::SetClearColor({0, 0, 0, 1});
 	Renderer::Clear();
@@ -219,7 +219,7 @@ void Game::OnUpdate()
 		m_Enemies = std::move(remainingEnemies);
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer->GetFBO());
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FrameBuffer->GetFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBlitFramebuffer(0, 0, GetWindowSize().x, GetWindowSize().y, 0, 0,
 					  GetWindowSize().x, GetWindowSize().y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -348,7 +348,7 @@ void Game::OnResize()
 		m_FramebufferProps.width = width;
 		m_FramebufferProps.height = height;
 
-		frameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
+		m_FrameBuffer = std::make_shared<FrameBuffer>(m_FramebufferProps);
 		m_ActiveScene->SetViewportSize(width,height);
 		m_LastViewportSize = glm::vec2{width, height};
 	}

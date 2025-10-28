@@ -27,7 +27,7 @@ private:
 	void OpenScene(const std::filesystem::path& path);
 	void OpenProject(const std::filesystem::path& path);
 	std::shared_ptr<Scene> m_ActiveScene;
-	std::shared_ptr<FrameBuffer> frameBuffer;
+	std::shared_ptr<FrameBuffer> m_FrameBuffer;
 	FrameBufferProperties m_FramebufferProps;
 	std::filesystem::path m_SavedScenePath;
 	glm::vec2 m_LastViewportSize{};
