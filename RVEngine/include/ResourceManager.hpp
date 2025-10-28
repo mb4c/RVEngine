@@ -11,7 +11,7 @@ class ResourceManager : public Singleton<ResourceManager>
 public:
 	ResourceManager(token)
 	{
-//		m_Models.emplace("plane", std::make_shared<Model>("res/plane.fbx"));
+		m_Models.emplace("plane", std::make_shared<Model>("res/plane.fbx"));
 //		m_Models.emplace("sphere05", std::make_shared<Model>("res/sphere05.fbx"));
 		m_Models.emplace("cube", std::make_shared<Model>("res/cube.fbx"));
 		// m_Models.emplace("helmet", std::make_shared<Model>("res/DamagedHelmet.glb"));
@@ -31,6 +31,7 @@ public:
 		m_Shaders.emplace("prefilter", std::make_shared<Shader>("res/shaders/Prefilter_vert.glsl", "res/shaders/Prefilter_frag.glsl"));
 		m_Shaders.emplace("brdf", std::make_shared<Shader>("res/shaders/brdf_vert.glsl", "res/shaders/brdf_frag.glsl"));
 
+		m_Shaders.emplace("DebugLine", std::make_shared<Shader>("res/shaders/DebugLine.vert", "res/shaders/DebugLine.frag"));
 		m_Shaders.emplace("grid", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/grid_frag.glsl"));
 
 		m_Textures.emplace("brickwall_albedo", std::make_shared<Texture2D>(Texture2D("res/brickwall.jpg")));
@@ -71,11 +72,14 @@ public:
 		m_Materials.emplace("default_pbr", defaultMat);
 		GetModel("cube")->m_Material = GetMaterial("default_pbr");
 //
-//		auto grid = std::make_shared<Material>();
-//		grid->albedo = GetTexture("default_albedo");
-//		grid->normal= GetTexture("default_normal");
-//		grid->occlusionRoughnessMetallic = GetTexture("brickwall_orm");
-//		m_Materials.emplace("grid", grid);
+		auto grid = std::make_shared<Material>();
+		grid->albedo = GetTexture("default_albedo");
+		grid->normal= GetTexture("default_normal");
+		grid->occlusion = GetTexture("default_albedo");
+		grid->roughness = GetTexture("default_albedo");
+		grid->metallic = GetTexture("default_albedo");
+		grid->emission = GetTexture("default_emission");
+		m_Materials.emplace("grid", grid);
 
 
 		// icons

@@ -1,7 +1,10 @@
-#include <../include/Renderer/Renderer.hpp>
-#include "../../include/Renderer/EditorCamera.hpp"
+#include "Renderer/Renderer.hpp"
+
+#include <Renderer/Renderer.hpp>
+#include "Renderer/EditorCamera.hpp"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
+std::unique_ptr<Renderer::DebugGeometry> Renderer::s_DebugGeometry = std::make_unique<Renderer::DebugGeometry>();
 
 void Renderer::Init()
 {
@@ -134,6 +137,11 @@ void Renderer::DrawLines(const std::shared_ptr<VertexArray> &vertexArray, int ve
 	RenderStats::GetInstance().DrawCalls++;
 }
 
+void Renderer::DrawLine(const glm::vec3& start, const glm::vec3& end,const glm::vec4& color, float thickness, bool depthTest)
+{
+	s_DebugGeometry->AddLine(start, end, color, thickness, depthTest);
+}
+
 void Renderer::SetLineWidth(float width)
 {
 	RV_PROFILE_FUNCTION();
@@ -235,6 +243,16 @@ GLuint Renderer::GetTimeElapsed()
 glm::mat4 Renderer::GetView()
 {
 	return s_SceneData->ViewMatrix;
+}
+
+glm::mat4 Renderer::GetViewProjection()
+{
+	return s_SceneData->ViewProjectionMatrix;
+}
+
+Renderer::DebugGeometry& Renderer::GetDebugGeometry()
+{
+	return *s_DebugGeometry;
 }
 
 glm::mat4 Renderer::GetProjection()

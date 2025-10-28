@@ -292,7 +292,83 @@ void Scene::RenderScene()
 		Renderer::Submit(backgroundShader, model->GetMeshes()->at(0).m_VertexArray, transform.GetTransform(), (unsigned int)entity);
 	}
 
+	if (!Renderer::GetDebugGeometry().Lines.empty())
+	{
+		const auto& lines = Renderer::GetDebugGeometry().Lines;
 
+		struct RenderBatch
+		{
+			std::vector<float> vertices;
+			float thickness;
+			bool depthTest;
+		};
+
+		std::vector<RenderBatch> batches;
+
+		for (const auto& line : lines)
+		{
+			auto it = std::find_if(batches.begin(), batches.end(),
+			                       [&](const RenderBatch& batch)
+			                       {
+				                       return batch.thickness == line.Thickness && batch.depthTest == line.DepthTest;
+			                       });
+
+			if (it == batches.end())
+			{
+				batches.push_back({std::vector<float>(), line.Thickness, line.DepthTest});
+				it = batches.end() - 1;
+			}
+
+			auto& verts = it->vertices;
+			verts.insert(verts.end(), {
+				             line.Start.x, line.Start.y, line.Start.z,
+				             line.Color.r, line.Color.g, line.Color.b, line.Color.a,
+
+				             line.End.x, line.End.y, line.End.z,
+				             line.Color.r, line.Color.g, line.Color.b, line.Color.a
+			             });
+		}
+
+		auto& rm = ResourceManager::instance();
+		auto lineShader = rm.GetShader("DebugLine");
+		lineShader->Bind();
+		lineShader->SetMat4("u_ViewProjection", Renderer::GetViewProjection());
+		lineShader->SetMat4("u_Transform", glm::mat4(1.0f));
+
+		for (auto& batch : batches)
+		{
+			if (batch.vertices.empty()) continue;
+
+			if (batch.depthTest)
+			{
+				glEnable(GL_DEPTH_TEST);
+			}
+			else
+			{
+				glDisable(GL_DEPTH_TEST);
+			}
+
+			auto vertexArray = std::make_shared<VertexArray>();
+			auto vertexBuffer = std::make_shared<VertexBuffer>(
+				batch.vertices.data(),
+				batch.vertices.size() * sizeof(float)
+			);
+
+			BufferLayout layout = {
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float4, "a_Color"}
+			};
+			vertexBuffer->SetLayout(layout);
+			vertexArray->AddVertexBuffer(vertexBuffer);
+
+			Renderer::SetLineWidth(batch.thickness);
+			Renderer::DrawLines(vertexArray, static_cast<int>(batch.vertices.size() / 7));
+		}
+
+		glEnable(GL_DEPTH_TEST);
+
+		Renderer::GetDebugGeometry().Clear();
+	}
 }
 
 void Scene::SetSelectedEntity(uint32_t entity)

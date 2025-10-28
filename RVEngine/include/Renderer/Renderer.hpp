@@ -28,6 +28,8 @@ public:
 	static void Clear();
 	static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, int indexCount);
 	static void DrawLines(const std::shared_ptr<VertexArray>& vertexArray, int indexCount);
+	static void DrawLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color = glm::vec4(1.0f), float thickness = 1.0f, bool depthTest = true);
+
 	static void SetLineWidth(float width);
 	static void DebugMessageCallback(GLenum source,
 									 GLenum type,
@@ -41,7 +43,33 @@ public:
 	static GLuint GetTimeElapsed();
 	static glm::mat4 GetProjection();
 	static glm::mat4 GetView();
+	static glm::mat4 GetViewProjection();
 
+	struct DebugGeometry
+	{
+		struct Line
+		{
+			glm::vec3 Start;
+			glm::vec3 End;
+			glm::vec4 Color;
+			float Thickness = 1.0f;
+			bool DepthTest = true;
+		};
+
+		std::vector<Line> Lines;
+
+		void AddLine(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color = glm::vec4(1.0f), const float thickness = 1.0f, const bool depthTest = true)
+		{
+			Lines.push_back({ start, end, color, thickness, depthTest });
+		}
+
+		void Clear()
+		{
+			Lines.clear();
+		}
+	};
+
+	static DebugGeometry& GetDebugGeometry();
 private:
 	struct SceneData
 	{
@@ -54,5 +82,8 @@ private:
 		bool QueryResultsReady;
 	};
 
+
+
 	static std::unique_ptr<SceneData> s_SceneData;
+	static std::unique_ptr<DebugGeometry> s_DebugGeometry;
 };
