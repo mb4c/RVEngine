@@ -42,6 +42,7 @@ void RVEditor::OnInit()
 
 	frameBuffer = std::make_shared<FrameBuffer>(fbProps);
 	frameBufferPicking = std::make_shared<FrameBuffer>(fbProps2);
+	frameBufferDisplay = std::make_shared<FrameBuffer>(fbPropsDisplay);
 
 	m_EditorScene = std::make_shared<Scene>();
 	m_ActiveScene = m_EditorScene;
@@ -186,6 +187,7 @@ void RVEditor::OnUpdate()
 	}
 
 	frameBuffer->Unbind();
+	frameBuffer->BlitTo(*frameBufferDisplay);
 
 	frameBufferPicking->Bind();
 //	Renderer::SetClearColor({0, 0, 0, 1});
@@ -336,13 +338,16 @@ void RVEditor::DrawImGui()
 		fbProps.height = m_ViewportSize.y;
 		fbProps2.width = m_ViewportSize.x;
 		fbProps2.height = m_ViewportSize.y;
+		fbPropsDisplay.width = m_ViewportSize.x;
+		fbPropsDisplay.height = m_ViewportSize.y;
+
 		frameBuffer = std::make_shared<FrameBuffer>(fbProps);
+		frameBufferDisplay = std::make_shared<FrameBuffer>(fbPropsDisplay);
 		frameBufferPicking = std::make_shared<FrameBuffer>(fbProps2);
 
 	}
 	// Because I use the texture from OpenGL, I need to invert the V from the UV.
-
-	ImGui::Image((ImTextureID)frameBuffer->GetColorTexture(), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Image((ImTextureID)frameBufferDisplay->GetColorTexture(), m_ViewportSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	float posx = ImGui::GetCursorScreenPos().x - ImGui::GetMousePos().x;
 	float posy = ImGui::GetCursorScreenPos().y - ImGui::GetMousePos().y;

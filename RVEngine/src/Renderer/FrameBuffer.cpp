@@ -4,32 +4,46 @@
 
 FrameBuffer::FrameBuffer(FrameBufferProperties props)
 {
-	m_Width = props.width;
-	m_Height = props.height;
+    m_Width = props.width;
+    m_Height = props.height;
+    int samples = props.samples;
 
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	// Color
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, props.internalFormat, props.width, props.height, 0, props.format, props.type, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, props.filtering);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, props.filtering);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    if (samples > 1)
+    {
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, props.internalFormat, props.width, props.height, GL_TRUE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, texture, 0);
 
-	// Depth
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, props.width, props.height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH24_STENCIL8, props.width, props.height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    }
+    else
+    {
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, props.internalFormat, props.width, props.height, 0, props.format, props.type, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, props.filtering);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, props.filtering);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        glGenRenderbuffers(1, &rbo);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, props.width, props.height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+    }
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 FrameBuffer::~FrameBuffer()
@@ -78,4 +92,39 @@ uint32_t FrameBuffer::GetEntityID(glm::vec2 pos)
 	glReadBuffer(GL_NONE);
 	Unbind();
 	return pixel.EntityID - 1;
+}
+
+void FrameBuffer::BlitTo(FrameBuffer& target)
+{
+	// TODO: check if buffer is multi sampled
+	bool isMSAA = true;
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target.fbo);
+
+	if (isMSAA)
+	{
+		if (m_Width != target.m_Width || m_Height != target.m_Height)
+		{
+			std::cerr << "ERROR: Cannot blit MSAA FBO to different size target!" << std::endl;
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			return;
+		}
+
+		glBlitFramebuffer(
+			0, 0, m_Width, m_Height,
+			0, 0, target.m_Width, target.m_Height,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST
+		);
+	}
+	else
+	{
+		glBlitFramebuffer(
+			0, 0, m_Width, m_Height,
+			0, 0, target.m_Width, target.m_Height,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST
+		);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

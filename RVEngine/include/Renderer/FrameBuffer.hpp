@@ -24,6 +24,7 @@ struct FrameBufferProperties
 	uint32_t format = GL_RGB;
 	uint32_t type = GL_UNSIGNED_BYTE;
 	uint32_t filtering = GL_LINEAR;
+	uint32_t samples = 1;
 };
 
 class FrameBuffer
@@ -37,6 +38,8 @@ public:
 	uint32_t GetColorTexture() { return texture;}
 	uint32_t GetEntityID(glm::vec2 pos);
 	uint32_t GetFBO(){return fbo;}
+	void BlitTo(FrameBuffer& target);
+
 private:
 	uint32_t m_Width;
 	uint32_t m_Height;

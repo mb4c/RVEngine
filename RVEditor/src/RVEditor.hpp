@@ -82,10 +82,12 @@ private:
 	std::shared_ptr<Shader> flatShader;
 	std::shared_ptr<Shader> mainShader;
 
-	FrameBufferProperties fbProps {static_cast<uint32_t>(GetWindowSize().x),static_cast<uint32_t>(GetWindowSize().y)};
+	FrameBufferProperties fbProps {static_cast<uint32_t>(GetWindowSize().x),static_cast<uint32_t>(GetWindowSize().y), .samples = 4};
 	FrameBufferProperties fbProps2 {static_cast<uint32_t>(GetWindowSize().x),static_cast<uint32_t>(GetWindowSize().y), GL_RGB32UI, GL_RGB_INTEGER, GL_UNSIGNED_INT};
+	FrameBufferProperties fbPropsDisplay {static_cast<uint32_t>(GetWindowSize().x),static_cast<uint32_t>(GetWindowSize().y), .samples = 1};
 	std::shared_ptr<FrameBuffer> frameBuffer;
 	std::shared_ptr<FrameBuffer> frameBufferPicking;
+	std::shared_ptr<FrameBuffer> frameBufferDisplay;
 
 	int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 	int32_t m_SelectedGizmo = 0;
