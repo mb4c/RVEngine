@@ -8,6 +8,8 @@
 #include <memory>
 #include <Renderer/FrameBuffer.hpp>
 
+#include "Renderer/EnvironmentMap.hpp"
+
 class Entity;
 
 class Scene
@@ -92,8 +94,9 @@ private:
 	PhysicsManager* m_PhysicsManager = nullptr;
 	uint32_t m_ViewportWidth, m_ViewportHeight;
 	std::string m_SceneName = "Untitled";
-
 	std::vector<Entity> m_EntityDeletionQueue;
+
+	EnvironmentMap m_EnvironmentMap;
 
 	friend class Entity;
 	friend class SceneHierarchyPanel;

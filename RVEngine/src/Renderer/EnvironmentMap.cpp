@@ -1,8 +1,8 @@
-#include "../../include/Renderer/EnvironmentMap.hpp"
+#include "Renderer/EnvironmentMap.hpp"
 
 EnvironmentMap::EnvironmentMap(const std::string& hdriPath)
 {
-
+	path = hdriPath;
 	glGenFramebuffers(1, &captureFBO);
 	glGenRenderbuffers(1, &captureRBO);
 
@@ -50,7 +50,18 @@ EnvironmentMap::EnvironmentMap(const std::string& hdriPath)
 void EnvironmentMap::Capture()
 {
 	ResourceManager& rm = ResourceManager::instance();
-
+	GLint lastViewport[4];
+	GLint lastFramebuffer;
+	GLint lastProgram;
+	GLint lastTexture2D;
+	GLint lastTextureCube;
+	GLint lastActiveTexture;
+	glGetIntegerv(GL_VIEWPORT, lastViewport);
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &lastFramebuffer);
+	glGetIntegerv(GL_CURRENT_PROGRAM, &lastProgram);
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &lastTexture2D);
+	glGetIntegerv(GL_TEXTURE_BINDING_CUBE_MAP, &lastTextureCube);
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &lastActiveTexture);
 // pbr: convert HDR equirectangular environment map to cubemap equivalent
 	// ----------------------------------------------------------------------
 	auto equirectangularToCubemapShader = rm.GetShader("cubemap");
@@ -191,7 +202,12 @@ void EnvironmentMap::Capture()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	RenderQuad();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, lastFramebuffer);
+	glViewport(lastViewport[0], lastViewport[1], lastViewport[2], lastViewport[3]);
+	glUseProgram(lastProgram);
+	glActiveTexture(lastActiveTexture);
+	glBindTexture(GL_TEXTURE_2D, lastTexture2D);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, lastTextureCube);
 }
 
 void EnvironmentMap::RenderCube()

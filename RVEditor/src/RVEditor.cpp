@@ -49,20 +49,12 @@ void RVEditor::OnInit()
 	m_ActiveScene->m_RenderingFB = frameBuffer;
 	m_ActiveScene->m_PickingFB = frameBufferPicking;
 
-	EnvironmentMap envMap("res/buikslotermeerplein_4k.hdr");
-	envMap.Capture();
-
-
 	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	m_AssetsPanel.SetContext(m_ActiveScene);
 
 
 	auto skybox = m_ActiveScene->CreateEntity("skybox");
-	skybox.AddComponent<SkyboxComponent>().envCubemap = envMap.envCubemap;
-	skybox.GetComponent<SkyboxComponent>().irradianceMap = envMap.irradianceMap;
-	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
-	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
-	skybox.GetComponent<SkyboxComponent>().envMap = "res/buikslotermeerplein_4k.hdr";
+	skybox.AddComponent<SkyboxComponent>().envMap = "res/buikslotermeerplein_4k.hdr";
 
 	auto shader = rm.GetShader("pbr");
 
@@ -683,18 +675,34 @@ std::filesystem::path RVEditor::SaveScene()
 
 void RVEditor::OpenScene(const std::filesystem::path& path)
 {
-	std::shared_ptr newScene = std::make_shared<Scene>();
-	SceneSerializer serializer(newScene);
+	// std::shared_ptr newScene = std::make_shared<Scene>();
+	NewScene();
+	SceneSerializer serializer(m_ActiveScene);
 	if(serializer.Deserialize(path))
 	{
-		m_EditorScene = newScene;
+		m_EditorScene = m_ActiveScene;
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 		m_AssetsPanel.SetContext(m_ActiveScene);
-		m_ActiveScene = m_EditorScene;
 		m_SavedScenePath = path;
 
-		UpdateWindowTitle();
+		m_ActiveScene->m_RenderingFB = frameBuffer;
+		m_ActiveScene->m_PickingFB = frameBufferPicking;
+		m_ActiveScene->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+		Renderer::SetViewport(0, 0, m_ViewportSize.x, m_ViewportSize.y);
+		m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+		fbProps.width = m_ViewportSize.x;
+		fbProps.height = m_ViewportSize.y;
+		fbProps2.width = m_ViewportSize.x;
+		fbProps2.height = m_ViewportSize.y;
+		fbPropsDisplay.width = m_ViewportSize.x;
+		fbPropsDisplay.height = m_ViewportSize.y;
 
+		frameBuffer = std::make_shared<FrameBuffer>(fbProps);
+		frameBufferDisplay = std::make_shared<FrameBuffer>(fbPropsDisplay);
+		frameBufferPicking = std::make_shared<FrameBuffer>(fbProps2);
+
+		m_ActiveScene->OnStart();
+		UpdateWindowTitle();
 	} else
 	{
 		std::cout << "Failed to deserialize scene" << std::endl;

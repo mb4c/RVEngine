@@ -7,11 +7,12 @@
 
 Scene::Scene()
 {
-
+	std::cout << "Scene created" << std::endl;
 }
 
 Scene::~Scene()
 {
+	std::cout << "Scene destroyed: " << m_SceneName << std::endl;
 }
 
 Entity Scene::CreateEntity(const std::string& name)
@@ -23,6 +24,21 @@ Entity Scene::CreateEntity(const std::string& name)
 void Scene::OnStart()
 {
 //	PrintAllComponentNames(AllComponents{});
+	std::cout << "Scene Started" << std::endl;
+
+	if (GetEntitiesWithComponent<SkyboxComponent>().empty())
+	{
+		std::cout << "No skybox found, critical error aaaaa" << std::endl;
+	}
+
+	auto& sc = GetEntitiesWithComponent<SkyboxComponent>().at(0).GetComponent<SkyboxComponent>();
+	m_EnvironmentMap = EnvironmentMap(sc.envMap);
+	m_EnvironmentMap.Capture();
+
+	sc.envCubemap = m_EnvironmentMap.envCubemap;
+	sc.irradianceMap = m_EnvironmentMap.irradianceMap;
+	sc.prefilterMap = m_EnvironmentMap.prefilterMap;
+	sc.brdfLUTTexture = m_EnvironmentMap.brdfLUTTexture;
 }
 
 void Scene::OnUpdateEditor(float ts, EditorCamera& editorCamera)
@@ -204,6 +220,7 @@ void Scene::RenderScene()
 	Stencil::DisableStencil();
 
 	mesh.shader->Bind();
+	mesh.shader->SetBool("u_UseIBL", true);
 	mesh.shader->SetBool("u_UseAlbedo", mat->useAlbedo);
 	mesh.shader->SetBool("u_UseNormal", mat->useNormal);
 	mesh.shader->SetVec4("u_AlbedoColor", mat->albedoColor);

@@ -11,6 +11,7 @@ class EnvironmentMap
 {
 public:
 	EnvironmentMap(const std::string& hdriPath);
+	EnvironmentMap() = default;
 
 	void Capture();
 	uint32_t envCubemap;
@@ -18,6 +19,8 @@ public:
 	uint32_t irradianceMap;
 	uint32_t prefilterMap;
 	uint32_t brdfLUTTexture;
+	bool shouldCapture = false;
+	std::string path = "";
 private:
 	glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
 	glm::mat4 captureViews[6] =
