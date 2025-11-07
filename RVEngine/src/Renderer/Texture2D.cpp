@@ -131,6 +131,9 @@ Texture2D::Texture2D(uint32_t width, uint32_t height, uint32_t channels, unsigne
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
+	GLfloat maxAniso;
+	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, std::min(16.0f, maxAniso));
 	m_ID = textureID;
 }
 
