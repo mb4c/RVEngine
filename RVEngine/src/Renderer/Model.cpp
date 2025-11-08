@@ -46,10 +46,21 @@ void Model::LoadModel(const std::string& path)
 		auto loadedMaterial = std::make_shared<Material>();
 		loadedMaterial->materialName = materialName.C_Str();
 
-		unsigned int textureCount = material->GetTextureCount(static_cast<aiTextureType>(aiTextureType_BASE_COLOR));
+		aiColor3D emissiveColor(0, 0, 0);
+		material->Get(AI_MATKEY_COLOR_EMISSIVE, emissiveColor);
+		if (emissiveColor.r > 0.0f || emissiveColor.g > 0.0f || emissiveColor.b > 0.0f)
+		{
+			loadedMaterial->useEmission = true;
+			loadedMaterial->emissionColor = glm::vec4(emissiveColor.r, emissiveColor.g, emissiveColor.b, 1.0f);
+		}
+		else
+		{
+			loadedMaterial->emissionColor = glm::vec4(0.0f);
+		}
 
 		for (unsigned int type = aiTextureType_DIFFUSE; type <= aiTextureType_AMBIENT_OCCLUSION; ++type)
 		{
+			unsigned int textureCount = material->GetTextureCount(static_cast<aiTextureType>(type));
 			for (int j = 0; j < textureCount; ++j)
 			{
 				aiString path;
@@ -74,42 +85,38 @@ void Model::LoadModel(const std::string& path)
 								{
 									case aiTextureType_BASE_COLOR:
 									{
-										loadedMaterial->albedo = std::make_shared<Texture2D>(spec.width, spec.height,
-																						 spec.nchannels, pixels.get());
+										loadedMaterial->useAlbedo = true;
+										loadedMaterial->albedo = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 									case aiTextureType_NORMALS:
 									{
-										loadedMaterial->normal = std::make_shared<Texture2D>(spec.width, spec.height,
-																						 spec.nchannels, pixels.get());
+										loadedMaterial->useNormal = true;
+										loadedMaterial->normal = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 									case aiTextureType_METALNESS:
 									{
-										loadedMaterial->metallic = std::make_shared<Texture2D>(spec.width, spec.height,
-																						   spec.nchannels,
-																						   pixels.get());
+										loadedMaterial->useMetallic = true;
+										loadedMaterial->metallic = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 									case aiTextureType_DIFFUSE_ROUGHNESS:
 									{
-										loadedMaterial->roughness = std::make_shared<Texture2D>(spec.width, spec.height,
-																							spec.nchannels,
-																							pixels.get());
+										loadedMaterial->useRoughness = true;
+										loadedMaterial->roughness = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 									case aiTextureType_AMBIENT_OCCLUSION:
 									{
-										loadedMaterial->occlusion = std::make_shared<Texture2D>(spec.width, spec.height,
-																							spec.nchannels,
-																							pixels.get());
+										loadedMaterial->useOcclusion = true;
+										loadedMaterial->occlusion = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 									case aiTextureType_EMISSIVE:
 									{
-										loadedMaterial->emission = std::make_shared<Texture2D>(spec.width, spec.height,
-																							spec.nchannels,
-																							pixels.get());
+										loadedMaterial->useEmission = true;
+										loadedMaterial->emission = std::make_shared<Texture2D>(spec.width, spec.height, spec.nchannels, pixels.get());
 										break;
 									}
 								}

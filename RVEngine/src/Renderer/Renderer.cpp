@@ -2,6 +2,7 @@
 
 #include <Renderer/Renderer.hpp>
 #include "Renderer/EditorCamera.hpp"
+#include "Renderer/MaterialUBO.hpp"
 
 std::unique_ptr<Renderer::SceneData> Renderer::s_SceneData = std::make_unique<Renderer::SceneData>();
 std::unique_ptr<Renderer::DebugGeometry> Renderer::s_DebugGeometry = std::make_unique<Renderer::DebugGeometry>();
@@ -28,6 +29,10 @@ void Renderer::Init()
 		glGenQueries(1, &frame.timeElapsedQuery);
 	}
 
+	glGenBuffers(1, &s_SceneData->materialUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, s_SceneData->materialUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUBO), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 9, s_SceneData->materialUBO); // 9 = binding = 9 in GLSL
 }
 
 void Renderer::Shutdown()
@@ -64,7 +69,6 @@ void Renderer::BeginScene(EditorCamera &camera)
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * camera.GetViewMatrix();
 	s_SceneData->ViewMatrix = camera.GetViewMatrix();
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
-
 	RenderStats::GetInstance().DrawCalls = 0;
 
 }

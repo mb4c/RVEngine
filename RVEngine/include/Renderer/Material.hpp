@@ -3,7 +3,7 @@
 #include <memory>
 #include "Renderer/Texture2D.hpp"
 #include "Shader.hpp"
-#include "../UUID.hpp"
+#include "UUID.hpp"
 #include <filesystem>
 
 class Material
@@ -23,15 +23,17 @@ public:
 	std::shared_ptr<Texture2D> metallic;
 	std::shared_ptr<Texture2D> emission;
 
-	bool useAlbedo = true;
-	bool useNormal = true;
-	bool useOcclusion = true;
-	bool useRoughness = true;
-	bool useMetallic = true;
-	bool useEmission = true;
+	bool useAlbedo = false;
+	bool useNormal = false;
+	bool useOcclusion = false;
+	bool useRoughness = false;
+	bool useMetallic = false;
+	bool useEmission = false;
+	bool useIBL = true;
 
 	glm::vec4 albedoColor = {1,1,1,1};
-	float roughnessValue = 0;
+	glm::vec4 emissionColor = {0,0,0,0};
+	float roughnessValue = 0.7;
 	float metallicValue = 0;
 	float emissionStrength = 1;
 

@@ -85,10 +85,19 @@ void SceneHierarchyPanel::OnRender()
 			{
 				auto light = m_Context->CreateEntity("Point light");
 				light.AddComponent<LightComponent>();
+				light.GetComponent<LightComponent>().type = LightType::Point;
 				m_SelectionContext = light;
 				m_Context->SetSelectedEntity(light);
 			}
 
+			if (ImGui::MenuItem("Create Directional light"))
+			{
+				auto light = m_Context->CreateEntity("Directional light");
+				light.AddComponent<LightComponent>();
+				light.GetComponent<LightComponent>().type = LightType::Directional;
+				m_SelectionContext = light;
+				m_Context->SetSelectedEntity(light);
+			}
 			ImGui::EndMenu();
 		}
 

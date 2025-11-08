@@ -109,12 +109,19 @@ struct TransformComponent
 	glm::quat GetRotationQuat()
 	{
 		RV_PROFILE_FUNCTION();
-		return glm::quat(Translation);
+		return glm::quat(Rotation);
 	}
 	glm::vec3 GetRotation()
 	{
 		RV_PROFILE_FUNCTION();
 		return glm::degrees(Rotation);
+	}
+
+	glm::vec3 GetForward()
+	{
+		glm::vec3 localForward = glm::vec3(0.0f, 0.0f, -1.0f);
+		glm::vec3 worldForward = glm::toMat3(GetRotationQuat()) * localForward;
+		return glm::normalize(worldForward);
 	}
 };
 
@@ -140,9 +147,14 @@ struct SpriteRendererComponent
 	SpriteRendererComponent(glm::vec4 color) : Color(color){}
 	SpriteRendererComponent(std::shared_ptr<Texture2D> texture) : Tex(texture) {}
 };
-
+enum class LightType
+{
+	Point = 0,
+	Directional,
+};
 struct LightComponent
 {
+	LightType type = LightType::Point;
 	glm::vec3 color = {1, 1, 1};
 	f32 intensity = {1.0};
 

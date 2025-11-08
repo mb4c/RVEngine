@@ -44,7 +44,7 @@ public:
 	static glm::mat4 GetProjection();
 	static glm::mat4 GetView();
 	static glm::mat4 GetViewProjection();
-
+	static GLuint GetMaterialUBO() { return s_SceneData->materialUBO; }
 	struct DebugGeometry
 	{
 		struct Line
