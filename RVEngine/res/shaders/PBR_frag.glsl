@@ -136,8 +136,14 @@ void main()
     float roughness = params.x;// from UBO
     float alpha = texture(albedoMap, TexCoords).a;
 
+    if (alpha < 0.75)
+    discard;
+
     if (useAlbedo) {
-        albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+        vec4 albedoSample = texture(albedoMap, TexCoords);
+        // divide by alpha to remove premultiplied darkening
+        albedo = pow(albedoSample.rgb / max(albedoSample.a, 0.001), vec3(2.2));
+        //albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
     }
     if (useNormal) {
         N = getNormalFromMap();
@@ -254,7 +260,7 @@ void main()
     switch (u_DisplayType)
     {
         case 0:// LIT
-        FragColor = vec4(color, alpha);
+        FragColor = vec4(color * alpha, alpha);
         break;
         case 1:// ALBEDO
         FragColor = vec4(albedo, 1.0);
