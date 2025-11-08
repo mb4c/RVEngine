@@ -22,10 +22,11 @@ void Renderer::Init()
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(DebugMessageCallback, 0);
 
-	glGenQueries(1, &s_SceneData->PrimitivesQuery);
-	glGenQueries(1, &s_SceneData->TimeElapsedQuery);
-	s_SceneData->QueryActive = false;
-	s_SceneData->QueryResultsReady = false;
+	for (auto& frame : s_SceneData->queryFrames)
+	{
+		glGenQueries(1, &frame.primitivesQuery);
+		glGenQueries(1, &frame.timeElapsedQuery);
+	}
 
 }
 
@@ -33,6 +34,13 @@ void Renderer::Shutdown()
 {
 	RV_PROFILE_FUNCTION();
 
+	for (auto& frame : s_SceneData->queryFrames)
+	{
+		if (frame.primitivesQuery != 0)
+			glDeleteQueries(1, &frame.primitivesQuery);
+		if (frame.timeElapsedQuery != 0)
+			glDeleteQueries(1, &frame.timeElapsedQuery);
+	}
 }
 
 void Renderer::OnWindowResize(int width, int height)
@@ -44,12 +52,15 @@ void Renderer::OnWindowResize(int width, int height)
 void Renderer::BeginScene(EditorCamera &camera)
 {
 	RV_PROFILE_FUNCTION();
-	if (!s_SceneData->QueryActive)
+	auto& currentFrame = s_SceneData->queryFrames[s_SceneData->currentQueryFrame];
+
+	if (!currentFrame.active)
 	{
-		glBeginQuery(GL_PRIMITIVES_GENERATED, s_SceneData->PrimitivesQuery);
-		glBeginQuery(GL_TIME_ELAPSED, s_SceneData->TimeElapsedQuery);
-		s_SceneData->QueryActive = true;
+		glBeginQuery(GL_PRIMITIVES_GENERATED, currentFrame.primitivesQuery);
+		glBeginQuery(GL_TIME_ELAPSED, currentFrame.timeElapsedQuery);
+		currentFrame.active = true;
 	}
+
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * camera.GetViewMatrix();
 	s_SceneData->ViewMatrix = camera.GetViewMatrix();
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
@@ -61,28 +72,51 @@ void Renderer::BeginScene(EditorCamera &camera)
 void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
 {
 	RV_PROFILE_FUNCTION();
-	if (!s_SceneData->QueryActive)
+
+	auto& currentFrame = s_SceneData->queryFrames[s_SceneData->currentQueryFrame];
+
+	if (!currentFrame.active)
 	{
-		glBeginQuery(GL_PRIMITIVES_GENERATED, s_SceneData->PrimitivesQuery);
-		glBeginQuery(GL_TIME_ELAPSED, s_SceneData->TimeElapsedQuery);
-		s_SceneData->QueryActive = true;
+		glBeginQuery(GL_PRIMITIVES_GENERATED, currentFrame.primitivesQuery);
+		glBeginQuery(GL_TIME_ELAPSED, currentFrame.timeElapsedQuery);
+		currentFrame.active = true;
 	}
+
 	s_SceneData->ViewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
 	s_SceneData->ViewMatrix = glm::inverse(transform);
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
 	RenderStats::GetInstance().DrawCalls = 0;
+
 }
 
 void Renderer::EndScene()
 {
 	RV_PROFILE_FUNCTION();
 
-	if (s_SceneData->QueryActive)
+	auto& currentFrame = s_SceneData->queryFrames[s_SceneData->currentQueryFrame];
+
+	if (currentFrame.active)
 	{
 		glEndQuery(GL_PRIMITIVES_GENERATED);
 		glEndQuery(GL_TIME_ELAPSED);
-		s_SceneData->QueryActive = false;
-		s_SceneData->QueryResultsReady = true;
+		currentFrame.active = false;
+	}
+
+	s_SceneData->currentQueryFrame = (s_SceneData->currentQueryFrame + 1) % SceneData::QUERY_FRAME_COUNT;
+
+	for (auto& frame : s_SceneData->queryFrames)
+	{
+		if (!frame.active && frame.primitivesQuery != 0)
+		{
+			GLint available = 0;
+			glGetQueryObjectiv(frame.primitivesQuery, GL_QUERY_RESULT_AVAILABLE, &available);
+
+			if (available)
+			{
+				glGetQueryObjectuiv(frame.primitivesQuery, GL_QUERY_RESULT, &frame.primitivesResult);
+				glGetQueryObjectuiv(frame.timeElapsedQuery, GL_QUERY_RESULT, &frame.timeResult);
+			}
+		}
 	}
 }
 
@@ -216,28 +250,28 @@ void Renderer::DebugMessageCallback(GLenum source, GLenum type, GLuint id, GLenu
 
 GLuint Renderer::GetPrimitivesGenerated()
 {
-	if (s_SceneData->QueryResultsReady)
+	RV_PROFILE_FUNCTION();
+
+	GLuint maxResult = 0;
+	for (const auto& frame : s_SceneData->queryFrames)
 	{
-		GLuint primitivesGenerated;
-		glGetQueryObjectuiv(s_SceneData->PrimitivesQuery, GL_QUERY_RESULT, &primitivesGenerated);
-		return primitivesGenerated;
-	} else
-	{
-		return 0;
+		if (frame.primitivesResult > maxResult)
+			maxResult = frame.primitivesResult;
 	}
+	return maxResult;
 }
 
 GLuint Renderer::GetTimeElapsed()
 {
-	if (s_SceneData->QueryResultsReady)
+	RV_PROFILE_FUNCTION();
+
+	GLuint maxResult = 0;
+	for (const auto& frame : s_SceneData->queryFrames)
 	{
-		GLuint timeElapsed;
-		glGetQueryObjectuiv(s_SceneData->TimeElapsedQuery, GL_QUERY_RESULT, &timeElapsed);
-		return timeElapsed;
-	} else
-	{
-		return 0;
+		if (frame.timeResult > maxResult)
+			maxResult = frame.timeResult;
 	}
+	return maxResult;
 }
 
 glm::mat4 Renderer::GetView()

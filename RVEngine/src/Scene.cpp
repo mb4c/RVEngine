@@ -151,6 +151,8 @@ void Scene::RenderScene()
 			Entity::UpdateGlobalTransform(entity);
 		}
 	}
+    RV_PROFILE_SCOPE("Rendering");
+	RV_PROFILE_GPU_ZONE("Render Scene");
 
 	auto lightGroup = m_Registry.group<>(entt::get<TransformComponent, LightComponent>);
 	unsigned int irrMap;
@@ -183,6 +185,7 @@ void Scene::RenderScene()
 {
 	auto& currentMesh = mesh.model->GetMeshes()->at(i);
 	std::shared_ptr<Material> mat = currentMesh.GetMaterial();
+            RV_PROFILE_SCOPE("Render mesh");
 
 	assert(mat && "No material assigned to mesh");
 	assert(mesh.shader && "No shader assigned to model");
@@ -190,6 +193,7 @@ void Scene::RenderScene()
 	// bind albedo
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mat->albedo->GetTexture());
+                RV_PROFILE_SCOPE("Bind textures");
 
 	// bind normal map
 	glActiveTexture(GL_TEXTURE1);

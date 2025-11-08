@@ -9,6 +9,7 @@ AssetsPanel::AssetsPanel()
 
 void AssetsPanel::OnRender()
 {
+	RV_PROFILE_FUNCTION();
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 	ImGui::Begin("Assets", nullptr, ImGuiWindowFlags_MenuBar);
@@ -46,6 +47,7 @@ void AssetsPanel::OnRender()
 
 		for (auto& it : std::filesystem::directory_iterator(m_CurrentDirectory))
 		{
+			RV_PROFILE_SCOPE("Iterate assets");
 			auto relativePath = std::filesystem::relative(it.path(), m_AssetsDirectory);
 
 			if (it.is_directory())

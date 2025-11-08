@@ -201,6 +201,7 @@ void RVEditor::OnUpdate()
 
 void RVEditor::OnImGuiRender()
 {
+	RV_PROFILE_FUNCTION();
 	DrawImGui();
 	m_SceneHierarchyPanel.OnRender();
 	m_AssetsPanel.OnRender();
@@ -221,7 +222,7 @@ void RVEditor::DrawImGui()
 
 	if (ImGui::TreeNodeEx("Debug", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-
+		RV_PROFILE_SCOPE("Settings window");
 		ImGui::Text("FPS: %f", GetFPS());
 		float mouseDelta[2];
 		mouseDelta[0] = m_Input.GetMouseDelta().x;
@@ -267,6 +268,8 @@ void RVEditor::DrawImGui()
 	ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_MenuBar);
 	if (ImGui::BeginMenuBar())
 	{
+		RV_PROFILE_SCOPE("Viewport window");
+
 		float avail = ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x;
 
 		const char* items[] = {"Translate", "Rotate", "Scale"};
@@ -317,7 +320,6 @@ void RVEditor::DrawImGui()
 		ImGui::PushItemWidth(75);
 		ImGui::DragFloat("Camera speed", &m_CameraSpeed);
 
-
 		ImGui::EndMenuBar();
 	}
 
@@ -332,6 +334,7 @@ void RVEditor::DrawImGui()
 
 	if (m_ViewportSize.x != m_LastViewportSize.x || m_ViewportSize.y != m_LastViewportSize.y || m_LastWindowSize != GetWindowSize())
 	{
+		RV_PROFILE_SCOPE("Resize viewport");
 		Renderer::SetViewport(0, 0, m_ViewportSize.x, m_ViewportSize.y);
 		m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		fbProps.width = m_ViewportSize.x;
@@ -356,46 +359,50 @@ void RVEditor::DrawImGui()
 
 	// Gizmos
 
-	Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
-	if (selectedEntity && m_GizmoType != -1)
 	{
-		ImGuizmo::SetOrthographic(false);
-		ImGuizmo::SetDrawlist();
+		RV_PROFILE_SCOPE("Gizmos");
 
-		float windowWidth = (float)ImGui::GetWindowWidth();
-		float windowHeight = (float)ImGui::GetWindowHeight();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
-
-		glm::mat4 cameraView = m_Camera.GetViewMatrix();
-		glm::mat4 cameraProjection = m_Camera.GetProjection();
-
-		if (selectedEntity.HasComponent<TransformComponent>())
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1)
 		{
-			auto& tc = selectedEntity.GetComponent<TransformComponent>();
-			glm::mat4 transform = tc.GetTransform();
-			glm::mat4 deltaTransform = glm::mat4(1);
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
 
-			//TODO: Rotation is broken
-			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), glm::value_ptr(deltaTransform));
+			float windowWidth = (float)ImGui::GetWindowWidth();
+			float windowHeight = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-			if(ImGuizmo::IsUsing())
+			glm::mat4 cameraView = m_Camera.GetViewMatrix();
+			glm::mat4 cameraProjection = m_Camera.GetProjection();
+
+			if (selectedEntity.HasComponent<TransformComponent>())
 			{
-				glm::vec3 translation, rotation, scale;
-//				glm::mat4 t = tc.GetLocalTransform();
-//				t = t * deltaTransform;
-				Math::DecomposeTransform(transform, translation, rotation, scale);
-//				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(t), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
-//				glm::vec3 deltaRotation = rotation - tc.Rotation;
-				tc.Translation = translation;
-				tc.Rotation = rotation;
-				tc.Scale = scale;
-				tc.IsDirty = true;
+				auto& tc = selectedEntity.GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
+				glm::mat4 deltaTransform = glm::mat4(1);
 
+				//TODO: Rotation is broken
+				ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), glm::value_ptr(deltaTransform));
+
+				if(ImGuizmo::IsUsing())
+				{
+					glm::vec3 translation, rotation, scale;
+					//				glm::mat4 t = tc.GetLocalTransform();
+					//				t = t * deltaTransform;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
+					//				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(t), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+					//				glm::vec3 deltaRotation = rotation - tc.Rotation;
+					tc.Translation = translation;
+					tc.Rotation = rotation;
+					tc.Scale = scale;
+					tc.IsDirty = true;
+
+				}
 			}
+
+
+
 		}
-
-
-
 	}
 
 	ImGui::End();

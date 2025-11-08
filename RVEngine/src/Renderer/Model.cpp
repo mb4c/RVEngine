@@ -38,6 +38,7 @@ void Model::LoadModel(const std::string& path)
 
 	for (unsigned int i = 0; i < scene->mNumMaterials; ++i)
 	{
+		RV_PROFILE_SCOPE("Load Materials");
 		aiMaterial* material = scene->mMaterials[i];
 		aiString materialName;
 		material->Get(AI_MATKEY_NAME, materialName);

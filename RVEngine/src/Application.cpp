@@ -63,12 +63,12 @@ void Application::Run()
 
 //	fmt::print("OpenGL version: {}\n", *glGetString(GL_VERSION));
 	glfwSwapInterval(m_Vsync);
-
+	RV_PROFILE_GPU_CONTEXT();
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	// io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	ImGui::StyleColorsDark();
 
@@ -107,47 +107,78 @@ void Application::Run()
 			}
 			{
 				RV_PROFILE_SCOPE("OnImGuiRender");
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplGlfw_NewFrame();
-				ImGui::NewFrame();
-				ImGuizmo::BeginFrame();
+				{
+					RV_PROFILE_SCOPE("ImGui new frame");
+					{
+						RV_PROFILE_SCOPE("ImGui_ImplOpenGL3_NewFrame");
+						ImGui_ImplOpenGL3_NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGui_ImplGlfw_NewFrame");
+						ImGui_ImplGlfw_NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGui::NewFrame");
+						ImGui::NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGuizmo::BeginFrame");
+						ImGuizmo::BeginFrame();
+					}
+				}
 				OnImGuiRender();
-
-				ImGui::Render();
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				{
+					RV_PROFILE_SCOPE("ImGui render");
+					ImGui::Render();
+					ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				}
 			}
-
-
-		} else
+		}
+		else
 		{
 			{
 				RV_PROFILE_SCOPE("OnImGuiRender");
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplGlfw_NewFrame();
-				ImGui::NewFrame();
-				ImGuizmo::BeginFrame();
+				{
+					RV_PROFILE_SCOPE("ImGui new frame");
+					{
+						RV_PROFILE_SCOPE("ImGui_ImplOpenGL3_NewFrame");
+						ImGui_ImplOpenGL3_NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGui_ImplGlfw_NewFrame");
+						ImGui_ImplGlfw_NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGui::NewFrame");
+						ImGui::NewFrame();
+					}
+					{
+						RV_PROFILE_SCOPE("ImGuizmo::BeginFrame");
+						ImGuizmo::BeginFrame();
+					}
+				}
 				OnImGuiRender();
 
-				ImGui::Render();
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				{
+					RV_PROFILE_SCOPE("ImGui render");
+					ImGui::Render();
+					ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+				}
 			}
 
 			{
 				RV_PROFILE_SCOPE("OnUpdate");
 				OnUpdate();
-
 			}
 		}
-
-
 
 
 		{
 			RV_PROFILE_SCOPE("Swap Buffers");
 			glfwSwapBuffers(m_Window);
+			RV_PROFILE_GPU_COLLECT();
 			glfwPollEvents();
 		}
-
 	}
 
 	OnShutdown();

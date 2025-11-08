@@ -8,6 +8,8 @@
 #include "../../RVEngine/include/Renderer/Material.hpp"
 #include <YAMLUtils.hpp>
 
+#include "Macros.hpp"
+
 void AssetImporter::Open(AppData* appdata, ProjectSettings* projectSettings, std::filesystem::path currentDirectory)
 {
 	Modal::Open();
@@ -19,6 +21,8 @@ void AssetImporter::Open(AppData* appdata, ProjectSettings* projectSettings, std
 
 void AssetImporter::Render()
 {
+	RV_PROFILE_FUNCTION();
+
 	Modal::Render();
 
 	if (ImGui::BeginPopupModal(m_Name.c_str(),  nullptr, ImGuiWindowFlags_AlwaysAutoResize))

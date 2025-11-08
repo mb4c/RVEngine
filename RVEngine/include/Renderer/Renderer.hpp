@@ -71,15 +71,25 @@ public:
 
 	static DebugGeometry& GetDebugGeometry();
 private:
+	struct QueryFrame
+	{
+		GLuint primitivesQuery = 0;
+		GLuint timeElapsedQuery = 0;
+		GLuint primitivesResult = 0;
+		GLuint timeResult = 0;
+		bool active = false;
+	};
 	struct SceneData
 	{
 		glm::mat4 ViewProjectionMatrix;
 		glm::mat4 ViewMatrix;
 		glm::mat4 ProjectionMatrix;
-		GLuint PrimitivesQuery;
-		GLuint TimeElapsedQuery;
-		bool QueryActive;
-		bool QueryResultsReady;
+
+		static constexpr int QUERY_FRAME_COUNT = 3;
+		std::array<QueryFrame, QUERY_FRAME_COUNT> queryFrames;
+		int currentQueryFrame = 0;
+
+		GLuint materialUBO = 0;
 	};
 
 
