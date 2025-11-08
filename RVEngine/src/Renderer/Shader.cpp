@@ -79,6 +79,20 @@ void Shader::SetInt(const std::string &name, int value) const
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+void Shader::SetInt3Array(const std::string& name, const std::vector<int>& values)
+{
+	RV_PROFILE_FUNCTION();
+
+	GLint loc = glGetUniformLocation(ID, name.c_str());
+	if (loc == -1)
+	{
+		std::cout << "ERROR::UNIFORM: " << name << " does not exist" << std::endl;
+		return;
+	}
+
+	glUniform1iv(loc, static_cast<GLsizei>(values.size()), values.data());
+}
+
 void Shader::SetUInt(const std::string &name, unsigned int value) const
 {
 	RV_PROFILE_FUNCTION();
@@ -120,6 +134,20 @@ void Shader::SetVec3(const std::string &name, glm::vec3 value) const
 {
 	RV_PROFILE_FUNCTION();
 	glUniform3f(glGetUniformLocation(ID, name.c_str()), value.x, value.y, value.z);
+}
+
+void Shader::SetVec3Array(const std::string& name, const std::vector<glm::vec3>& values)
+{
+	RV_PROFILE_FUNCTION();
+
+	GLint loc = glGetUniformLocation(ID, name.c_str());
+	if (loc == -1)
+	{
+		std::cout << "ERROR::UNIFORM: " << name << " does not exist" << std::endl;
+		return;
+	}
+
+	glUniform3fv(loc, static_cast<GLsizei>(values.size()), glm::value_ptr(values[0]));
 }
 
 void Shader::SetVec4(const std::string &name, glm::vec4 value) const

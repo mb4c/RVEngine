@@ -21,9 +21,11 @@ public:
 	// utility uniform functions
 	void SetBool(const std::string &name, bool value) const;
 	void SetInt(const std::string &name, int value) const;
+	void SetInt3Array(const std::string& name, const std::vector<int>& values);
 	void SetUInt(const std::string &name, unsigned int value) const;
 	void SetFloat(const std::string &name, float value) const;
 	void SetVec3(const std::string &name, glm::vec3 value) const;
+	void SetVec3Array(const std::string& name, const std::vector<glm::vec3>& values);
 	void SetVec4(const std::string &name, glm::vec4 value) const;
 	void SetMat4(const std::string &name, glm::mat4 value) const;
 	void SetMat3(const std::string &name, glm::mat3 value) const;
