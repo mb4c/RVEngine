@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
-#include <Scene.hpp>
-#include "Entity.hpp"
 #include <imgui_stdlib.h>
 #include <ResourceManager.hpp>
+class Scene;
+#include "Entity.hpp"
 
 class SceneHierarchyPanel
 {

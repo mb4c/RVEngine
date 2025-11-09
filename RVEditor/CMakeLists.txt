@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(RVEditor)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 #find_package(glfw3 CONFIG REQUIRED)
 #find_package(glad CONFIG REQUIRED)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(RVEngine)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 
 if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
     add_compile_definitions(JPH_PROFILE_ENABLED)

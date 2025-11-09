@@ -28,7 +28,12 @@ struct IDComponent
 	u32 EntityID = entt::null;
 
 	IDComponent() = default;
+	IDComponent(const UUID& id) : ID(id) {}
 	IDComponent(const IDComponent&) = default;
+	IDComponent(IDComponent&&) = default;
+	IDComponent& operator=(const IDComponent&) = default;
+	IDComponent& operator=(IDComponent&&) = default;
+
 };
 
 struct TransformComponent

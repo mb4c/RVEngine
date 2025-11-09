@@ -43,10 +43,10 @@ void AssetImporter::Render()
 			{
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0); // File
-				ImGui::Selectable(std::filesystem::path(m_AppData->dropPaths.at(row)).filename().u8string().c_str(), row	== 0, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns);
+				ImGui::Selectable(std::filesystem::path(m_AppData->dropPaths.at(row)).filename().string().c_str(), row	== 0, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns);
 				//Note: this is so fucking retarded, for some fucking reason microshits garbage compiler throws error when directly calling .c_str() so we need to call .string() first
 				ImGui::TableSetColumnIndex(1); // Type
-				ImGui::Selectable(AssetTypeToString(AssetTypeFromExtension(m_AppData->dropPaths.at(row).extension().u8string())).c_str(), row	== 0, ImGuiSelectableFlags_DontClosePopups);
+				ImGui::Selectable(AssetTypeToString(AssetTypeFromExtension(m_AppData->dropPaths.at(row).extension().string())).c_str(), row	== 0, ImGuiSelectableFlags_DontClosePopups);
 				ImGui::TableSetColumnIndex(2); // Path
 				ImGui::Selectable(m_AppData->dropPaths.at(row).string().c_str(), row	== 0, ImGuiSelectableFlags_DontClosePopups );
 
@@ -55,7 +55,7 @@ void AssetImporter::Render()
 		}
 
 
-		if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().u8string()) == AssetType::IMAGE)
+		if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().string()) == AssetType::IMAGE)
 		{
 			// TODO: Display metadata
 			// TODO: Display Image preview
@@ -80,11 +80,11 @@ void AssetImporter::Render()
 			std::cout << m_CurrentDirectory << std::endl;
 
 			bool copied = std::filesystem::copy_file(m_AppData->dropPaths.at(0), copyPath, std::filesystem::copy_options::overwrite_existing); //TODO: ask user if he wants to overwrite
-			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().u8string()) == AssetType::MODEL)
+			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().string()) == AssetType::MODEL)
 			{
 				ImportMesh(copyPath);
 			}
-			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().u8string()) == AssetType::IMAGE)
+			if (AssetTypeFromExtension(m_AppData->dropPaths.at(0).extension().string()) == AssetType::IMAGE)
 			{
 				ImportTexture(copyPath);
 			}
@@ -139,7 +139,7 @@ void AssetImporter::EraseFirstElement()
 void AssetImporter::ImportMesh(const std::filesystem::path& path)
 {
 	Assimp::Importer import;
-	const aiScene *scene = import.ReadFile(path.u8string(),  aiProcess_RemoveRedundantMaterials);
+	const aiScene *scene = import.ReadFile(path.string(),  aiProcess_RemoveRedundantMaterials);
 
 	if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -165,7 +165,7 @@ void AssetImporter::ImportMesh(const std::filesystem::path& path)
 			std::filesystem::path texPath = m_AppData->dropPaths.at(0).parent_path();
 			texPath /= texturePath.C_Str();
 
-			std::string texPathStr = texPath.u8string();
+			std::string texPathStr = texPath.string();
 			std::replace( texPathStr.begin(), texPathStr.end(), '\\', '/' ); //HACK: std::filesystem::path::make_preferred doesn't work so we do this instead
 			texPath = texPathStr;
 
@@ -210,7 +210,7 @@ void AssetImporter::ImportTexture(const std::filesystem::path& path)
 	std::cout << "copy: " << copyDir << std::endl;
 
 	Texture2D tex;
-	tex.SetRelPath(relativePath.u8string());
+	tex.SetRelPath(relativePath.string());
 	tex.Serialize(copyDir.parent_path().string() + "/" + copyDir.stem().string() + "." + "rvtex2d");
 
 }

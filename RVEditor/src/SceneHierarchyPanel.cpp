@@ -1,6 +1,7 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "SceneHierarchyPanel.hpp"
+#include "Entity.hpp"
 #include "Components.hpp"
 #include <Widgets.hpp>
 

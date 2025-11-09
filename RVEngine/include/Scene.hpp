@@ -35,19 +35,7 @@ public:
 	static std::shared_ptr<Scene> Copy(std::shared_ptr<Scene> other);
 
 	template<typename... Component>
-	std::vector<Entity> GetEntitiesWithComponent()
-	{
-		std::vector<Entity> entities;
-
-		auto view = m_Registry.view<Component...>();
-
-		for (entt::entity entity: view)
-		{
-			entities.emplace_back(entity,this);
-		}
-
-		return entities;
-	}
+	std::vector<Entity> GetEntitiesWithComponent();
 
 	Entity CreateEntity(const std::string& name = std::string());
 	void RemoveEntity(Entity entity);
@@ -86,8 +74,8 @@ public:
 
 	std::shared_ptr<FrameBuffer> m_RenderingFB;
 	std::shared_ptr<FrameBuffer> m_PickingFB;
-private:
 	entt::registry m_Registry;
+private:
 	uint32_t m_SelectedEntity;
 	bool m_IsRunning = false;
 	std::unordered_map<UUID, entt::entity> m_EntityMap;

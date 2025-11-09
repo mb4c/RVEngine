@@ -1,4 +1,7 @@
 #include <Entity.hpp>
+#include <Scene.hpp>
+#include <Components.hpp>
+#include <cassert>
 
 Entity::Entity(entt::entity handle, Scene* scene)
 		: m_EntityHandle(handle), m_Scene(scene)
@@ -8,6 +11,11 @@ Entity::Entity(entt::entity handle, Scene* scene)
 Entity::Entity(uint32_t handle, Scene* scene)
 		: m_EntityHandle(static_cast<entt::entity>(handle)), m_Scene(scene)
 {
+}
+
+UUID Entity::GetUUID() 
+{ 
+	return GetComponent<IDComponent>().ID; 
 }
 
 void Entity::Destroy()

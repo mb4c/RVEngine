@@ -2,7 +2,13 @@
 
 #include <entt/entt.hpp>
 #include <memory>
-#include <Scene.hpp>
+#include <vector>
+#include <string>
+#include <cstdint>
+
+class Scene;
+class UUID;
+class IDComponent;
 
 class Entity
 {
@@ -14,39 +20,19 @@ public:
 	void Destroy();
 
 	template<typename T, typename... Args>
-	T& AddComponent(Args&&... args)
-	{
-		assert(!HasComponent<T>()); // "Entity already has component!"
-		return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
-	}
+	T& AddComponent(Args&&... args);
 
 	template<typename T, typename... Args>
-	T& AddOrReplaceComponent(Args&&... args)
-	{
-		T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
-//		m_Scene->OnComponentAdded<T>(*this, component);
-		return component;
-	}
+	T& AddOrReplaceComponent(Args&&... args);
 
 	template<typename T>
-	T& GetComponent()
-	{
-		assert(HasComponent<T>()); // "Entity does not have component!"
-		return m_Scene->m_Registry.get<T>(m_EntityHandle);
-	}
+	T& GetComponent();
 
 	template<typename T>
-	bool HasComponent()
-	{
-		return m_Scene->m_Registry.any_of<T>(m_EntityHandle);
-	}
+	bool HasComponent();
 
 	template<typename T>
-	void RemoveComponent()
-	{
-		assert(HasComponent<T>());
-		m_Scene->m_Registry.remove<T>(m_EntityHandle); // "Entity does not have component!"
-	}
+	void RemoveComponent();
 
 	operator bool() const { return m_EntityHandle != entt::null; }
 	operator bool() { return m_EntityHandle != entt::null; }
@@ -66,8 +52,8 @@ public:
 	}
 
 	entt::entity GetHandle() { return m_EntityHandle; };
-	UUID GetUUID() { return GetComponent<IDComponent>().ID; }
-	bool IsValid() {     return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle); }
+	UUID GetUUID();
+	bool IsValid();
 
 	void SetParent(Entity entity);
 	Entity GetParent();
@@ -87,3 +73,45 @@ private:
 	entt::entity m_EntityHandle{ entt::null };
 	Scene* m_Scene = nullptr;
 };
+
+#include "Scene.hpp"
+
+template<typename T, typename... Args>
+T& Entity::AddComponent(Args&&... args)
+{
+	assert(!HasComponent<T>()); // "Entity already has component!"
+	return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+}
+
+template<typename T, typename... Args>
+T& Entity::AddOrReplaceComponent(Args&&... args)
+{
+	T& component = m_Scene->m_Registry.emplace_or_replace<T>(m_EntityHandle, std::forward<Args>(args)...);
+//	m_Scene->OnComponentAdded<T>(*this, component);
+	return component;
+}
+
+template<typename T>
+T& Entity::GetComponent()
+{
+	assert(HasComponent<T>()); // "Entity does not have component!"
+	return m_Scene->m_Registry.get<T>(m_EntityHandle);
+}
+
+template<typename T>
+bool Entity::HasComponent()
+{
+	return m_Scene->m_Registry.any_of<T>(m_EntityHandle);
+}
+
+template<typename T>
+void Entity::RemoveComponent()
+{
+	assert(HasComponent<T>());
+	m_Scene->m_Registry.remove<T>(m_EntityHandle); // "Entity does not have component!"
+}
+
+inline bool Entity::IsValid() 
+{     
+	return m_EntityHandle != entt::null && m_Scene->m_Registry.valid(m_EntityHandle); 
+}
