@@ -25,18 +25,13 @@ void Game::OnInit()
 
 	LoadAssets();
 
-	EnvironmentMap envMap("res/overcast_soil_puresky_4k.hdr");
-	envMap.Capture();
 
 
 //	m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 
 
 	auto skybox = m_ActiveScene->CreateEntity("skybox");
-	skybox.AddComponent<SkyboxComponent>().envCubemap = envMap.envCubemap;
-	skybox.GetComponent<SkyboxComponent>().irradianceMap = envMap.irradianceMap;
-	skybox.GetComponent<SkyboxComponent>().prefilterMap = envMap.prefilterMap;
-	skybox.GetComponent<SkyboxComponent>().brdfLUTTexture = envMap.brdfLUTTexture;
+	skybox.AddComponent<SkyboxComponent>().envMap = "res/overcast_soil_puresky_4k.hdr";
 
 	m_Camera = m_ActiveScene->CreateEntity("Camera");
 	m_Camera.AddComponent<CameraComponent>();

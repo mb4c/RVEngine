@@ -24,6 +24,7 @@ public:
 		m_Shaders.emplace("pbr", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/PBR_frag.glsl"));
 		m_Shaders.emplace("picking", std::make_shared<Shader>("res/shaders/PBR_vert.glsl", "res/shaders/Picking_frag.glsl"));
 		m_Shaders.emplace("flat", std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/FlatColor.frag"));
+		m_Shaders.emplace("depth", std::make_shared<Shader>("res/shaders/FlatColor.vert", "res/shaders/Depth.frag"));
 		m_Shaders.emplace("sprite", std::make_shared<Shader>("res/shaders/Sprite.vert", "res/shaders/Sprite.frag"));
 		m_Shaders.emplace("cubemap", std::make_shared<Shader>("res/shaders/Cubemap_vert.glsl", "res/shaders/Cubemap_frag.glsl"));
 		m_Shaders.emplace("convolution", std::make_shared<Shader>("res/shaders/Cubemap_vert.glsl", "res/shaders/Convolution_frag.glsl"));

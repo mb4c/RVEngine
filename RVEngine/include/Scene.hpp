@@ -90,5 +90,5 @@ private:
 	friend class SceneHierarchyPanel;
 	friend class SceneSerializer;
 };
-
+#include "Scene.inl"
 

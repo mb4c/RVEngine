@@ -1,6 +1,8 @@
 #include "Renderer/Renderer.hpp"
 
 #include <Renderer/Renderer.hpp>
+
+#include "Renderer/CameraUBO.hpp"
 #include "Renderer/EditorCamera.hpp"
 #include "Renderer/MaterialUBO.hpp"
 
@@ -32,7 +34,14 @@ void Renderer::Init()
 	glGenBuffers(1, &s_SceneData->materialUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, s_SceneData->materialUBO);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(MaterialUBO), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 9, s_SceneData->materialUBO); // 9 = binding = 9 in GLSL
+	glBindBufferBase(GL_UNIFORM_BUFFER, 9, s_SceneData->materialUBO);
+
+	glGenBuffers(1, &s_SceneData->cameraUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, s_SceneData->cameraUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraUBO), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 10, s_SceneData->cameraUBO);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Renderer::Shutdown()
@@ -71,6 +80,17 @@ void Renderer::BeginScene(EditorCamera &camera)
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
 	RenderStats::GetInstance().DrawCalls = 0;
 
+	{
+		RV_PROFILE_SCOPE("Update Camera UBO");
+		CameraUBO cameraData;
+		cameraData.ViewProjection = s_SceneData->ViewProjectionMatrix;
+		cameraData.View = s_SceneData->ViewMatrix;
+		cameraData.Projection = s_SceneData->ProjectionMatrix;
+
+		glBindBuffer(GL_UNIFORM_BUFFER, s_SceneData->cameraUBO);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraUBO), &cameraData);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 }
 
 void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
@@ -91,6 +111,17 @@ void Renderer::BeginScene(Camera& camera, const glm::mat4& transform)
 	s_SceneData->ProjectionMatrix = camera.GetProjection();
 	RenderStats::GetInstance().DrawCalls = 0;
 
+	{
+		RV_PROFILE_SCOPE("Update Camera UBO");
+		CameraUBO cameraData;
+		cameraData.ViewProjection = s_SceneData->ViewProjectionMatrix;
+		cameraData.View = s_SceneData->ViewMatrix;
+		cameraData.Projection = s_SceneData->ProjectionMatrix;
+
+		glBindBuffer(GL_UNIFORM_BUFFER, s_SceneData->cameraUBO);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraUBO), &cameraData);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 }
 
 void Renderer::EndScene()
@@ -127,14 +158,11 @@ void Renderer::EndScene()
 void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, const glm::mat4 &transform, unsigned int entity)
 {
 	RV_PROFILE_FUNCTION();
+
 	shader->Bind();
-	shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-	shader->SetMat4("u_View", s_SceneData->ViewMatrix);
-	shader->SetMat4("u_Projection", s_SceneData->ProjectionMatrix);
 	shader->SetMat4("u_Transform", transform);
 	shader->SetMat3("u_NormalMatrix", glm::transpose(glm::inverse(glm::mat3(transform))));
 	shader->SetUInt("u_ObjectIndex", entity + 1);
-
 
 	vertexArray->Bind();
 	DrawIndexed(vertexArray, 0);

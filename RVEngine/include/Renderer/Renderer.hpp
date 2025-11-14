@@ -90,6 +90,7 @@ private:
 		int currentQueryFrame = 0;
 
 		GLuint materialUBO = 0;
+		GLuint cameraUBO = 0;
 	};
 
 

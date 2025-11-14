@@ -105,7 +105,6 @@ void RVEditor::OnInit()
 	// 	sas.SetParent(helmet);
 
 	m_ActiveScene->OnStart();
-
 }
 
 void RVEditor::OnUpdate()
@@ -699,9 +698,11 @@ void RVEditor::OpenScene(const std::filesystem::path& path)
 
 		m_ActiveScene->m_RenderingFB = frameBuffer;
 		m_ActiveScene->m_PickingFB = frameBufferPicking;
+
 		m_ActiveScene->SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 		Renderer::SetViewport(0, 0, m_ViewportSize.x, m_ViewportSize.y);
 		m_Camera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
+
 		fbProps.width = m_ViewportSize.x;
 		fbProps.height = m_ViewportSize.y;
 		fbProps2.width = m_ViewportSize.x;
